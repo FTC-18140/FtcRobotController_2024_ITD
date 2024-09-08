@@ -51,13 +51,12 @@ import org.firstinspires.ftc.teamcode.Robot.StraferBot;
  */
 
 @TeleOp(name="Strafer Teleop", group="Teleop")
-@Disabled
 public class StraferTeleop extends OpMode
 {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private StraferBot robot = new StraferBot();
-    private TBDGamepad theGamepad1 = new TBDGamepad( gamepad1);
+    private TBDGamepad theGamepad1;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -67,6 +66,7 @@ public class StraferTeleop extends OpMode
         robot.init(hardwareMap, telemetry);
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
+        theGamepad1 = new TBDGamepad( gamepad1);
     }
 
     /*
