@@ -92,7 +92,7 @@ public class StraferBot
 
     }
     public void joystickDrive(double forward, double right, double clockwise) {
-        PoseVelocity2d thePose = new PoseVelocity2d(new Vector2d(forward, right), -clockwise);
+        PoseVelocity2d thePose = new PoseVelocity2d(new Vector2d(forward, -right), -clockwise);
         drive.setDrivePowers(thePose);
     }
     /**
