@@ -20,24 +20,24 @@ import org.firstinspires.ftc.teamcode.messages.ThreeDeadWheelInputsMessage;
 @Config
 public final class ThreeDeadWheelLocalizer implements Localizer {
     public static class Params {
-        public double par0YTicks = -88.52226869391666; // y position of the first parallel encoder (in tick units)
-        public double par1YTicks = 41.56158128740321; // y position of the second parallel encoder (in tick units)
-        public double perpXTicks = -25.72787134036071; // x position of the perpendicular encoder (in tick units)
+        public double par0YTicks = 0.0; // y position of the first parallel encoder (in tick units)
+        public double par1YTicks = 1.0; // y position of the second parallel encoder (in tick units)
+        public double perpXTicks = 0.0; // x position of the perpendicular encoder (in tick units)
     }
 
     public static Params PARAMS = new Params();
 
     /*  |-|                           |-|
-        |-|-leftFront       rightBack-|-|
+        |-|-leftBack       rightFront-|-|
         |-|                           |-|
 
 
 
-                    leftBack
+                    rightBack
                     _________
                     _________
     * */
-    public final Encoder leftFront, rightBack, leftBack;
+    public final Encoder rightFront, leftBack, rightBack;
 
     public final double inPerTick;
 
@@ -48,12 +48,13 @@ public final class ThreeDeadWheelLocalizer implements Localizer {
         // TODO: make sure your config has **motors** with these names (or change them)
         //   the encoders should be plugged into the slot matching the named motor
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        leftFront = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "leftFront")));
-        rightBack = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightBack")));
+        rightFront = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightFront")));
         leftBack = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "leftBack")));
+        rightBack = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "rightBack")));
 
         // TODO: reverse encoder directions if needed
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         this.inPerTick = inPerTick;
@@ -62,9 +63,9 @@ public final class ThreeDeadWheelLocalizer implements Localizer {
     }
 
     public Twist2dDual<Time> update() {
-        PositionVelocityPair par0PosVel = leftFront.getPositionAndVelocity();
-        PositionVelocityPair par1PosVel = rightBack.getPositionAndVelocity();
-        PositionVelocityPair perpPosVel = leftBack.getPositionAndVelocity();
+        PositionVelocityPair par0PosVel = rightFront.getPositionAndVelocity();
+        PositionVelocityPair par1PosVel = leftBack.getPositionAndVelocity();
+        PositionVelocityPair perpPosVel = rightBack.getPositionAndVelocity();
 
         FlightRecorder.write("THREE_DEAD_WHEEL_INPUTS", new ThreeDeadWheelInputsMessage(par0PosVel, par1PosVel, perpPosVel));
 
