@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.Robot.StraferBot.GearRatio.TWELVE_T
 import static java.lang.Math.abs;
 import static java.lang.Math.toRadians;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -18,7 +19,7 @@ import java.util.List;
 
 ;
 
-
+@Config
 public class StraferBot
 {
 
@@ -30,6 +31,7 @@ public class StraferBot
     long rightRearPosition = 0;
     List<LynxModule> allHubs;
 
+    public static boolean useFieldCenteredDrive = false;
     boolean moving = false;
     public enum GearRatio
     {
@@ -78,22 +80,36 @@ public class StraferBot
         telemetry = telem;
 
         drive = new MecanumDrive(hwMap, new Pose2d(0,0,0));
-
-        try {
-            allHubs = hwMap.getAll(LynxModule.class);
-
-            for (LynxModule module : allHubs) {
-                module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
-            }
-        }
-        catch (Exception e) {
-            telemetry.addData("Lynx Module not initialized", 0);
-        }
+//  This code was somehow preventing the Odometry from updating
+//        try {
+//            allHubs = hwMap.getAll(LynxModule.class);
+//
+//            for (LynxModule module : allHubs) {
+//                module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
+//            }
+//        }
+//        catch (Exception e) {
+//            telemetry.addData("Lynx Module not initialized", 0);
+//        }
 
     }
     public void joystickDrive(double forward, double right, double clockwise) {
-        PoseVelocity2d thePose = new PoseVelocity2d(new Vector2d(right, forward), clockwise);
-        drive.setDrivePowers(thePose);
+        PoseVelocity2d thePose;
+        Vector2d theVector;
+
+        drive.updatePoseEstimate();
+        if(useFieldCenteredDrive) {
+
+            theVector = new Vector2d(forward, -right);
+            thePose = new PoseVelocity2d(theVector, -clockwise);
+            drive.setDrivePowers(thePose);
+        }else{
+            theVector = new Vector2d(forward, -right);
+            thePose = new PoseVelocity2d(theVector, -clockwise);
+            drive.setDrivePowers(thePose);
+        }
+        telemetry.addData("Odometry X: ", drive.pose.position.x);
+        telemetry.addData("Odometry Y: ", drive.pose.position.y);
     }
     /**
      * Make the robot drive a certain distance in a certain direction.
