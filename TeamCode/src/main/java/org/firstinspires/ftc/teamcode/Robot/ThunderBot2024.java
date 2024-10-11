@@ -1,13 +1,20 @@
 package org.firstinspires.ftc.teamcode.Robot;
 
-import static org.firstinspires.ftc.teamcode.Robot.StraferBot.GearRatio.TWELVE_TO_ONE;
+import static org.firstinspires.ftc.teamcode.Robot.ThunderBot2024.GearRatio.TWELVE_TO_ONE;
 import static java.lang.Math.abs;
 import static java.lang.Math.toRadians;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.DualNum;
+import com.acmerobotics.roadrunner.HolonomicController;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Pose2dDual;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Rotation2dDual;
+import com.acmerobotics.roadrunner.Time;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.Vector2dDual;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
@@ -20,7 +27,7 @@ import java.util.List;
 ;
 
 @Config
-public class StraferBot
+public class ThunderBot2024
 {
 
     public MecanumDrive drive;
@@ -67,7 +74,7 @@ public class StraferBot
     /**
      * Constructor
      */
-    public StraferBot() {}
+    public ThunderBot2024() {}
 
     /**
      * Initializes the Thunderbot and connects its hardware to the HardwareMap
@@ -96,18 +103,15 @@ public class StraferBot
     public void joystickDrive(double forward, double right, double clockwise) {
         PoseVelocity2d thePose;
         Vector2d theVector;
+        theVector = new Vector2d(forward, -right);
+        thePose = new PoseVelocity2d(theVector, -clockwise);
 
-        drive.updatePoseEstimate();
-        if(useFieldCenteredDrive) {
 
-            theVector = new Vector2d(forward, -right);
-            thePose = new PoseVelocity2d(theVector, -clockwise);
-            drive.setDrivePowers(thePose);
-        }else{
-            theVector = new Vector2d(forward, -right);
-            thePose = new PoseVelocity2d(theVector, -clockwise);
-            drive.setDrivePowers(thePose);
-        }
+        PoseVelocity2d currentVel = drive.updatePoseEstimate();
+
+        drive.setDrivePowers(thePose);
+
+
         telemetry.addData("Odometry X: ", drive.pose.position.x);
         telemetry.addData("Odometry Y: ", drive.pose.position.y);
     }
@@ -344,9 +348,9 @@ public class StraferBot
     }
 
 
-    public boolean strafe(StraferBot.Direction dir, double distance, double power)
+    public boolean strafe(ThunderBot2024.Direction dir, double distance, double power)
     {
-        if ( dir == StraferBot.Direction.LEFT)
+        if ( dir == ThunderBot2024.Direction.LEFT)
         {
             return drive(-90, distance,  power);
         }

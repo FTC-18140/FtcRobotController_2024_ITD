@@ -29,12 +29,11 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Robot.StraferBot;
+import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
 
 /*
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -51,11 +50,11 @@ import org.firstinspires.ftc.teamcode.Robot.StraferBot;
  */
 
 @TeleOp(name="Strafer Teleop", group="Teleop")
-public class StraferTeleop extends OpMode
+public class Teleop extends OpMode
 {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private StraferBot robot = new StraferBot();
+    private ThunderBot2024 robot = new ThunderBot2024();
     private TBDGamepad theGamepad1;
 
     /*
