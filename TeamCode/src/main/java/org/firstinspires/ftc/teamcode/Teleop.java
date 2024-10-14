@@ -94,9 +94,13 @@ public class Teleop extends OpMode
         double forward = theGamepad1.getLeftY();
         double strafe = theGamepad1.getLeftX();
         double turn  = theGamepad1.getRightX();
+        boolean slow = false;
+        if(theGamepad1.getTrigger(TBDGamepad.Trigger.LEFT_TRIGGER)>0.1){
+            slow = true;
+        };
 
         // Send calculated power to wheels
-        robot.joystickDrive(forward, strafe, turn);
+        robot.joystickDrive(forward, strafe, turn, slow);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

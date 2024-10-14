@@ -29,7 +29,7 @@ import java.util.List;
 @Config
 public class ThunderBot2024
 {
-
+    public Intake intake;
     public MecanumDrive drive;
     double heading = 0;
     long leftFrontPosition = 0;
@@ -86,6 +86,9 @@ public class ThunderBot2024
     {
         telemetry = telem;
 
+        intake = new Intake();
+        intake.init(hwMap,telem);
+
         drive = new MecanumDrive(hwMap, new Pose2d(0,0,0));
 //  This code was somehow preventing the Odometry from updating
 //        try {
@@ -100,15 +103,18 @@ public class ThunderBot2024
 //        }
 
     }
-    public void joystickDrive(double forward, double right, double clockwise) {
+    public void joystickDrive(double forward, double right, double clockwise, boolean slow) {
         PoseVelocity2d thePose;
         Vector2d theVector;
         theVector = new Vector2d(forward, -right);
+        if(slow){
+            theVector = theVector.times(0.8);
+        }
         thePose = new PoseVelocity2d(theVector, -clockwise);
 
 
         PoseVelocity2d currentVel = drive.updatePoseEstimate();
-
+        //PoseVelocity2d finalVel = new PoseVelocity2d(new Vector2d(thePose.linearVel.x+0.5*(thePose.linearVel.x-currentVel.linearVel.x),thePose.linearVel.y+0.5*(thePose.linearVel.y-currentVel.linearVel.y)), thePose.angVel+0.5*(thePose.angVel-currentVel.angVel));
         drive.setDrivePowers(thePose);
 
 
