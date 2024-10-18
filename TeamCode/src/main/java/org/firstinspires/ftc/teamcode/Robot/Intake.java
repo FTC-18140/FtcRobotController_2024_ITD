@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Robot;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -9,6 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Utilities.PIDController;
 
 @Config
 public class Intake {
@@ -19,12 +19,12 @@ public class Intake {
     DcMotor arm = null;
     DcMotor elbow = null;
     private PIDController controller;
-    public static double p = 0, i = 0, d = 0;
-    public static double f = 0;
+    public static double p = 0.007, i = 0, d = 0;
+    public static double f = 0.2;
 
     public final double WRIST_INIT = 0.0;
     public final double WRIST_MIN = 0.0;
-    public final double WRIST_MAX = 0.065;
+    public final double WRIST_MAX = 0.1;
     public final double ELBOW_MIN = 0.0;
     public final double ELBOW_MAX = 5.0;
     public final double ARM_MIN = 0;
@@ -86,7 +86,7 @@ public class Intake {
             elbow = hwMap.dcMotor.get("elbow");
 
             elbow.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            elbow.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            elbow.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             elbow.setDirection(DcMotorSimple.Direction.FORWARD);
             elbow.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -129,24 +129,20 @@ public class Intake {
     }
     public void elbowUp(double power) {
         telemetry.addData("elbow position : ", elbowPosition/COUNTS_PER_CM);
-        if(elbowPosition/COUNTS_PER_CM <=27){
-            elbow.setPower(power);
+        if(target < 640){
+            target+=5;
         }
-        else{
-            elbowStop();
-        }
+
     }
     public void elbowDown(double power) {
         telemetry.addData("elbow position : ", elbowPosition/COUNTS_PER_CM);
-        if(elbowPosition/COUNTS_PER_CM >=0){
-            elbow.setPower(power);
+        if(target >= 30){
+            target-=5;
         }
-        else{
-            elbowStop();
-        }
+
     }
     public void elbowStop(){
-        elbow.setPower(0);
+        //elbow.setPower(0);
     }
     public void wristMove(double position) {
         wristLeft.setPosition(position);
@@ -160,18 +156,23 @@ public class Intake {
     }
     public void  update(){
         controller.setPID(p, i, d);
-        armPos = arm.getCurrentPosition();
-        double pid = controller.calculate(armPos, target);
+        elbowPosition = elbow.getCurrentPosition();
+        double pid = controller.calculate(elbowPosition, target);
         double ff = Math.cos(Math.toRadians(target/ticks_in_degree)) * f;
 
         double power = pid + ff;
-        arm.setPower(power);
+        if(target<30){
+            elbow.setPower(0);
+        }else {
+            elbow.setPower(power);
+        }
+        telemetry.addData("power : ", power);
 
         wristLeftPos = wristLeft.getPosition();
         wristRightPos = wristRight.getPosition();
-        elbowPosition = elbow.getCurrentPosition();
+        armPos = arm.getCurrentPosition();
 
-        telemetry.addData("armPos : ", armPos);
+        telemetry.addData("elbowPos : ", elbowPosition);
         telemetry.addData("targetPos : ", target);
         telemetry.update();
     }

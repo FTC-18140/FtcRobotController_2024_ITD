@@ -129,7 +129,7 @@ public class Teleop extends OpMode
             robot.intake.elbowDown(-0.5);
         }
         else{
-            robot.intake.elbowStop();
+            //robot.intake.elbowStop();
         }
         // Arm controls
         if(theGamepad2.getButton(TBDGamepad.Button.X)){
@@ -146,7 +146,7 @@ public class Teleop extends OpMode
             robot.intake.spin(1.5);
             telemetry.addData("intaking",0);
         } else if (theGamepad2.getButton(TBDGamepad.Button.RIGHT_BUMPER)) {
-            robot.intake.spin(-0.75);
+            robot.intake.spin(-0.25);
             telemetry.addData("outaking",0);
         }else{
             robot.intake.spinStop();
