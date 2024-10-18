@@ -103,15 +103,11 @@ public class ThunderBot2024
 //        }
 
     }
-    public void joystickDrive(double forward, double right, double clockwise, boolean slow) {
+    public void joystickDrive(double forward, double right, double clockwise, double slow) {
         PoseVelocity2d thePose;
         Vector2d theVector;
         theVector = new Vector2d(forward, -right);
-        if(slow){
-            theVector = theVector.times(0.5);
-        }else{
-            theVector = theVector.times(0.9);
-        }
+        theVector = theVector.times(slow);
         thePose = new PoseVelocity2d(theVector, -clockwise);
 
 
@@ -182,7 +178,7 @@ public class ThunderBot2024
             telemetry.addData("x value", xValue);
             telemetry.addData("angle error", angleError);
 
-            joystickDrive(yValue, xValue, angleError, false);
+            joystickDrive(yValue, xValue, angleError, 1);
             return false;
         }
     }
@@ -245,7 +241,7 @@ public class ThunderBot2024
         else
         {
             // Continues if not at the specified distance
-            joystickDrive(power, 0, angleError, false);
+            joystickDrive(power, 0, angleError, 1);
             telemetry.addData("power: ", power);
             telemetry.addData("Angle error", angleError);
             return false;
@@ -289,7 +285,7 @@ public class ThunderBot2024
         else
         {
             // Continues to turn if not at the specified angle
-            joystickDrive(0, 0, power, false);
+            joystickDrive(0, 0, power, 1);
             return false;
         }
     }
@@ -347,7 +343,7 @@ public class ThunderBot2024
         else
         {
             // Continues to turn if not at the specified angle
-            joystickDrive(0, 0, power, false);
+            joystickDrive(0, 0, power, 1);
             telemetry.addData("power", power);
             telemetry.addData("angle error", angleError);
             telemetry.addData("target heading", targetHeading);

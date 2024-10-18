@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.Robot;
 
+import com.acmerobotics.dashboard.config.Config;
+import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -7,17 +10,21 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+@Config
 public class Intake {
     Telemetry telemetry;
     Servo wristLeft = null;
     Servo wristRight = null;
-    Servo spinner = null;
+    CRServo spinner = null;
     DcMotor arm = null;
     DcMotor elbow = null;
+    private PIDController controller;
+    public static double p = 0, i = 0, d = 0;
+    public static double f = 0;
 
     public final double WRIST_INIT = 0.0;
     public final double WRIST_MIN = 0.0;
-    public final double WRIST_MAX = 0.06;
+    public final double WRIST_MAX = 0.065;
     public final double ELBOW_MIN = 0.0;
     public final double ELBOW_MAX = 5.0;
     public final double ARM_MIN = 0;
@@ -51,6 +58,7 @@ public class Intake {
     }
     public void init(HardwareMap hwMap, Telemetry telem) {
         telemetry = telem;
+        controller = new PIDController(p, i, d);
 
         //initialize servos and motors
         try{
@@ -67,7 +75,8 @@ public class Intake {
             telemetry.addData("wristRight servo not found in configuration",0);
         }
         try{
-            spinner = hwMap.servo.get("spinner");
+            spinner = hwMap.get(CRServo.class, "spinner");
+
         }catch(Exception e){
             telemetry.addData("spinner servo not found in configuration",0);
         }
@@ -140,6 +149,12 @@ public class Intake {
     public void wristMove(double position) {
         wristLeft.setPosition(position);
         wristRight.setPosition(position);
+    }
+    public void spin(double power){
+        spinner.setPower(power);
+    }
+    public void spinStop(){
+        spinner.setPower(0);
     }
     public void  update(){
         wristLeftPos = wristLeft.getPosition();

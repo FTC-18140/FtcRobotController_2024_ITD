@@ -60,6 +60,7 @@ public class Teleop extends OpMode
     private TBDGamepad theGamepad2;
 
     public double wristPos;
+    public double spinPos;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -68,6 +69,7 @@ public class Teleop extends OpMode
     public void init() {
         robot.init(hardwareMap, telemetry);
         wristPos = robot.intake.WRIST_INIT;
+        spinPos = 0.0;
         theGamepad1 = new TBDGamepad( gamepad1);
         theGamepad2 = new TBDGamepad(gamepad2);
         // Tell the driver that initialization is complete.
@@ -100,13 +102,16 @@ public class Teleop extends OpMode
         double forward = theGamepad1.getLeftY();
         double strafe = theGamepad1.getLeftX();
         double turn  = theGamepad1.getRightX();
-        boolean slow = false;
+        double slow = 0.8;
 
         robot.intake.update();
 
         if(theGamepad1.getTrigger(TBDGamepad.Trigger.LEFT_TRIGGER)>0.1){
-            slow = true;
+            slow = 0.5;
         };
+        if(theGamepad1.getButton(TBDGamepad.Button.LEFT_BUMPER)){
+            slow = 0.2;
+        }
         if(gamepad2.dpad_up){
             wristPos -= 0.003;
         }
@@ -134,11 +139,21 @@ public class Teleop extends OpMode
             robot.intake.armStop();
         }
 
+        if(theGamepad2.getButton(TBDGamepad.Button.LEFT_BUMPER)){
+            robot.intake.spin(1.5);
+            telemetry.addData("intaking",0);
+        } else if (theGamepad2.getButton(TBDGamepad.Button.RIGHT_BUMPER)) {
+            robot.intake.spin(-0.75);
+            telemetry.addData("outaking",0);
+        }else{
+            robot.intake.spinStop();
+        }
+
         wristPos = Range.clip(wristPos, robot.intake.WRIST_MIN, robot.intake.WRIST_MAX);
         robot.intake.wristMove(wristPos);
 
         // Send calculated power to wheels
-        robot.joystickDrive(forward, strafe, turn, slow);
+        robot.joystickDrive(forward, strafe, turn*0.5, slow);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
