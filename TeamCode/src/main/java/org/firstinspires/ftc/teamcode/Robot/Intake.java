@@ -32,6 +32,8 @@ public class Intake {
     public final double WRIST_RIGHT_MIN = -5.0;
     public final double WRIST_RIGHT_MAX = 5.0;
 
+    public static double ticks_in_degree = 5.96;
+    public static double target = 0;
     public double armPos;
     public double elbowPosition;
     public double wristLeftPos;
@@ -157,10 +159,20 @@ public class Intake {
         spinner.setPower(0);
     }
     public void  update(){
+        controller.setPID(p, i, d);
+        armPos = arm.getCurrentPosition();
+        double pid = controller.calculate(armPos, target);
+        double ff = Math.cos(Math.toRadians(target/ticks_in_degree)) * f;
+
+        double power = pid + ff;
+        arm.setPower(power);
+
         wristLeftPos = wristLeft.getPosition();
         wristRightPos = wristRight.getPosition();
         elbowPosition = elbow.getCurrentPosition();
-        armPos = arm.getCurrentPosition();
 
+        telemetry.addData("armPos : ", armPos);
+        telemetry.addData("targetPos : ", target);
+        telemetry.update();
     }
 }
