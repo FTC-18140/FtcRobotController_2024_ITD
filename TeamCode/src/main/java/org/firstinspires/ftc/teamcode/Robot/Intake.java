@@ -19,8 +19,11 @@ public class Intake {
     DcMotor arm = null;
     DcMotor elbow = null;
     private PIDController controller;
-    public static double p = 0.007, i = 0, d = 0;
-    public static double f = 0.2;
+    public static double p = 0.025, i = 0, d = 0.0001;
+    public static double pDown = 0.01, iDown = 0, dDown = 0.0001;
+
+    public static double f = 0.25;
+    public static double fDown = 0.25;
 
     public final double WRIST_INIT = 0.0;
     public final double WRIST_MIN = 0.0;
@@ -67,6 +70,7 @@ public class Intake {
             wristLeft = hwMap.servo.get("wristLeft");
             wristLeft.setDirection(Servo.Direction.REVERSE);
             wristLeftPos = wristLeft.getPosition();
+            wristLeft.setPosition(WRIST_INIT);
         }catch(Exception e){
             telemetry.addData("wristLeft servo not found in configuration",0);
         }
@@ -129,7 +133,7 @@ public class Intake {
     }
     public void elbowUp(double power) {
         telemetry.addData("elbow position : ", elbowPosition/COUNTS_PER_CM);
-        if(target < 640){
+        if(target < 750){
             target+=5;
         }
 
@@ -155,10 +159,17 @@ public class Intake {
         spinner.setPower(0);
     }
     public void  update(){
-        controller.setPID(p, i, d);
         elbowPosition = elbow.getCurrentPosition();
-        double pid = controller.calculate(elbowPosition, target);
+        controller.setPID(p,i,d);
         double ff = Math.cos(Math.toRadians(target/ticks_in_degree)) * f;
+//        if(target >=elbowPosition){
+//            controller.setPID(p, i, d);
+//            ff = Math.cos(Math.toRadians(target/ticks_in_degree)) * f;
+//        }else{
+//            controller.setPID(pDown,iDown,dDown);
+//            ff = Math.cos(Math.toRadians(target/ticks_in_degree)) * fDown;
+//        }
+        double pid = controller.calculate(elbowPosition, target);
 
         double power = pid + ff;
         if(target<30){
