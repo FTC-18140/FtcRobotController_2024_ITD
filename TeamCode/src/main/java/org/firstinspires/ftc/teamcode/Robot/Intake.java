@@ -1,6 +1,11 @@
 package org.firstinspires.ftc.teamcode.Robot;
 
+
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -157,6 +162,51 @@ public class Intake {
     }
     public void spinStop(){
         spinner.setPower(0);
+    }
+
+    public Action armMoveAction(double position){
+        return new Action() {
+            private double pos = position;
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                double currentPos = arm.getCurrentPosition();
+                if(pos >= currentPos){
+                    armUp(0.1);
+                }
+                telemetry.addData("currentPos(armAction): ",currentPos);
+                return pos <= currentPos;
+            }
+        };
+    }
+    public Action wristMoveAction(double position){
+        return new Action() {
+            private double pos = position;
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                wristMove(pos);
+                return true;
+            }
+        };
+    }
+    public Action spinnerAction(double power){
+        return new Action() {
+            private double pow = power;
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                spin(pow);
+                telemetry.addData("spinnerAction: ", 0);
+                return true;
+            }
+        };
+    }
+    public Action updateAction(){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                update();
+                return false;
+            }
+        };
     }
     public void  update(){
         elbowPosition = elbow.getCurrentPosition();

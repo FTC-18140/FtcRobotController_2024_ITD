@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode.Auto;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -16,16 +18,19 @@ public class AutoTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         ThunderBot2024 robot = new ThunderBot2024();
-        Action park;
         robot.init(hardwareMap,telemetry);
         robot.drive.pose = new Pose2d(-12,-60,Math.toRadians(90));
 
-        park = robot.drive.actionBuilder(robot.drive.pose)
-                .strafeTo(new Vector2d(-48,-48))
-                .turn(Math.toRadians(135))
-                .build();
         waitForStart();
 
-        Actions.runBlocking(park);
+        Actions.runBlocking(new ParallelAction(
+                robot.intake.wristMoveAction(robot.intake.WRIST_MAX),
+                robot.intake.spinnerAction(1),
+                robot.intake.armMoveAction(0.1)
+
+
+        ));
+        telemetry.update();
+
     }
 }
