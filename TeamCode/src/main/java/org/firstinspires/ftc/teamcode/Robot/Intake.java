@@ -167,14 +167,25 @@ public class Intake {
     public Action armMoveAction(double position){
         return new Action() {
             private double pos = position;
+            private double direction = pos - arm.getCurrentPosition()/COUNTS_PER_CM;
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 double currentPos = arm.getCurrentPosition();
-                if(pos >= currentPos){
-                    armUp(0.1);
+                if(direction>0) {
+                    if (pos >= currentPos / COUNTS_PER_CM) {
+                        armUp(0.1);
+                    } else {
+                        armStop();
+                    }
+                }else if (direction<0){
+                    if (pos <= currentPos / COUNTS_PER_CM) {
+                        armUp(-0.1);
+                    } else {
+                        armStop();
+                    }
                 }
                 telemetry.addData("currentPos(armAction): ",currentPos);
-                return pos <= currentPos;
+                return Math.abs(pos - currentPos/COUNTS_PER_CM) > 1;
             }
         };
     }
@@ -184,7 +195,7 @@ public class Intake {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 wristMove(pos);
-                return true;
+                return Math.abs(wristLeftPos-pos)>0.1;
             }
         };
     }
@@ -195,7 +206,7 @@ public class Intake {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 spin(pow);
                 telemetry.addData("spinnerAction: ", 0);
-                return true;
+                return false;
             }
         };
     }
@@ -204,7 +215,7 @@ public class Intake {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 update();
-                return false;
+                return true;
             }
         };
     }

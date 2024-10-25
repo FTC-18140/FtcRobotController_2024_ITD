@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -24,12 +25,22 @@ public class AutoTest extends LinearOpMode {
         waitForStart();
 
         Actions.runBlocking(new ParallelAction(
-                robot.intake.wristMoveAction(robot.intake.WRIST_MAX),
-                robot.intake.spinnerAction(1),
-                robot.intake.armMoveAction(0.1)
-
-
-        ));
+                robot.intake.updateAction(),
+                new SequentialAction(
+                    robot.intake.wristMoveAction(robot.intake.WRIST_MIN),
+                    new ParallelAction(
+                            robot.intake.spinnerAction(1),
+                            robot.intake.armMoveAction(12)
+                    ),
+                    new SleepAction(2),
+                    new ParallelAction(
+                            robot.intake.armMoveAction(0),
+                            robot.intake.wristMoveAction(robot.intake.WRIST_MAX),
+                            robot.intake.spinnerAction(0)
+                    )
+                )
+            )
+        );
         telemetry.update();
 
     }
