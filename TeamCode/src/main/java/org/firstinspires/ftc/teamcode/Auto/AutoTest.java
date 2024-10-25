@@ -1,12 +1,10 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -30,11 +28,11 @@ public class AutoTest extends LinearOpMode {
                     robot.intake.wristMoveAction(robot.intake.WRIST_MIN),
                     new ParallelAction(
                             robot.intake.spinnerAction(1),
-                            robot.intake.armMoveAction(12)
+                            robot.intake.armUpAction(12)
                     ),
                     new SleepAction(2),
                     new ParallelAction(
-                            robot.intake.armMoveAction(0),
+                            robot.intake.armDownAction(0),
                             robot.intake.wristMoveAction(robot.intake.WRIST_MAX),
                             robot.intake.spinnerAction(0)
                     )

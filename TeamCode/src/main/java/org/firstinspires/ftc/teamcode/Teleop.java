@@ -133,17 +133,17 @@ public class Teleop extends OpMode
         }
         // Arm controls
         if(theGamepad2.getButton(TBDGamepad.Button.X)){
-            robot.intake.armUp(0.5);
+            robot.intake.armUp(0.6);
         }
         else if(theGamepad2.getButton(TBDGamepad.Button.B)){
-            robot.intake.armDown(-0.5);
+            robot.intake.armDown(-0.6);
         }
         else{
             robot.intake.armStop();
         }
 
         if(theGamepad2.getButton(TBDGamepad.Button.LEFT_BUMPER)){
-            robot.intake.spin(1.5);
+            robot.intake.spin(1);
             telemetry.addData("intaking",0);
         } else if (theGamepad2.getButton(TBDGamepad.Button.RIGHT_BUMPER)) {
             robot.intake.spin(-0.25);
@@ -156,7 +156,7 @@ public class Teleop extends OpMode
         robot.intake.wristMove(wristPos);
 
         // Send calculated power to wheels
-        robot.joystickDrive(forward, strafe, turn*0.5, slow);
+        robot.joystickDrive(forward, strafe, turn*0.625*slow, slow);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

@@ -82,6 +82,7 @@ public class Intake {
         try{
             wristRight = hwMap.servo.get("wristRight");
             wristRightPos = wristRight.getPosition();
+            wristRight.setPosition(WRIST_INIT);
         }catch(Exception e){
             telemetry.addData("wristRight servo not found in configuration",0);
         }
@@ -164,26 +165,35 @@ public class Intake {
         spinner.setPower(0);
     }
 
-    public Action armMoveAction(double position){
+    public Action armUpAction(double position){
         return new Action() {
             private double pos = position;
-            private double direction = pos - arm.getCurrentPosition()/COUNTS_PER_CM;
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 double currentPos = arm.getCurrentPosition();
-                if(direction>0) {
-                    if (pos >= currentPos / COUNTS_PER_CM) {
-                        armUp(0.1);
-                    } else {
-                        armStop();
-                    }
-                }else if (direction<0){
-                    if (pos <= currentPos / COUNTS_PER_CM) {
-                        armUp(-0.1);
-                    } else {
-                        armStop();
-                    }
+                if (pos >= currentPos / COUNTS_PER_CM) {
+                    armUp(0.1);
+                } else {
+                    armStop();
                 }
+
+                telemetry.addData("currentPos(armAction): ",currentPos);
+                return Math.abs(pos - currentPos/COUNTS_PER_CM) > 1;
+            }
+        };
+    }
+    public Action armDownAction(double position){
+        return new Action() {
+            private double pos = position;
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                double currentPos = arm.getCurrentPosition();
+                if (pos <= currentPos / COUNTS_PER_CM) {
+                    armDown(-0.1);
+                } else {
+                    armStop();
+                }
+
                 telemetry.addData("currentPos(armAction): ",currentPos);
                 return Math.abs(pos - currentPos/COUNTS_PER_CM) > 1;
             }
@@ -206,6 +216,16 @@ public class Intake {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 spin(pow);
                 telemetry.addData("spinnerAction: ", 0);
+                return false;
+            }
+        };
+    }
+    public Action elbowAction(double position){
+        return new Action() {
+            private double pos = position;
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                target = pos;
                 return false;
             }
         };
