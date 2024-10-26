@@ -116,11 +116,17 @@ public class Teleop extends OpMode
             slow = 0.2;
         }
         if(gamepad2.dpad_up){
-            wristPos -= 0.003;
+            wristPos -= 0.01;
         }
-        if(gamepad2.dpad_down){
-            wristPos += 0.003;
+        else if(gamepad2.dpad_down){
+            wristPos += 0.01;
         }
+//        else if (gamepad2.dpad_left){
+//            wristPos = 0.65;
+//        }
+//        else if(gamepad2.dpad_right){
+//            wristPos = 0;
+//        }
         //Elbow controls
         if(theGamepad2.getButton(TBDGamepad.Button.Y)){
             robot.intake.elbowUp(0.5);
@@ -133,10 +139,10 @@ public class Teleop extends OpMode
         }
         // Arm controls
         if(theGamepad2.getButton(TBDGamepad.Button.X)){
-            robot.intake.armUp(0.6);
+            robot.intake.armUp(1);
         }
         else if(theGamepad2.getButton(TBDGamepad.Button.B)){
-            robot.intake.armDown(-0.6);
+            robot.intake.armDown(-1);
         }
         else{
             robot.intake.armStop();
@@ -161,8 +167,7 @@ public class Teleop extends OpMode
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Joystick Commands", "forward (%.2f), strafe (%.2f), turn (%.2f)", forward, strafe, turn);
-        telemetry.addData("servo wristL position: ", robot.intake.wristLeftPos);
-        telemetry.addData("servo wristR position: ", robot.intake.wristRightPos);
+        telemetry.addData("servo wrist position: ", robot.intake.wristPos);
         telemetry.addData("wristPos : ", wristPos);
     }
 

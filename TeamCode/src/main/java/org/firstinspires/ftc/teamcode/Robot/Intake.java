@@ -18,8 +18,7 @@ import org.firstinspires.ftc.teamcode.Utilities.PIDController;
 @Config
 public class Intake {
     Telemetry telemetry;
-    Servo wristLeft = null;
-    Servo wristRight = null;
+    Servo wrist = null;
     CRServo spinner = null;
     DcMotor arm = null;
     DcMotor elbow = null;
@@ -32,11 +31,11 @@ public class Intake {
 
     public final double WRIST_INIT = 0.0;
     public final double WRIST_MIN = 0.0;
-    public final double WRIST_MAX = 0.1;
+    public final double WRIST_MAX = 1.0;
     public final double ELBOW_MIN = 0.0;
     public final double ELBOW_MAX = 5.0;
     public final double ARM_MIN = 0;
-    public final double ARM_MAX = 50;
+    public final double ARM_MAX = 13;
     public final double WRIST_RIGHT_MIN = -5.0;
     public final double WRIST_RIGHT_MAX = 5.0;
 
@@ -45,7 +44,7 @@ public class Intake {
     public double armPos;
     public double elbowPosition;
     public double wristLeftPos;
-    public double wristRightPos;
+    public double wristPos;
     public double spinnerPos;
 
     // Lift parameters
@@ -72,17 +71,10 @@ public class Intake {
 
         //initialize servos and motors
         try{
-            wristLeft = hwMap.servo.get("wristLeft");
-            wristLeft.setDirection(Servo.Direction.REVERSE);
-            wristLeftPos = wristLeft.getPosition();
-            wristLeft.setPosition(WRIST_INIT);
-        }catch(Exception e){
-            telemetry.addData("wristLeft servo not found in configuration",0);
-        }
-        try{
-            wristRight = hwMap.servo.get("wristRight");
-            wristRightPos = wristRight.getPosition();
-            wristRight.setPosition(WRIST_INIT);
+            wrist = hwMap.servo.get("wrist");
+            wrist.setDirection(Servo.Direction.REVERSE);
+            wristPos = wrist.getPosition();
+            wrist.setPosition(WRIST_INIT);
         }catch(Exception e){
             telemetry.addData("wristRight servo not found in configuration",0);
         }
@@ -108,7 +100,7 @@ public class Intake {
 
             arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            arm.setDirection(DcMotorSimple.Direction.FORWARD);
+            arm.setDirection(DcMotorSimple.Direction.REVERSE);
             arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         }catch(Exception e){
@@ -118,7 +110,7 @@ public class Intake {
     }
     public void armUp(double power){
         telemetry.addData("arm position : ", armPos/COUNTS_PER_CM);
-        if(armPos/COUNTS_PER_CM <=28){
+        if(armPos/COUNTS_PER_CM <=ARM_MAX){
             arm.setPower(power);
         }
         else{
@@ -127,7 +119,7 @@ public class Intake {
     }
     public void armDown(double power){
         telemetry.addData("arm position : ", armPos/COUNTS_PER_CM);
-        if(armPos/COUNTS_PER_CM >=0){
+        if(armPos/COUNTS_PER_CM >=ARM_MIN){
             arm.setPower(power);
         }
         else{
@@ -139,15 +131,15 @@ public class Intake {
     }
     public void elbowUp(double power) {
         telemetry.addData("elbow position : ", elbowPosition/COUNTS_PER_CM);
-        if(target < 750){
-            target+=5;
+        if(target < 1820){
+            target+=15;
         }
 
     }
     public void elbowDown(double power) {
         telemetry.addData("elbow position : ", elbowPosition/COUNTS_PER_CM);
-        if(target >= 30){
-            target-=5;
+        if(target >= 90){
+            target-=15;
         }
 
     }
@@ -155,8 +147,7 @@ public class Intake {
         //elbow.setPower(0);
     }
     public void wristMove(double position) {
-        wristLeft.setPosition(position);
-        wristRight.setPosition(position);
+        wrist.setPosition(position);
     }
     public void spin(double power){
         spinner.setPower(power);
@@ -205,7 +196,7 @@ public class Intake {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 wristMove(pos);
-                return Math.abs(wristLeftPos-pos)>0.1;
+                return Math.abs(wristPos -pos)>0.1;
             }
         };
     }
@@ -253,15 +244,14 @@ public class Intake {
         double pid = controller.calculate(elbowPosition, target);
 
         double power = pid + ff;
-        if(target<30){
+        if(target<90){
             elbow.setPower(0);
         }else {
             elbow.setPower(power);
         }
         telemetry.addData("power : ", power);
 
-        wristLeftPos = wristLeft.getPosition();
-        wristRightPos = wristRight.getPosition();
+        wristPos = wrist.getPosition();
         armPos = arm.getCurrentPosition();
 
         telemetry.addData("elbowPos : ", elbowPosition);
