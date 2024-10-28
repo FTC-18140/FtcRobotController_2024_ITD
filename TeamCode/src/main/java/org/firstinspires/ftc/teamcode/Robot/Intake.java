@@ -1,15 +1,20 @@
 package org.firstinspires.ftc.teamcode.Robot;
 
 
+import android.graphics.Color;
+
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -22,6 +27,10 @@ public class Intake {
     CRServo spinner = null;
     DcMotor arm = null;
     DcMotor elbow = null;
+
+    ColorSensor colorL = null;
+    ColorSensor colorR = null;
+    float hsvValues[] = {0,0,0};
     private PIDController controller;
     public static double p = 0.025, i = 0, d = 0.0001;
     public static double pDown = 0.01, iDown = 0, dDown = 0.0001;
@@ -69,6 +78,17 @@ public class Intake {
         telemetry = telem;
         controller = new PIDController(p, i, d);
 
+        //Initialize Sensors
+        try{
+            colorL = hwMap.colorSensor.get("colorL");
+        }catch(Exception e){
+            telemetry.addData("left color sensor not found in configuration",0);
+        }
+        try{
+            colorR = hwMap.colorSensor.get("colorR");
+        }catch(Exception e){
+            telemetry.addData("left color sensor not found in configuration",0);
+        }
         //initialize servos and motors
         try{
             wrist = hwMap.servo.get("wrist");
@@ -131,14 +151,14 @@ public class Intake {
     }
     public void elbowUp(double power) {
         telemetry.addData("elbow position : ", elbowPosition/COUNTS_PER_CM);
-        if(target < 1820){
+        if(target+15 < 1820){
             target+=15;
         }
 
     }
     public void elbowDown(double power) {
         telemetry.addData("elbow position : ", elbowPosition/COUNTS_PER_CM);
-        if(target >= 90){
+        if(target-15 >= 90){
             target-=15;
         }
 
@@ -163,13 +183,14 @@ public class Intake {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 double currentPos = arm.getCurrentPosition();
                 if (pos >= currentPos / COUNTS_PER_CM) {
-                    armUp(0.1);
+                    armUp(0.5);
                 } else {
                     armStop();
+                    return false;
                 }
 
                 telemetry.addData("currentPos(armAction): ",currentPos);
-                return Math.abs(pos - currentPos/COUNTS_PER_CM) > 1;
+                return true;
             }
         };
     }
@@ -180,13 +201,14 @@ public class Intake {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 double currentPos = arm.getCurrentPosition();
                 if (pos <= currentPos / COUNTS_PER_CM) {
-                    armDown(-0.1);
+                    armDown(-0.5);
                 } else {
                     armStop();
+                    return false;
                 }
 
                 telemetry.addData("currentPos(armAction): ",currentPos);
-                return Math.abs(pos - currentPos/COUNTS_PER_CM) > 1;
+                return true;
             }
         };
     }
@@ -231,7 +253,10 @@ public class Intake {
         };
     }
     public void  update(){
+        Color.RGBToHSV((int)(colorL.red()*255),(int)(colorL.green()*255),(int)(colorL.blue()*255), hsvValues);
+
         elbowPosition = elbow.getCurrentPosition();
+
         controller.setPID(p,i,d);
         double ff = Math.cos(Math.toRadians(target/ticks_in_degree)) * f;
 //        if(target >=elbowPosition){
@@ -254,6 +279,7 @@ public class Intake {
         wristPos = wrist.getPosition();
         armPos = arm.getCurrentPosition();
 
+        telemetry.addData("hue", hsvValues[0]);
         telemetry.addData("elbowPos : ", elbowPosition);
         telemetry.addData("targetPos : ", target);
         telemetry.update();

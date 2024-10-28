@@ -25,15 +25,15 @@ public class AutoTest extends LinearOpMode {
         Actions.runBlocking(new ParallelAction(
                 robot.intake.updateAction(),
                 new SequentialAction(
-                    robot.intake.wristMoveAction(robot.intake.WRIST_MIN),
+                    robot.intake.wristMoveAction(0.66),
                     new ParallelAction(
                             robot.intake.spinnerAction(1),
                             robot.intake.armUpAction(12)
                     ),
-                    new SleepAction(2),
+                    new SleepAction(1),
                     new ParallelAction(
                             robot.intake.armDownAction(0),
-                            robot.intake.wristMoveAction(robot.intake.WRIST_MAX),
+                            robot.intake.wristMoveAction(0),
                             robot.intake.spinnerAction(0)
                     )
                 )
