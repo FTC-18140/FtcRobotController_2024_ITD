@@ -183,7 +183,7 @@ public class Intake {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 double currentPos = arm.getCurrentPosition();
                 if (pos >= currentPos / COUNTS_PER_CM) {
-                    armUp(0.5);
+                    armUp(1);
                 } else {
                     armStop();
                     return false;
@@ -201,7 +201,7 @@ public class Intake {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 double currentPos = arm.getCurrentPosition();
                 if (pos <= currentPos / COUNTS_PER_CM) {
-                    armDown(-0.5);
+                    armDown(-1);
                 } else {
                     armStop();
                     return false;
@@ -243,6 +243,18 @@ public class Intake {
             }
         };
     }
+    public Action checkForSample(){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                Color.RGBToHSV((int)(colorL.red()*255),(int)(colorL.green()*255),(int)(colorL.blue()*255), hsvValues);
+                if(hsvValues[2] >= 50){
+                    return false;
+                }
+                return true;
+            }
+        };
+    }
     public Action updateAction(){
         return new Action() {
             @Override
@@ -253,8 +265,9 @@ public class Intake {
         };
     }
     public void  update(){
-        Color.RGBToHSV((int)(colorL.red()*255),(int)(colorL.green()*255),(int)(colorL.blue()*255), hsvValues);
-
+        if(colorL != null) {
+            Color.RGBToHSV((int) (colorL.red() * 255), (int) (colorL.green() * 255), (int) (colorL.blue() * 255), hsvValues);
+        }
         elbowPosition = elbow.getCurrentPosition();
 
         controller.setPID(p,i,d);
@@ -280,6 +293,7 @@ public class Intake {
         armPos = arm.getCurrentPosition();
 
         telemetry.addData("hue", hsvValues[0]);
+        telemetry.addData("value", hsvValues[2]);
         telemetry.addData("elbowPos : ", elbowPosition);
         telemetry.addData("targetPos : ", target);
         telemetry.update();

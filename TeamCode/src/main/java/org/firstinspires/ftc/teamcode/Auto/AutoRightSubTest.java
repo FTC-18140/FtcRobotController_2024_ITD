@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -15,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
 
 @Config
 @Autonomous
-public class AutoRight extends LinearOpMode {
+public class AutoRightSubTest extends LinearOpMode {
     public static Vector2d startPos = new Vector2d(12,-60);
     public static Vector2d basketPos = new Vector2d(-50,-50);
     public static Vector2d samplePos = new Vector2d(48,-36);

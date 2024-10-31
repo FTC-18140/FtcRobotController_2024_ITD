@@ -52,7 +52,7 @@ import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Strafer Teleop", group="Teleop")
+@TeleOp(name="Teleop", group="Teleop")
 public class Teleop extends OpMode
 {
     // Declare OpMode members.
@@ -125,7 +125,7 @@ public class Teleop extends OpMode
 //            wristPos = 0.65;
 //        }
 //        else if(gamepad2.dpad_right){
-//            wristPos = 0;
+//            wristPos = 0;s
 //        }
         //Elbow controls
         if(theGamepad2.getButton(TBDGamepad.Button.Y)){

@@ -2,7 +2,10 @@ package org.firstinspires.ftc.teamcode.Auto;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -16,7 +19,7 @@ public class AutoLeft  extends LinearOpMode {
     public static Vector2d startPos = new Vector2d(-12,-60);
     public static Vector2d basketPos = new Vector2d(-50,-50);
     public static Vector2d samplePos = new Vector2d(-48,-36);
-    public static Vector2d parkPos = new Vector2d(-56,-56);
+    public static Vector2d parkPos = new Vector2d(-32,-11);
     @Override
     public void runOpMode() throws InterruptedException {
         //Move to basket () and rotate <-+
@@ -30,59 +33,41 @@ public class AutoLeft  extends LinearOpMode {
 
         ThunderBot2024 robot = new ThunderBot2024();
 
-        Action moveToBasket1;
-        Action moveToSample;
-        Action moveToBasket2;
-        Action park;
         robot.init(hardwareMap,telemetry);
         robot.drive.pose = new Pose2d(startPos,Math.toRadians(90));
 
-        moveToBasket1 = robot.drive.actionBuilder(robot.drive.pose)
-                .strafeTo(new Vector2d(-48,-48))
-                .turn(Math.toRadians(135))
-                .build();
-        moveToSample = robot.drive.actionBuilder(robot.drive.pose)
-                .strafeTo(new Vector2d(-48,-48))
-                .turn(Math.toRadians(135))
-                .build();
-        moveToBasket2 = robot.drive.actionBuilder(robot.drive.pose)
-                .strafeTo(new Vector2d(-48,-48))
-                .turn(Math.toRadians(135))
-                .build();
-        park = robot.drive.actionBuilder(robot.drive.pose)
-                .strafeTo(new Vector2d(-48,-48))
-                .turn(Math.toRadians(135))
-                .build();
         waitForStart();
 
-        Actions.runBlocking(
-                robot.drive.actionBuilder(robot.drive.pose)
-                .strafeTo(basketPos)
-                .turn(Math.toRadians(-45))
-                        .waitSeconds(2)
-                .build()
-        );
-        Actions.runBlocking(
-                robot.drive.actionBuilder(robot.drive.pose)
-                        .turn(Math.toRadians(45))
-                        .strafeTo(samplePos)
-                        .waitSeconds(2)
-                        .build()
-        );
+        Actions.runBlocking(new ParallelAction(
+                robot.intake.updateAction(),
+                new SequentialAction(
+                        robot.drive.actionBuilder(robot.drive.pose)
+                                .strafeTo(basketPos)
+                                .build(),
+                        robot.intake.wristMoveAction(0.685),
+                        new SleepAction(1),
+                        new ParallelAction(
+                            robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(90)))
+                                    .strafeTo(samplePos)
+                                    .build(),
+                                robot.intake.armUpAction(10),
+                                robot.intake.spinnerAction(1)
+                                ),
+                        new SleepAction(2),
+                        new ParallelAction(
+                                robot.intake.wristMoveAction(0),
+                                robot.intake.armDownAction(0),
+                                robot.intake.spinnerAction(0),
+                                robot.drive.actionBuilder(new Pose2d(samplePos, Math.toRadians(90)))
+                                        .strafeTo(basketPos)
+                                        .build()
+                        ),
+                        robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(90)))
+                                .strafeTo(new Vector2d(-42, -11))
+                                .strafeTo(parkPos)
+                                .build()
+                )
+        ));
 
-        Actions.runBlocking(
-                robot.drive.actionBuilder(robot.drive.pose)
-                        .strafeTo(basketPos)
-                        .turn(Math.toRadians(-45))
-                        .waitSeconds(2)
-                        .build()
-        );
-
-        Actions.runBlocking(
-                robot.drive.actionBuilder(robot.drive.pose)
-                        .turn(Math.toRadians(45))
-                        .strafeTo(parkPos)
-                        .build()
-        );
     }
 }
