@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.Robot;
 
 import android.graphics.Color;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -14,7 +13,6 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -44,7 +42,7 @@ public class Intake {
     public final double ELBOW_MIN = 0.0;
     public final double ELBOW_MAX = 5.0;
     public final double ARM_MIN = 0;
-    public final double ARM_MAX = 13;
+    public final double ARM_MAX = 28;
     public final double WRIST_RIGHT_MIN = -5.0;
     public final double WRIST_RIGHT_MAX = 5.0;
 
@@ -64,14 +62,15 @@ public class Intake {
             / (SPOOL_DIAMETER_CM * Math.PI);
 
     public enum Positions{
-        READY_TO_INTAKE(0.0,0.0,0.0);
-        public final double wristLeftPos;
-        public final double wristRightPos;
-        public final double spinnerPos;
+        READY_TO_INTAKE(0.5,0.0,0.0),
+        HIGH_BASKET(0.2,0.0,1800);
+        public final double wristPos;
+        public final double armPos;
+        public final double elbowPos;
         Positions(double wristl, double wristr, double spin){
-            wristLeftPos = wristl;
-            wristRightPos = wristr;
-            spinnerPos = spin;
+            wristPos = wristl;
+            armPos = wristr;
+            elbowPos = spin;
         }
     }
     public void init(HardwareMap hwMap, Telemetry telem) {
