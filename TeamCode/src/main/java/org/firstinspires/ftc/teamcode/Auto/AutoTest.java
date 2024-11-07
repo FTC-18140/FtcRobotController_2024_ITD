@@ -24,14 +24,7 @@ public class AutoTest extends LinearOpMode {
 
         Actions.runBlocking(new ParallelAction(
                 robot.intake.updateAction(),
-                new SequentialAction(
-                    robot.intake.wristMoveAction(0.66),
-                    new ParallelAction(
-                            robot.intake.spinnerAction(1),
-                            robot.intake.checkForSample("yellow")
-                    ),
-                        robot.intake.spinnerAction(0)
-                )
+                robot.intake.elbowAction(160)
             )
         );
         telemetry.update();

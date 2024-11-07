@@ -180,7 +180,7 @@ public class Intake {
     }
     public void elbowUp(double power) {
         telemetry.addData("elbow position : ", elbowPosition/COUNTS_PER_CM);
-        if(target+15 < 1820){
+        if(target+15 < 2020){
             target+=15;
         }
 
