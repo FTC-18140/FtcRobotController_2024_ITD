@@ -28,14 +28,9 @@ public class AutoTest extends LinearOpMode {
                     robot.intake.wristMoveAction(0.66),
                     new ParallelAction(
                             robot.intake.spinnerAction(1),
-                            robot.intake.armUpAction(12)
+                            robot.intake.checkForSample("yellow")
                     ),
-                    new SleepAction(1),
-                    new ParallelAction(
-                            robot.intake.armDownAction(0),
-                            robot.intake.wristMoveAction(0),
-                            robot.intake.spinnerAction(0)
-                    )
+                        robot.intake.spinnerAction(0)
                 )
             )
         );

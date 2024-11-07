@@ -29,6 +29,8 @@ public class Intake {
     ColorSensor colorL = null;
     ColorSensor colorR = null;
     float hsvValues[] = {0,0,0};
+    float hsvValuesL[] = {0,0,0};
+    float hsvValuesR[] = {0,0,0};
     private PIDController controller;
     public static double p = 0.025, i = 0, d = 0.0001;
     public static double pDown = 0.01, iDown = 0, dDown = 0.0001;
@@ -86,7 +88,7 @@ public class Intake {
         try{
             colorR = hwMap.colorSensor.get("colorR");
         }catch(Exception e){
-            telemetry.addData("left color sensor not found in configuration",0);
+            telemetry.addData("right color sensor not found in configuration",0);
         }
         //initialize servos and motors
         try{
@@ -126,6 +128,34 @@ public class Intake {
             telemetry.addData("arm motor not found in configuration", 0);
         }
 
+    }
+    public void calculateSensorValues(){
+        if(colorL != null) {
+            Color.RGBToHSV((int) (colorL.red() * 255), (int) (colorL.green() * 255), (int) (colorL.blue() * 255), hsvValuesL);
+        }
+        if(colorR != null) {
+            Color.RGBToHSV((int) (colorR.red() * 255), (int) (colorR.green() * 255), (int) (colorR.blue() * 255), hsvValuesR);
+        }
+        if(colorL != null && colorR != null){
+            hsvValues[0] = Math.round((hsvValuesL[0] + hsvValuesR[0])/2);
+            hsvValues[1] = Math.round((hsvValuesL[1] + hsvValuesR[1])/2);
+            hsvValues[2] = Math.round((hsvValuesL[2] + hsvValuesR[2])/2);
+
+        }
+    }
+    public String getCalculatedColor(){
+        calculateSensorValues();
+        if(hsvValues[2] < 1000){
+            return "none";
+        }else if(hsvValues[0] < 75){
+            return "red";
+        } else if (hsvValues[0] < 150) {
+            return "yellow";
+        } else if (hsvValues[0] < 200) {
+            return "none";
+        }else{
+            return "blue";
+        }
     }
     public void armUp(double power){
         telemetry.addData("arm position : ", armPos/COUNTS_PER_CM);
@@ -211,6 +241,7 @@ public class Intake {
             }
         };
     }
+
     public Action wristMoveAction(double position){
         return new Action() {
             private double pos = position;
@@ -242,12 +273,12 @@ public class Intake {
             }
         };
     }
-    public Action checkForSample(){
+    public Action checkForSample(String color){
         return new Action() {
+            String c = color;
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                Color.RGBToHSV((int)(colorL.red()*255),(int)(colorL.green()*255),(int)(colorL.blue()*255), hsvValues);
-                if(hsvValues[2] >= 50){
+                if(c.contains(getCalculatedColor())){
                     return false;
                 }
                 return true;
@@ -264,9 +295,7 @@ public class Intake {
         };
     }
     public void  update(){
-        if(colorL != null) {
-            Color.RGBToHSV((int) (colorL.red() * 255), (int) (colorL.green() * 255), (int) (colorL.blue() * 255), hsvValues);
-        }
+        calculateSensorValues();
         elbowPosition = elbow.getCurrentPosition();
 
         controller.setPID(p,i,d);
@@ -291,6 +320,17 @@ public class Intake {
         wristPos = wrist.getPosition();
         armPos = arm.getCurrentPosition();
 
+        if(hsvValues[2] < 2000){
+            telemetry.addData("color detected: ", "none");
+        }else if(hsvValues[0] < 70){
+            telemetry.addData("color detected: ", "red");
+        } else if (hsvValues[0] < 150) {
+            telemetry.addData("color detected: ", "yellow");
+        } else if (hsvValues[0] < 200) {
+            telemetry.addData("color detected: ", "none");
+        }else{
+            telemetry.addData("color detected: ", "blue");
+        }
         telemetry.addData("hue", hsvValues[0]);
         telemetry.addData("value", hsvValues[2]);
         telemetry.addData("elbowPos : ", elbowPosition);
