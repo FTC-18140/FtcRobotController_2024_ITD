@@ -32,24 +32,27 @@ public class Intake {
     float hsvValuesL[] = {0,0,0};
     float hsvValuesR[] = {0,0,0};
     private PIDController controller;
-    public static double p = 0.025, i = 0, d = 0.0001;
+    public static double p = 0.005, i = 0, d = 0.0001;
     public static double pDown = 0.01, iDown = 0, dDown = 0.0001;
 
-    public static double f = 0.25;
+    public static double f = 0.015;
     public static double fDown = 0.25;
 
     public final double WRIST_INIT = 0.0;
     public final double WRIST_MIN = 0.0;
     public final double WRIST_MAX = 1.0;
-    public final double ELBOW_MIN = 0.0;
-    public final double ELBOW_MAX = 5.0;
+    public final double ELBOW_MIN = 90.0;
+    public final double ELBOW_MIN_SLOW = 1000;
+    public final double ELBOW_MAX = 2700.0;
+    public int elbowDirection = 0;
     public final double ARM_MIN = 0;
     public final double ARM_MAX = 28;
     public final double WRIST_RIGHT_MIN = -5.0;
     public final double WRIST_RIGHT_MAX = 5.0;
 
     public static double ticks_in_degree = 5.96;
-    public static double target = 0;
+    public static double target = 90;
+    public double directSetTarget = 90;
     public double armPos;
     public double elbowPosition;
     public double wristLeftPos;
@@ -137,15 +140,17 @@ public class Intake {
             Color.RGBToHSV((int) (colorR.red() * 255), (int) (colorR.green() * 255), (int) (colorR.blue() * 255), hsvValuesR);
         }
         if(colorL != null && colorR != null){
-            hsvValues[0] = Math.round((hsvValuesL[0] + hsvValuesR[0])/2);
-            hsvValues[1] = Math.round((hsvValuesL[1] + hsvValuesR[1])/2);
-            hsvValues[2] = Math.round((hsvValuesL[2] + hsvValuesR[2])/2);
+            //Creates hsvValues equal to the average of the colors detected by the left and right sensors
+            hsvValues[0] = Math.round((hsvValuesL[0] + hsvValuesR[0])/2);//hue
+            hsvValues[1] = Math.round((hsvValuesL[1] + hsvValuesR[1])/2);//saturation
+            hsvValues[2] = Math.round((hsvValuesL[2] + hsvValuesR[2])/2);//light value
 
         }
     }
     public String getCalculatedColor(){
         calculateSensorValues();
         if(hsvValues[2] < 1000){
+            //light values of less than 1000 indicate black, the inside of the intake
             return "none";
         }else if(hsvValues[0] < 75){
             return "red";
@@ -180,17 +185,36 @@ public class Intake {
     }
     public void elbowUp(double power) {
         telemetry.addData("elbow position : ", elbowPosition/COUNTS_PER_CM);
-        if(target+15 < 2020){
-            target+=15;
+        if(target+40 <= ELBOW_MAX){
+            target+=40;
+        }else{
+            target = ELBOW_MAX;
+            directSetTarget = target;
+            elbowDirection = 0;
         }
 
     }
     public void elbowDown(double power) {
         telemetry.addData("elbow position : ", elbowPosition/COUNTS_PER_CM);
-        if(target-15 >= 90){
-            target-=15;
+        if(target-35 >= ELBOW_MIN){
+            target-=35;
+        }else{
+            target = ELBOW_MIN;
         }
-
+        directSetTarget = target;
+        elbowDirection = 0;
+    }
+    public void setElbowTo(double position){
+        if(position <= ELBOW_MAX && position >= ELBOW_MIN){
+            if(position < target){
+                elbowDirection = -1;
+            } else if (position > target) {
+                elbowDirection = 1;
+            } else {
+                elbowDirection = 0;
+            }
+            directSetTarget = position;
+        }
     }
     public void elbowStop(){
         //elbow.setPower(0);
@@ -295,6 +319,24 @@ public class Intake {
         };
     }
     public void  update(){
+        if(elbowDirection == 1){
+            target = directSetTarget;
+        } else if (elbowDirection == -1) {
+            if(directSetTarget < ELBOW_MIN_SLOW){
+                if(target > ELBOW_MIN_SLOW){
+                    telemetry.addData("go to slowdown",0);
+                    target = ELBOW_MIN_SLOW;
+                }else if(target > directSetTarget){
+                    telemetry.addData("slow down", 0);
+                    target -= 50;
+                }
+            }else{
+                target = directSetTarget;
+            }
+        }
+        if(target < ELBOW_MIN){
+            target = ELBOW_MIN;
+        }
         calculateSensorValues();
         elbowPosition = elbow.getCurrentPosition();
 
@@ -310,7 +352,7 @@ public class Intake {
         double pid = controller.calculate(elbowPosition, target);
 
         double power = pid + ff;
-        if(target<90){
+        if(target<ELBOW_MIN){
             elbow.setPower(0);
         }else {
             elbow.setPower(power);
@@ -331,6 +373,8 @@ public class Intake {
         }else{
             telemetry.addData("color detected: ", "blue");
         }
+        telemetry.addData("incrementing target: ", directSetTarget);
+
         telemetry.addData("hue", hsvValues[0]);
         telemetry.addData("value", hsvValues[2]);
         telemetry.addData("elbowPos : ", elbowPosition);

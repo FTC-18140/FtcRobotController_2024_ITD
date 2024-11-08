@@ -116,10 +116,10 @@ public class Teleop extends OpMode
             slow = 0.2;
         }
         if(gamepad2.dpad_up){
-            wristPos -= 0.01;
+            wristPos -= 0.02;
         }
         else if(gamepad2.dpad_down){
-            wristPos += 0.01;
+            wristPos += 0.02;
         }
 //        else if (gamepad2.dpad_left){
 //            wristPos = 0.65;
@@ -134,8 +134,8 @@ public class Teleop extends OpMode
         else if(theGamepad2.getButton(TBDGamepad.Button.A)){
             robot.intake.elbowDown(-0.5);
         }
-        else{
-            //robot.intake.elbowStop();
+        else if(theGamepad2.getTrigger(TBDGamepad.Trigger.RIGHT_TRIGGER)> 0.1){
+            robot.intake.setElbowTo(90);
         }
         // Arm controls
         if(theGamepad2.getButton(TBDGamepad.Button.X)){
