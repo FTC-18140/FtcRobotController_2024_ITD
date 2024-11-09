@@ -134,15 +134,15 @@ public class Teleop extends OpMode
         else if(theGamepad2.getButton(TBDGamepad.Button.A)){
             robot.intake.elbowDown(-0.5);
         }
-        else if(theGamepad2.getTrigger(TBDGamepad.Trigger.RIGHT_TRIGGER)> 0.1){
-            robot.intake.setElbowTo(90);
-        }
+//        else if(theGamepad2.getTrigger(TBDGamepad.Trigger.RIGHT_TRIGGER)> 0.1){
+//            robot.intake.setElbowTo(90);
+//        }
         // Arm controls
         if(theGamepad2.getButton(TBDGamepad.Button.X)){
-            robot.intake.armUp(1);
+            robot.intake.armUp(0.4);
         }
         else if(theGamepad2.getButton(TBDGamepad.Button.B)){
-            robot.intake.armDown(-1);
+            robot.intake.armDown(-0.7);
         }
         else{
             robot.intake.armStop();

@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Utilities.PIDController;
@@ -41,18 +42,18 @@ public class Intake {
     public final double WRIST_INIT = 0.0;
     public final double WRIST_MIN = 0.0;
     public final double WRIST_MAX = 1.0;
-    public final double ELBOW_MIN = 90.0;
-    public final double ELBOW_MIN_SLOW = 1000;
-    public final double ELBOW_MAX = 2700.0;
+    public final double ELBOW_MIN = 0;
+    public final double ELBOW_MIN_SLOW = 30;
+    public final double ELBOW_MAX = 100;
     public int elbowDirection = 0;
     public final double ARM_MIN = 0;
     public final double ARM_MAX = 28;
     public final double WRIST_RIGHT_MIN = -5.0;
     public final double WRIST_RIGHT_MAX = 5.0;
 
-    public static double ticks_in_degree = 5.96;
-    public static double target = 90;
-    public double directSetTarget = 90;
+    public static double ticks_in_degree = 5.96*3;
+    public static double target = 0;
+    public double directSetTarget = 0;
     public double armPos;
     public double elbowPosition;
     public double wristLeftPos;
@@ -123,7 +124,7 @@ public class Intake {
             arm = hwMap.dcMotor.get("arm");
 
             arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             arm.setDirection(DcMotorSimple.Direction.REVERSE);
             arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -185,8 +186,8 @@ public class Intake {
     }
     public void elbowUp(double power) {
         telemetry.addData("elbow position : ", elbowPosition/COUNTS_PER_CM);
-        if(target+40 <= ELBOW_MAX){
-            target+=40;
+        if(target+10 <= ELBOW_MAX){
+            target+=10;
         }else{
             target = ELBOW_MAX;
             directSetTarget = target;
@@ -196,8 +197,8 @@ public class Intake {
     }
     public void elbowDown(double power) {
         telemetry.addData("elbow position : ", elbowPosition/COUNTS_PER_CM);
-        if(target-35 >= ELBOW_MIN){
-            target-=35;
+        if(target-10 >= ELBOW_MIN){
+            target-=10;
         }else{
             target = ELBOW_MIN;
         }
@@ -292,17 +293,18 @@ public class Intake {
             private double pos = position;
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                target = pos;
+                setElbowTo(pos);
                 return false;
             }
         };
     }
-    public Action checkForSample(String color){
+    public Action checkForSample(String color, double limit){
         return new Action() {
             String c = color;
+            ElapsedTime timer = new ElapsedTime();
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if(c.contains(getCalculatedColor())){
+                if(c.contains(getCalculatedColor()) || timer.time()>=limit){
                     return false;
                 }
                 return true;
