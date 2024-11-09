@@ -43,15 +43,15 @@ public class Intake {
     public final double WRIST_MIN = 0.0;
     public final double WRIST_MAX = 1.0;
     public final double ELBOW_MIN = 0;
-    public final double ELBOW_MIN_SLOW = 30;
-    public final double ELBOW_MAX = 100;
+    public final double ELBOW_MIN_SLOW = 700;
+    public final double ELBOW_MAX = 2400;
     public int elbowDirection = 0;
     public final double ARM_MIN = 0;
     public final double ARM_MAX = 28;
     public final double WRIST_RIGHT_MIN = -5.0;
     public final double WRIST_RIGHT_MAX = 5.0;
 
-    public static double ticks_in_degree = 5.96*3;
+    public static double ticks_in_degree = 5.96;
     public static double target = 0;
     public double directSetTarget = 0;
     public double armPos;
@@ -67,16 +67,18 @@ public class Intake {
     final private double COUNTS_PER_CM = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION)
             / (SPOOL_DIAMETER_CM * Math.PI);
 
+
     public enum Positions{
         READY_TO_INTAKE(0.5,0.0,0.0),
-        HIGH_BASKET(0.2,0.0,1800);
+        //Max elbow, Max arm extend, base of intake parallel with floor ↓
+        HIGH_BASKET(0.2,28,2400);
         public final double wristPos;
         public final double armPos;
         public final double elbowPos;
-        Positions(double wristl, double wristr, double spin){
-            wristPos = wristl;
-            armPos = wristr;
-            elbowPos = spin;
+        Positions(double wrist, double arm, double elbow){
+            wristPos = wrist;
+            armPos = arm;
+            elbowPos = elbow;
         }
     }
     public void init(HardwareMap hwMap, Telemetry telem) {
@@ -186,8 +188,8 @@ public class Intake {
     }
     public void elbowUp(double power) {
         telemetry.addData("elbow position : ", elbowPosition/COUNTS_PER_CM);
-        if(target+10 <= ELBOW_MAX){
-            target+=10;
+        if(target+power <= ELBOW_MAX){
+            target+=power;
         }else{
             target = ELBOW_MAX;
             directSetTarget = target;
@@ -197,8 +199,8 @@ public class Intake {
     }
     public void elbowDown(double power) {
         telemetry.addData("elbow position : ", elbowPosition/COUNTS_PER_CM);
-        if(target-10 >= ELBOW_MIN){
-            target-=10;
+        if(target-power >= ELBOW_MIN){
+            target-=power;
         }else{
             target = ELBOW_MIN;
         }

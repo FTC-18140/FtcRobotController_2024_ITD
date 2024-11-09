@@ -106,6 +106,7 @@ public class Teleop extends OpMode
         double strafe = theGamepad1.getLeftX();
         double turn  = theGamepad1.getRightX();
         double slow = 0.8;
+        double armSlow = 1.0;
 
         robot.intake.update();
 
@@ -115,11 +116,14 @@ public class Teleop extends OpMode
         if(theGamepad1.getButton(TBDGamepad.Button.LEFT_BUMPER)){
             slow = 0.2;
         }
+        if(theGamepad2.getTrigger(TBDGamepad.Trigger.LEFT_TRIGGER)>0.1){
+            armSlow = 0.4;
+        }
         if(gamepad2.dpad_up){
-            wristPos -= 0.02;
+            wristPos -= 0.03*armSlow;
         }
         else if(gamepad2.dpad_down){
-            wristPos += 0.02;
+            wristPos += 0.03*armSlow;
         }
 //        else if (gamepad2.dpad_left){
 //            wristPos = 0.65;
@@ -129,20 +133,20 @@ public class Teleop extends OpMode
 //        }
         //Elbow controls
         if(theGamepad2.getButton(TBDGamepad.Button.Y)){
-            robot.intake.elbowUp(0.5);
+            robot.intake.elbowUp(80*armSlow);
         }
         else if(theGamepad2.getButton(TBDGamepad.Button.A)){
-            robot.intake.elbowDown(-0.5);
+            robot.intake.elbowDown(70*armSlow);
         }
 //        else if(theGamepad2.getTrigger(TBDGamepad.Trigger.RIGHT_TRIGGER)> 0.1){
 //            robot.intake.setElbowTo(90);
 //        }
         // Arm controls
         if(theGamepad2.getButton(TBDGamepad.Button.X)){
-            robot.intake.armUp(0.4);
+            robot.intake.armUp(0.4*armSlow);
         }
         else if(theGamepad2.getButton(TBDGamepad.Button.B)){
-            robot.intake.armDown(-0.7);
+            robot.intake.armDown(-0.8*(armSlow*1.5));
         }
         else{
             robot.intake.armStop();
