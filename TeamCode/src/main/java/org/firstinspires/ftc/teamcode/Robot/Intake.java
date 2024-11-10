@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Utilities.PIDController;
@@ -26,6 +27,9 @@ public class Intake {
     CRServo spinner = null;
     DcMotor arm = null;
     DcMotor elbow = null;
+
+    public double armTo = 0;
+    double armTarget = 0;
 
     ColorSensor colorL = null;
     ColorSensor colorR = null;
@@ -71,7 +75,7 @@ public class Intake {
     public enum Positions{
         READY_TO_INTAKE(0.5,0.0,0.0),
         //Max elbow, Max arm extend, base of intake parallel with floor ↓
-        HIGH_BASKET(0.2,28,2400);
+        HIGH_BASKET(0.3,28,2400);
         public final double wristPos;
         public final double armPos;
         public final double elbowPos;
@@ -134,6 +138,24 @@ public class Intake {
             telemetry.addData("arm motor not found in configuration", 0);
         }
 
+    }
+
+    public void preset(Positions position){
+        armPos = arm.getCurrentPosition();
+        setElbowTo(position.elbowPos);
+        wristMove(position.wristPos);
+        armTarget = position.armPos;
+        armTo = armTarget - armPos/COUNTS_PER_CM;
+        telemetry.addData("preset arm: ", armTo);
+    }
+    public Action presetAction(Positions position){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                preset(position);
+                return false;
+            }
+        };
     }
     public void calculateSensorValues(){
         if(colorL != null) {
@@ -323,6 +345,21 @@ public class Intake {
         };
     }
     public void  update(){
+        armPos = arm.getCurrentPosition();
+        if(armTo > 0){
+            if(armPos / COUNTS_PER_CM < armTarget){
+                armUp(0.4);
+            }else{
+                armTo = 0;
+            }
+        } else if (armTo < 0) {
+            if(armPos / COUNTS_PER_CM > armTarget){
+                armDown(-1.0);
+            }else {
+                armTo = 0;
+            }
+        }
+
         if(elbowDirection == 1){
             target = directSetTarget;
         } else if (elbowDirection == -1) {
@@ -332,7 +369,7 @@ public class Intake {
                     target = ELBOW_MIN_SLOW;
                 }else if(target > directSetTarget){
                     telemetry.addData("slow down", 0);
-                    target -= 50;
+                    target -= 20;
                 }
             }else{
                 target = directSetTarget;
@@ -356,6 +393,7 @@ public class Intake {
         double pid = controller.calculate(elbowPosition, target);
 
         double power = pid + ff;
+        power = Range.clip(power, -0.5, 0.7);
         if(target<ELBOW_MIN){
             elbow.setPower(0);
         }else {
@@ -364,7 +402,7 @@ public class Intake {
         telemetry.addData("power : ", power);
 
         wristPos = wrist.getPosition();
-        armPos = arm.getCurrentPosition();
+
 
         if(hsvValues[2] < 2000){
             telemetry.addData("color detected: ", "none");
@@ -379,6 +417,8 @@ public class Intake {
         }
         telemetry.addData("incrementing target: ", directSetTarget);
 
+        telemetry.addData("arm direction for preset ", armTarget-armPos/COUNTS_PER_CM);
+        telemetry.addData("arm target: ", armTarget);
         telemetry.addData("hue", hsvValues[0]);
         telemetry.addData("value", hsvValues[2]);
         telemetry.addData("elbowPos : ", elbowPosition);

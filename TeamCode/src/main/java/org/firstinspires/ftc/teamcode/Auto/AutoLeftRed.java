@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.Robot.Intake;
 import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
 
 @Config
@@ -40,21 +41,25 @@ public class AutoLeftRed extends LinearOpMode {
         Actions.runBlocking(new ParallelAction(
                 robot.intake.updateAction(),
                 new SequentialAction(
-                        robot.drive.actionBuilder(robot.drive.pose)
-                                .strafeTo(basketPos)
-                                .build(),
                         new ParallelAction(
-                                robot.intake.elbowAction(robot.intake.ELBOW_MAX),
-                                robot.intake.armUpAction(robot.intake.ARM_MAX)
+                                robot.drive.actionBuilder(robot.drive.pose)
+                                        .strafeTo(basketPos)
+                                        .turn(Math.toRadians(-45))
+                                        .build(),
+                                robot.intake.presetAction(Intake.Positions.HIGH_BASKET)
                         ),
+                        new SleepAction(1),
                         new ParallelAction(
-                                robot.intake.wristMoveAction(0.25),
                                 robot.intake.spinnerAction(-0.5),
                                 new SleepAction(1)
-                        ),
+                        )
+                        ,
                         new ParallelAction(
-                                robot.intake.elbowAction(robot.intake.ELBOW_MIN),
-                                robot.intake.armUpAction(robot.intake.ARM_MIN)
+                                robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
+                                robot.intake.spinnerAction(0),
+                                robot.drive.actionBuilder(new Pose2d(basketPos.x, basketPos.y, Math.toRadians(45)))
+                                        .turn(Math.toRadians(45))
+                                        .build()
                         ),
                         robot.intake.wristMoveAction(0.685),
                         new SleepAction(1),
@@ -64,30 +69,27 @@ public class AutoLeftRed extends LinearOpMode {
                                     .build(),
                                 robot.intake.armUpAction(10),
                                 robot.intake.spinnerAction(1),
-                                robot.intake.checkForSample("yellowred", 5)
-                                ),
+                                robot.intake.checkForSample("yellowred", 50)
+                                )
+                        ,
                         new ParallelAction(
-                                robot.intake.wristMoveAction(0),
-                                robot.intake.armDownAction(0),
                                 robot.intake.spinnerAction(0),
+                                robot.intake.presetAction(Intake.Positions.HIGH_BASKET),
                                 robot.drive.actionBuilder(new Pose2d(samplePos, Math.toRadians(90)))
                                         .strafeTo(basketPos)
+                                        .turn(Math.toRadians(-45))
                                         .build()
                         ),
                         new ParallelAction(
-                                robot.intake.elbowAction(robot.intake.ELBOW_MAX),
-                                robot.intake.armUpAction(robot.intake.ARM_MAX)
-                        ),
-                        new ParallelAction(
-                                robot.intake.wristMoveAction(0.25),
                                 robot.intake.spinnerAction(-0.5),
                                 new SleepAction(1)
-                        ),
-                        new ParallelAction(
-                                robot.intake.elbowAction(robot.intake.ELBOW_MIN),
-                                robot.intake.armUpAction(robot.intake.ARM_MIN)
-                        ),
-                        robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(90)))
+                        )
+                        ,
+                        robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
+                        robot.intake.spinnerAction(0),
+                        new SleepAction(2),
+                        robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(45)))
+                                .turn(Math.toRadians(45))
                                 .strafeTo(new Vector2d(-42, -11))
                                 .strafeTo(parkPos)
                                 .build()

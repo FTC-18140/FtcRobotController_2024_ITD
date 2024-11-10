@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.Robot.Intake;
 import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
 
 /*
@@ -119,10 +120,13 @@ public class Teleop extends OpMode
         if(theGamepad2.getTrigger(TBDGamepad.Trigger.LEFT_TRIGGER)>0.1){
             armSlow = 0.4;
         }
+
         if(gamepad2.dpad_up){
+            wristPos = robot.intake.wristPos;
             wristPos -= 0.03*armSlow;
         }
         else if(gamepad2.dpad_down){
+            wristPos = robot.intake.wristPos;
             wristPos += 0.03*armSlow;
         }
 //        else if (gamepad2.dpad_left){
@@ -133,13 +137,21 @@ public class Teleop extends OpMode
 //        }
         //Elbow controls
         if(theGamepad2.getButton(TBDGamepad.Button.Y)){
-            robot.intake.elbowUp(80*armSlow);
+            robot.intake.preset(Intake.Positions.HIGH_BASKET);
+            wristPos = Intake.Positions.HIGH_BASKET.wristPos;
         }
         else if(theGamepad2.getButton(TBDGamepad.Button.A)){
-            robot.intake.elbowDown(70*armSlow);
+            robot.intake.preset(Intake.Positions.READY_TO_INTAKE);
+            wristPos = Intake.Positions.READY_TO_INTAKE.wristPos;
         }
+//        if(theGamepad2.getButton(TBDGamepad.Button.Y)){
+//            robot.intake.elbowUp(80*armSlow);
+//        }
+//        else if(theGamepad2.getButton(TBDGamepad.Button.A)){
+//            robot.intake.elbowDown(70*armSlow);
+//        }
 //        else if(theGamepad2.getTrigger(TBDGamepad.Trigger.RIGHT_TRIGGER)> 0.1){
-//            robot.intake.setElbowTo(90);
+//            robot.intake.preset(Intake.Positions.READY_TO_INTAKE);
 //        }
         // Arm controls
         if(theGamepad2.getButton(TBDGamepad.Button.X)){
@@ -149,7 +161,9 @@ public class Teleop extends OpMode
             robot.intake.armDown(-0.8*(armSlow*1.5));
         }
         else{
-            robot.intake.armStop();
+            if(robot.intake.armTo == 0){
+                robot.intake.armStop();
+            }
         }
 
         if(theGamepad2.getButton(TBDGamepad.Button.LEFT_BUMPER)){
@@ -166,7 +180,9 @@ public class Teleop extends OpMode
         robot.intake.wristMove(wristPos);
 
         // Send calculated power to wheels
-        robot.joystickDrive(forward, strafe, turn*0.625*slow, slow);
+
+        robot.joystickDrive(forward, strafe, turn * 0.625 * slow, slow);
+
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
