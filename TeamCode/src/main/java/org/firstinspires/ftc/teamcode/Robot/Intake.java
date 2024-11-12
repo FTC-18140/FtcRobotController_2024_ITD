@@ -73,7 +73,7 @@ public class Intake {
 
 
     public enum Positions{
-        READY_TO_INTAKE(0.5,0.0,0.0),
+        READY_TO_INTAKE(0.5,1.0,1),
         //Max elbow, Max arm extend, base of intake parallel with floor ↓
         HIGH_BASKET(0.3,28,2400);
         public final double wristPos;
@@ -150,6 +150,7 @@ public class Intake {
     }
     public Action presetAction(Positions position){
         return new Action() {
+
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 preset(position);

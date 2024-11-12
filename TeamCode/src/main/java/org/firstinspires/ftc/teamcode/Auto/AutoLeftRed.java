@@ -17,9 +17,9 @@ import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
 @Autonomous
 public class AutoLeftRed extends LinearOpMode {
     public static Vector2d startPos = new Vector2d(-12,-60);
-    public static Vector2d basketPos = new Vector2d(-50,-50);
+    public static Vector2d basketPos = new Vector2d(-52,-52.5);
     public static Vector2d samplePos = new Vector2d(-48,-36);
-    public static Vector2d parkPos = new Vector2d(-32,-11);
+    public static Vector2d parkPos = new Vector2d(-30,-11);
     @Override
     public void runOpMode() throws InterruptedException {
         //Move to basket () and rotate <-+
@@ -46,16 +46,18 @@ public class AutoLeftRed extends LinearOpMode {
                                         .strafeTo(basketPos)
                                         .turn(Math.toRadians(-45))
                                         .build(),
-                                robot.intake.presetAction(Intake.Positions.HIGH_BASKET)
+                                robot.intake.presetAction(Intake.Positions.HIGH_BASKET),
+                                robot.intake.armUpAction(28)
                         ),
-                        new SleepAction(1),
+                        new SleepAction(0.5),
                         new ParallelAction(
                                 robot.intake.spinnerAction(-0.5),
                                 new SleepAction(1)
                         )
-                        ,
+                        ,robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
+                        robot.intake.armDownAction(1),
+                        new SleepAction(0.5),
                         new ParallelAction(
-                                robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
                                 robot.intake.spinnerAction(0),
                                 robot.drive.actionBuilder(new Pose2d(basketPos.x, basketPos.y, Math.toRadians(45)))
                                         .turn(Math.toRadians(45))
@@ -67,32 +69,41 @@ public class AutoLeftRed extends LinearOpMode {
                             robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(90)))
                                     .strafeTo(samplePos)
                                     .build(),
-                                robot.intake.armUpAction(10),
+                                robot.intake.armUpAction(20),
                                 robot.intake.spinnerAction(1),
-                                robot.intake.checkForSample("yellowred", 50)
+                                robot.intake.checkForSample("yellowred", 5)
                                 )
                         ,
                         new ParallelAction(
                                 robot.intake.spinnerAction(0),
                                 robot.intake.presetAction(Intake.Positions.HIGH_BASKET),
+                                robot.intake.armUpAction(28),
                                 robot.drive.actionBuilder(new Pose2d(samplePos, Math.toRadians(90)))
                                         .strafeTo(basketPos)
                                         .turn(Math.toRadians(-45))
                                         .build()
                         ),
+                        new SleepAction(0.5),
                         new ParallelAction(
                                 robot.intake.spinnerAction(-0.5),
                                 new SleepAction(1)
                         )
                         ,
                         robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
+                        robot.intake.armDownAction(1),
                         robot.intake.spinnerAction(0),
-                        new SleepAction(2),
+                        new SleepAction(0.75),
                         robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(45)))
                                 .turn(Math.toRadians(45))
                                 .strafeTo(new Vector2d(-42, -11))
+                                .turn(Math.toRadians(-90))
+                                .build(),
+                        robot.intake.elbowAction(2000),
+                        new SleepAction(2),
+                        robot.drive.actionBuilder(new Pose2d(new Vector2d(-42, -11), Math.toRadians(0)))
                                 .strafeTo(parkPos)
-                                .build()
+                                .build(),
+                        robot.intake.elbowAction(1200)
                 )
         ));
 
