@@ -16,9 +16,9 @@ import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
 @Config
 @Autonomous
 public class AutoLeftRed extends LinearOpMode {
-    public static Vector2d startPos = new Vector2d(-12,-60);
-    public static Vector2d basketPos = new Vector2d(-52,-52.5);
-    public static Vector2d samplePos = new Vector2d(-48,-36);
+    public static Vector2d startPos = new Vector2d(-15.5,-60);
+    public static Vector2d basketPos = new Vector2d(-54.5,-53);
+    public static Vector2d samplePos = new Vector2d(-45,-38);
     public static Vector2d parkPos = new Vector2d(-30,-11);
     @Override
     public void runOpMode() throws InterruptedException {
@@ -43,8 +43,8 @@ public class AutoLeftRed extends LinearOpMode {
                 new SequentialAction(
                         new ParallelAction(
                                 robot.drive.actionBuilder(robot.drive.pose)
-                                        .strafeTo(basketPos)
-                                        .turn(Math.toRadians(-45))
+                                        .strafeTo(new Vector2d(startPos.x,basketPos.y))
+                                        .strafeToLinearHeading(basketPos, Math.toRadians(45))
                                         .build(),
                                 robot.intake.presetAction(Intake.Positions.HIGH_BASKET),
                                 robot.intake.armUpAction(28)
@@ -64,13 +64,14 @@ public class AutoLeftRed extends LinearOpMode {
                                         .build()
                         ),
                         robot.intake.wristMoveAction(0.685),
+                        robot.intake.spinnerAction(1),
                         new SleepAction(1),
+                        robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(90)))
+                                .strafeTo(new Vector2d(samplePos.x, -48))
+                                .strafeTo(samplePos)
+                                .build(),
                         new ParallelAction(
-                            robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(90)))
-                                    .strafeTo(samplePos)
-                                    .build(),
                                 robot.intake.armUpAction(20),
-                                robot.intake.spinnerAction(1),
                                 robot.intake.checkForSample("yellowred", 5)
                                 )
                         ,
@@ -92,6 +93,7 @@ public class AutoLeftRed extends LinearOpMode {
                         robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
                         robot.intake.armDownAction(1),
                         robot.intake.spinnerAction(0),
+                        robot.intake.wristMoveAction(0),
                         new SleepAction(0.75),
                         robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(45)))
                                 .turn(Math.toRadians(45))

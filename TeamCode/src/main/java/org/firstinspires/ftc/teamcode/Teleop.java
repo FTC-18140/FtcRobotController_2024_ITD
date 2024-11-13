@@ -121,6 +121,12 @@ public class Teleop extends OpMode
             armSlow = 0.4;
         }
 
+        if(gamepad1.dpad_up){
+            robot.lift.moveLift(1);
+        }else if(gamepad1.dpad_down){
+            robot.lift.moveLift(-1);
+        }
+
         if(gamepad2.dpad_up){
             wristPos = robot.intake.wristPos;
             wristPos -= 0.03*armSlow;
@@ -133,26 +139,25 @@ public class Teleop extends OpMode
 //            wristPos = 0.65;
 //        }
 //        else if(gamepad2.dpad_right){
-//            wristPos = 0;s
+//            wristPos = 0;
 //        }
         //Elbow controls
-        if(theGamepad2.getButton(TBDGamepad.Button.Y)){
-            robot.intake.preset(Intake.Positions.HIGH_BASKET);
-            wristPos = Intake.Positions.HIGH_BASKET.wristPos;
+        if(theGamepad2.getTrigger(TBDGamepad.Trigger.RIGHT_TRIGGER) > 0.1){
+            if(theGamepad2.getButton(TBDGamepad.Button.Y)){
+                robot.intake.elbowUp(80*armSlow);
+            }
+            else if(theGamepad2.getButton(TBDGamepad.Button.A)){
+                robot.intake.elbowDown(70*armSlow);
+            }
+        } else {
+            if (theGamepad2.getButton(TBDGamepad.Button.Y)) {
+                robot.intake.preset(Intake.Positions.HIGH_BASKET);
+                wristPos = Intake.Positions.HIGH_BASKET.wristPos;
+            } else if (theGamepad2.getButton(TBDGamepad.Button.A)) {
+                robot.intake.preset(Intake.Positions.READY_TO_INTAKE);
+                wristPos = Intake.Positions.READY_TO_INTAKE.wristPos;
+            }
         }
-        else if(theGamepad2.getButton(TBDGamepad.Button.A)){
-            robot.intake.preset(Intake.Positions.READY_TO_INTAKE);
-            wristPos = Intake.Positions.READY_TO_INTAKE.wristPos;
-        }
-//        if(theGamepad2.getButton(TBDGamepad.Button.Y)){
-//            robot.intake.elbowUp(80*armSlow);
-//        }
-//        else if(theGamepad2.getButton(TBDGamepad.Button.A)){
-//            robot.intake.elbowDown(70*armSlow);
-//        }
-//        else if(theGamepad2.getTrigger(TBDGamepad.Trigger.RIGHT_TRIGGER)> 0.1){
-//            robot.intake.preset(Intake.Positions.READY_TO_INTAKE);
-//        }
         // Arm controls
         if(theGamepad2.getButton(TBDGamepad.Button.X)){
             robot.intake.armUp(0.4*armSlow);
