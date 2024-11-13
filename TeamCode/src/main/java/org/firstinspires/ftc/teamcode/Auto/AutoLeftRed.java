@@ -98,12 +98,9 @@ public class AutoLeftRed extends LinearOpMode {
                                 .strafeTo(new Vector2d(-42, -11))
                                 .turn(Math.toRadians(-90))
                                 .build(),
-                        robot.intake.elbowAction(2000),
-                        new SleepAction(2),
                         robot.drive.actionBuilder(new Pose2d(new Vector2d(-42, -11), Math.toRadians(0)))
                                 .strafeTo(parkPos)
-                                .build(),
-                        robot.intake.elbowAction(1200)
+                                .build()
                 )
         ));
 

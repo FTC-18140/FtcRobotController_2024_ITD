@@ -52,6 +52,7 @@ public class Intake {
     public int elbowDirection = 0;
     public final double ARM_MIN = 0;
     public final double ARM_MAX = 28;
+    public final double ARM_MAX_HORIZONTAL = 20;
     public final double WRIST_RIGHT_MIN = -5.0;
     public final double WRIST_RIGHT_MAX = 5.0;
 
@@ -131,7 +132,7 @@ public class Intake {
 
             arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            arm.setDirection(DcMotorSimple.Direction.REVERSE);
+//            arm.setDirection(DcMotorSimple.Direction.REVERSE);
             arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         }catch(Exception e){
@@ -190,11 +191,18 @@ public class Intake {
     }
     public void armUp(double power){
         telemetry.addData("arm position : ", armPos/COUNTS_PER_CM);
-        if(armPos/COUNTS_PER_CM <=ARM_MAX){
-            arm.setPower(power);
-        }
-        else{
-            armStop();
+        if(target < 1000){
+            if(armPos/COUNTS_PER_CM <=ARM_MAX_HORIZONTAL){
+                arm.setPower(power);
+            }else{
+                armStop();
+            }
+        }else{
+            if(armPos/COUNTS_PER_CM <=ARM_MAX){
+                arm.setPower(power);
+            }else{
+                armStop();
+            }
         }
     }
     public void armDown(double power){
@@ -349,7 +357,7 @@ public class Intake {
         armPos = arm.getCurrentPosition();
         if(armTo > 0){
             if(armPos / COUNTS_PER_CM < armTarget){
-                armUp(0.4);
+                armUp(0.3);
             }else{
                 armTo = 0;
             }
@@ -420,6 +428,7 @@ public class Intake {
 
         telemetry.addData("arm direction for preset ", armTarget-armPos/COUNTS_PER_CM);
         telemetry.addData("arm target: ", armTarget);
+        telemetry.addData("armPos: ", armPos);
         telemetry.addData("hue", hsvValues[0]);
         telemetry.addData("value", hsvValues[2]);
         telemetry.addData("elbowPos : ", elbowPosition);
