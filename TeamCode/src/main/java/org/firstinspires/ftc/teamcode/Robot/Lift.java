@@ -21,6 +21,14 @@ public class Lift {
         hardwareMap = hwMap;
         telemetry = telem;
         try{
+            liftLeft = hardwareMap.dcMotor.get("liftL");
+            liftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            liftLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            liftLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }catch (Exception e){
+            telemetry.addData("left lift motor not found in configuration",0);
+        }
+        try{
             liftRight = hardwareMap.dcMotor.get("liftR");
             liftRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             liftRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -32,21 +40,29 @@ public class Lift {
     public double getLiftPosR(){
         return liftRight.getCurrentPosition();
     }
+    public double getLiftPosL(){
+        return liftLeft.getCurrentPosition();
+    }
     public void moveLift(double power){
         if(power > 0){
             if(liftRight.getCurrentPosition() >= LIFT_MAX){
                 liftRight.setPower(0);
+                liftLeft.setPower(0);
             }else{
                 liftRight.setPower(power);
+                liftLeft.setPower(power);
             }
         }else if(power < 0){
             if(liftRight.getCurrentPosition() <= 100){
                 liftRight.setPower(0);
+                liftLeft.setPower(0);
             }else{
                 liftRight.setPower(power);
+                liftLeft.setPower(power);
             }
         } else{
             liftRight.setPower(0);
+            liftLeft.setPower(0);
         }
 
     }
