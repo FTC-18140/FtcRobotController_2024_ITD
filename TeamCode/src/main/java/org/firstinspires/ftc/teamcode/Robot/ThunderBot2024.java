@@ -83,7 +83,7 @@ public class ThunderBot2024
      * @param hwMap
      * @param telem
      */
-    public void init(HardwareMap hwMap, Telemetry telem)
+    public void init(HardwareMap hwMap, Telemetry telem, double liftOffset)
     {
         telemetry = telem;
 
@@ -91,7 +91,7 @@ public class ThunderBot2024
         intake.init(hwMap,telem);
 
         lift = new Lift();
-        lift.init(hwMap, telem);
+        lift.init(hwMap, telem, liftOffset);
 
         drive = new MecanumDrive(hwMap, new Pose2d(0,0,0));
 //  This code was somehow preventing the Odometry from updating

@@ -18,7 +18,7 @@ public class AutoTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         ThunderBot2024 robot = new ThunderBot2024();
-        robot.init(hardwareMap,telemetry);
+        robot.init(hardwareMap,telemetry, 0);
         robot.drive.pose = new Pose2d(-12,-60,Math.toRadians(90));
 
         waitForStart();

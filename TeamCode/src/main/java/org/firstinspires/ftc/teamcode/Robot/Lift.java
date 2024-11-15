@@ -16,8 +16,11 @@ public class Lift {
     DcMotor liftLeft;
     DcMotor liftRight;
 
+    double offsetPos;
+
     public final double LIFT_MAX = 55500;
-    public void init(HardwareMap hwMap, Telemetry telem){
+    public void init(HardwareMap hwMap, Telemetry telem, double startPos){
+        offsetPos = startPos;
         hardwareMap = hwMap;
         telemetry = telem;
         try{
@@ -38,14 +41,14 @@ public class Lift {
         }
     }
     public double getLiftPosR(){
-        return liftRight.getCurrentPosition();
+        return liftRight.getCurrentPosition()+offsetPos;
     }
     public double getLiftPosL(){
-        return liftLeft.getCurrentPosition();
+        return liftLeft.getCurrentPosition()+offsetPos;
     }
     public void moveLift(double power){
         if(power > 0){
-            if(liftRight.getCurrentPosition() >= LIFT_MAX){
+            if(liftRight.getCurrentPosition()+offsetPos >= LIFT_MAX){
                 liftRight.setPower(0);
                 liftLeft.setPower(0);
             }else{
@@ -53,7 +56,7 @@ public class Lift {
                 liftLeft.setPower(power);
             }
         }else if(power < 0){
-            if(liftRight.getCurrentPosition() <= 100){
+            if(liftRight.getCurrentPosition()+offsetPos <= 100){
                 liftRight.setPower(0);
                 liftLeft.setPower(0);
             }else{

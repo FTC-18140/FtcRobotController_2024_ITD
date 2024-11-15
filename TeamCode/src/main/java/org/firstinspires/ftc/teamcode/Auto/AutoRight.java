@@ -33,7 +33,7 @@ public class AutoRight extends LinearOpMode {
 
         ThunderBot2024 robot = new ThunderBot2024();
 
-        robot.init(hardwareMap,telemetry);
+        robot.init(hardwareMap,telemetry, 0);
         robot.drive.pose = new Pose2d(startPos,Math.toRadians(90));
 
         waitForStart();
