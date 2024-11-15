@@ -38,7 +38,6 @@ public class NathanPID extends OpMode {
 
         arm_motor =hardwareMap.get(DcMotorEx.class, "arm_motor");
         arm_motor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-
         arm_motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         arm_motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
