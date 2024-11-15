@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.Robot.Intake;
 import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
 
 @Config
@@ -25,17 +26,8 @@ public class AutoTest extends LinearOpMode {
         Actions.runBlocking(new ParallelAction(
                 robot.intake.updateAction(),
                 new SequentialAction(
-                    robot.intake.wristMoveAction(robot.intake.WRIST_MIN),
-                    new ParallelAction(
-                            robot.intake.spinnerAction(1),
-                            robot.intake.armUpAction(12)
-                    ),
-                    new SleepAction(2),
-                    new ParallelAction(
-                            robot.intake.armDownAction(0),
-                            robot.intake.wristMoveAction(robot.intake.WRIST_MAX),
-                            robot.intake.spinnerAction(0)
-                    )
+                        robot.intake.presetAction(Intake.Positions.HIGH_BASKET),
+                        robot.intake.armUpAction(28)
                 )
             )
         );

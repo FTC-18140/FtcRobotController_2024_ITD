@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.Robot.Intake;
 import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
 
 /*
@@ -52,7 +53,7 @@ import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Strafer Teleop", group="Teleop")
+@TeleOp(name="Teleop", group="Teleop")
 public class Teleop extends OpMode
 {
     // Declare OpMode members.
@@ -63,6 +64,8 @@ public class Teleop extends OpMode
 
     public double wristPos;
     public double spinPos;
+
+    public double liftPower = 0;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -106,6 +109,7 @@ public class Teleop extends OpMode
         double strafe = theGamepad1.getLeftX();
         double turn  = theGamepad1.getRightX();
         double slow = 0.8;
+        double armSlow = 1.0;
 
         robot.intake.update();
 
@@ -115,31 +119,60 @@ public class Teleop extends OpMode
         if(theGamepad1.getButton(TBDGamepad.Button.LEFT_BUMPER)){
             slow = 0.2;
         }
+        if(theGamepad2.getTrigger(TBDGamepad.Trigger.LEFT_TRIGGER)>0.1){
+            armSlow = 0.4;
+        }
+
+        if(gamepad1.dpad_up){
+            liftPower = 1;
+        }else if(gamepad1.dpad_down){
+            liftPower = -1;
+        }else if(gamepad1.dpad_left){
+            liftPower = 0;
+        }
+
         if(gamepad2.dpad_up){
-            wristPos -= 0.003;
+            wristPos = robot.intake.wristPos;
+            wristPos -= 0.03*armSlow;
         }
-        if(gamepad2.dpad_down){
-            wristPos += 0.003;
+        else if(gamepad2.dpad_down){
+            wristPos = robot.intake.wristPos;
+            wristPos += 0.03*armSlow;
         }
+//        else if (gamepad2.dpad_left){
+//            wristPos = 0.65;
+//        }
+//        else if(gamepad2.dpad_right){
+//            wristPos = 0;
+//        }
         //Elbow controls
-        if(theGamepad2.getButton(TBDGamepad.Button.Y)){
-            robot.intake.elbowUp(0.5);
-        }
-        else if(theGamepad2.getButton(TBDGamepad.Button.A)){
-            robot.intake.elbowDown(-0.5);
-        }
-        else{
-            //robot.intake.elbowStop();
+        if(theGamepad2.getTrigger(TBDGamepad.Trigger.RIGHT_TRIGGER) > 0.1){
+            if(theGamepad2.getButton(TBDGamepad.Button.Y)){
+                robot.intake.elbowUp(80*armSlow);
+            }
+            else if(theGamepad2.getButton(TBDGamepad.Button.A)){
+                robot.intake.elbowDown(70*armSlow);
+            }
+        } else {
+            if (theGamepad2.getButton(TBDGamepad.Button.Y)) {
+                robot.intake.preset(Intake.Positions.HIGH_BASKET);
+                wristPos = Intake.Positions.HIGH_BASKET.wristPos;
+            } else if (theGamepad2.getButton(TBDGamepad.Button.A)) {
+                robot.intake.preset(Intake.Positions.READY_TO_INTAKE);
+                wristPos = Intake.Positions.READY_TO_INTAKE.wristPos;
+            }
         }
         // Arm controls
         if(theGamepad2.getButton(TBDGamepad.Button.X)){
-            robot.intake.armUp(0.6);
+            robot.intake.armUp(0.4*armSlow);
         }
         else if(theGamepad2.getButton(TBDGamepad.Button.B)){
-            robot.intake.armDown(-0.6);
+            robot.intake.armDown(-0.8*(armSlow*1.5));
         }
         else{
-            robot.intake.armStop();
+            if(robot.intake.armTo == 0){
+                robot.intake.armStop();
+            }
         }
 
         if(theGamepad2.getButton(TBDGamepad.Button.LEFT_BUMPER)){
@@ -155,15 +188,20 @@ public class Teleop extends OpMode
         wristPos = Range.clip(wristPos, robot.intake.WRIST_MIN, robot.intake.WRIST_MAX);
         robot.intake.wristMove(wristPos);
 
+        robot.lift.moveLift(liftPower);
+
         // Send calculated power to wheels
-        robot.joystickDrive(forward, strafe, turn*0.625*slow, slow);
+
+        robot.joystickDrive(forward, strafe, turn * 0.625 * slow, slow);
+
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Joystick Commands", "forward (%.2f), strafe (%.2f), turn (%.2f)", forward, strafe, turn);
-        telemetry.addData("servo wristL position: ", robot.intake.wristLeftPos);
-        telemetry.addData("servo wristR position: ", robot.intake.wristRightPos);
+        telemetry.addData("servo wrist position: ", robot.intake.wristPos);
         telemetry.addData("wristPos : ", wristPos);
+        telemetry.addData("liftPos : ", robot.lift.getLiftPosR());
+
     }
 
     /*
