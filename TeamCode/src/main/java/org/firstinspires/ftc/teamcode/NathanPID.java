@@ -17,12 +17,12 @@ import org.firstinspires.ftc.teamcode.Utilities.PIDController;
 public class NathanPID extends OpMode {
     private PIDController controller;
 
-    public static double p = 0, i = 0, d = 0;
-    public static double f = 0;
-    public static double factor_p_down = 0;
-    public static double factor_d_down = 0;
+    public static double p = 0.003, i = 0, d = 0.0001;
+    public static double f = 0.1;
+    public static double factor_p_down = 0.45;
+    public static double factor_d_down = 1.4;
 
-    public static int target;
+    public static int target = 0;
 
     private final double ticks_in_degree = 18.182;
 
