@@ -19,7 +19,7 @@ public class AutoLeftRed extends LinearOpMode {
     public static Vector2d startPos = new Vector2d(-15,-60);
     public static Vector2d basketPos = new Vector2d(-53.5,-53);
     public static Vector2d samplePos = new Vector2d(-49,-38);
-    public static Vector2d parkPos = new Vector2d(-30,-11);
+    public static Vector2d parkPos = new Vector2d(-26,-11);
     @Override
     public void runOpMode() throws InterruptedException {
         //Move to basket () and rotate <-+
@@ -40,6 +40,7 @@ public class AutoLeftRed extends LinearOpMode {
 
         Actions.runBlocking(new ParallelAction(
                 robot.intake.updateAction(),
+                robot.lift.liftTo(45000),
                 new SequentialAction(
                         new ParallelAction(
                                 robot.drive.actionBuilder(robot.drive.pose)
@@ -59,11 +60,13 @@ public class AutoLeftRed extends LinearOpMode {
                         new SleepAction(0.5),
                         new ParallelAction(
                                 robot.intake.spinnerAction(0),
+                                robot.intake.elbowAction(0.5),
                                 robot.drive.actionBuilder(new Pose2d(basketPos.x, basketPos.y, Math.toRadians(45)))
                                         .turn(Math.toRadians(45))
                                         .build()
                         ),
-                        new ParallelAction(robot.intake.wristMoveAction(0.72),
+                        new ParallelAction(
+                                robot.intake.wristMoveAction(0.73),
                                 robot.intake.spinnerAction(1),
                                 robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(90)))
                                         .strafeTo(new Vector2d(samplePos.x, -48))
@@ -95,22 +98,18 @@ public class AutoLeftRed extends LinearOpMode {
                         robot.intake.armDownAction(1),
                         robot.intake.spinnerAction(0),
                         robot.intake.wristMoveAction(0),
-                        new ParallelAction(
-                                new SequentialAction(
-                                        new SleepAction(0.75),
-                                        robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(45)))
-                                                .turn(Math.toRadians(45))
-                                                .strafeTo(new Vector2d(-42, -11))
-                                                .turn(Math.toRadians(-90))
-                                                .build(),
-                                        robot.drive.actionBuilder(new Pose2d(new Vector2d(-42, -11), Math.toRadians(0)))
-                                            .strafeTo(parkPos)
-                                            .build()
-                                        ),
-                                robot.lift.liftTo(45000)
-                        )
+                        new SleepAction(0.75),
+                        robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(45)))
+                                .turn(Math.toRadians(45))
+                                .strafeTo(new Vector2d(-42, -11))
+                                .turn(Math.toRadians(-90))
+                                .build(),
+                        robot.drive.actionBuilder(new Pose2d(new Vector2d(-42, -11), Math.toRadians(0)))
+                                .strafeTo(parkPos)
+                                .build()
+                        ),
+                    robot.lift.liftTo(45000)
                 )
-        ));
-
+        );
     }
 }
