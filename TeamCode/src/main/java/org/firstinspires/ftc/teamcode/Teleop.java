@@ -65,6 +65,8 @@ public class Teleop extends OpMode
     public double wristPos;
     public double spinPos;
 
+    public double liftPower = 0;
+
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -122,9 +124,11 @@ public class Teleop extends OpMode
         }
 
         if(gamepad1.dpad_up){
-            robot.lift.moveLift(1);
+            liftPower = 1;
         }else if(gamepad1.dpad_down){
-            robot.lift.moveLift(-1);
+            liftPower = -1;
+        }else if(gamepad1.dpad_left){
+            liftPower = 0;
         }
 
         if(gamepad2.dpad_up){
@@ -184,6 +188,8 @@ public class Teleop extends OpMode
         wristPos = Range.clip(wristPos, robot.intake.WRIST_MIN, robot.intake.WRIST_MAX);
         robot.intake.wristMove(wristPos);
 
+        robot.lift.moveLift(liftPower);
+
         // Send calculated power to wheels
 
         robot.joystickDrive(forward, strafe, turn * 0.625 * slow, slow);
@@ -194,6 +200,8 @@ public class Teleop extends OpMode
         telemetry.addData("Joystick Commands", "forward (%.2f), strafe (%.2f), turn (%.2f)", forward, strafe, turn);
         telemetry.addData("servo wrist position: ", robot.intake.wristPos);
         telemetry.addData("wristPos : ", wristPos);
+        telemetry.addData("liftPos : ", robot.lift.getLiftPosR());
+
     }
 
     /*

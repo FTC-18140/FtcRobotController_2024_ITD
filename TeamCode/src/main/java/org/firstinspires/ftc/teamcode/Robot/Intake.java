@@ -337,7 +337,7 @@ public class Intake {
             ElapsedTime timer = new ElapsedTime();
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if(c.contains(getCalculatedColor()) || timer.time()>=limit){
+                if(c.contains(getCalculatedColor()) || timer.seconds()>=limit){
                     return false;
                 }
                 return true;
@@ -413,26 +413,26 @@ public class Intake {
         wristPos = wrist.getPosition();
 
 
-        if(hsvValues[2] < 2000){
-            telemetry.addData("color detected: ", "none");
-        }else if(hsvValues[0] < 70){
-            telemetry.addData("color detected: ", "red");
-        } else if (hsvValues[0] < 150) {
-            telemetry.addData("color detected: ", "yellow");
-        } else if (hsvValues[0] < 200) {
-            telemetry.addData("color detected: ", "none");
-        }else{
-            telemetry.addData("color detected: ", "blue");
-        }
-        telemetry.addData("incrementing target: ", directSetTarget);
-
-        telemetry.addData("arm direction for preset ", armTarget-armPos/COUNTS_PER_CM);
-        telemetry.addData("arm target: ", armTarget);
-        telemetry.addData("armPos: ", armPos);
-        telemetry.addData("hue", hsvValues[0]);
-        telemetry.addData("value", hsvValues[2]);
-        telemetry.addData("elbowPos : ", elbowPosition);
-        telemetry.addData("targetPos : ", target);
+//        if(hsvValues[2] < 2000){
+//            telemetry.addData("color detected: ", "none");
+//        }else if(hsvValues[0] < 70){
+//            telemetry.addData("color detected: ", "red");
+//        } else if (hsvValues[0] < 150) {
+//            telemetry.addData("color detected: ", "yellow");
+//        } else if (hsvValues[0] < 200) {
+//            telemetry.addData("color detected: ", "none");
+//        }else{
+//            telemetry.addData("color detected: ", "blue");
+//        }
+//        telemetry.addData("incrementing target: ", directSetTarget);
+//
+//        telemetry.addData("arm direction for preset ", armTarget-armPos/COUNTS_PER_CM);
+//        telemetry.addData("arm target: ", armTarget);
+//        telemetry.addData("armPos: ", armPos);
+//        telemetry.addData("hue", hsvValues[0]);
+//        telemetry.addData("value", hsvValues[2]);
+//        telemetry.addData("elbowPos : ", elbowPosition);
+//        telemetry.addData("targetPos : ", target);
         telemetry.update();
     }
 }
