@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -16,15 +17,16 @@ public class Lift {
     DcMotor liftLeft;
     DcMotor liftRight;
 
-    double offsetPos;
+    public double offsetPos;
 
-    public final double LIFT_MAX = 55500;
+    public final double LIFT_MAX = 2200;
     public void init(HardwareMap hwMap, Telemetry telem, double startPos){
         offsetPos = startPos;
         hardwareMap = hwMap;
         telemetry = telem;
         try{
             liftLeft = hardwareMap.dcMotor.get("liftL");
+            liftLeft.setDirection(DcMotorSimple.Direction.REVERSE);
             liftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             liftLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             liftLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -33,6 +35,7 @@ public class Lift {
         }
         try{
             liftRight = hardwareMap.dcMotor.get("liftR");
+            liftRight.setDirection(DcMotorSimple.Direction.REVERSE);
             liftRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             liftRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             liftRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -48,20 +51,26 @@ public class Lift {
     }
     public void moveLift(double power){
         if(power > 0){
-            if(liftRight.getCurrentPosition()+offsetPos >= LIFT_MAX){
-                liftRight.setPower(0);
+            if(liftLeft.getCurrentPosition()+offsetPos >= LIFT_MAX){
                 liftLeft.setPower(0);
             }else{
-                liftRight.setPower(power);
                 liftLeft.setPower(power);
             }
-        }else if(power < 0){
-            if(liftRight.getCurrentPosition()+offsetPos <= 100){
+            if(liftRight.getCurrentPosition()+offsetPos >= LIFT_MAX){
                 liftRight.setPower(0);
-                liftLeft.setPower(0);
             }else{
                 liftRight.setPower(power);
+            }
+        }else if(power < 0){
+            if(liftLeft.getCurrentPosition()+offsetPos <= 100){
+                liftLeft.setPower(0);
+            }else{
                 liftLeft.setPower(power);
+            }
+            if(liftRight.getCurrentPosition()+offsetPos <= 100){
+                liftRight.setPower(0);
+            }else{
+                liftRight.setPower(power);
             }
         } else{
             liftRight.setPower(0);

@@ -40,7 +40,7 @@ public class AutoLeftBlue extends LinearOpMode {
 
         Actions.runBlocking(new ParallelAction(
                         robot.intake.updateAction(),
-                        robot.lift.liftTo(45000),
+                        robot.lift.liftTo(2200),
                         new SequentialAction(
                                 new ParallelAction(
                                         robot.drive.actionBuilder(robot.drive.pose)

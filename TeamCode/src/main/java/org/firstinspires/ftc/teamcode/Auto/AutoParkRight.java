@@ -12,20 +12,12 @@ import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
 @Config
 @Autonomous
 public class AutoParkRight extends LinearOpMode {
-    public static Vector2d startPos = new Vector2d(12,-60);
+    public static Vector2d startPos = new Vector2d(15,-60);
     public static Vector2d basketPos = new Vector2d(-50,-50);
     public static Vector2d samplePos = new Vector2d(-48,-36);
-    public static Vector2d parkPos = new Vector2d(58,-60);
+    public static Vector2d parkPos = new Vector2d(58,-59);
     @Override
     public void runOpMode() throws InterruptedException {
-        //Move to basket () and rotate <-+
-        //Lift arm                       |
-        //release sample                 |
-        //retract arm                    |
-        //Move to placed sample ()       |
-        //intake sample                  |
-        //Repeat-------------------------+
-        //park ()
 
         ThunderBot2024 robot = new ThunderBot2024();
 
