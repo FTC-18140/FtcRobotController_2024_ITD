@@ -102,13 +102,12 @@ public class AutoLeftBlue extends LinearOpMode {
                                 robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(45)))
                                         .turn(Math.toRadians(45))
                                         .strafeTo(new Vector2d(-42, -11))
-                                        .turn(Math.toRadians(-90))
+                                        .turn(Math.toRadians(90))
                                         .build(),
-                                robot.drive.actionBuilder(new Pose2d(new Vector2d(-42, -11), Math.toRadians(0)))
+                                robot.drive.actionBuilder(new Pose2d(new Vector2d(-42, -11), Math.toRadians(180)))
                                         .strafeTo(parkPos)
                                         .build()
-                        ),
-                        robot.lift.liftTo(45000)
+                        )
                 )
         );
     }

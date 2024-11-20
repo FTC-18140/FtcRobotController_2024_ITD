@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
 
 @Config
 @Autonomous
-public class AutoLeftRed extends LinearOpMode {
+public class AutoLeftRed_HoldArmPosition extends LinearOpMode {
     public static Vector2d startPos = new Vector2d(-15,-60);
     public static Vector2d basketPos = new Vector2d(-53.5,-53);
     public static Vector2d samplePos = new Vector2d(-49,-38);
@@ -36,6 +36,9 @@ public class AutoLeftRed extends LinearOpMode {
         robot.init(hardwareMap,telemetry, 0);
         robot.drive.pose = new Pose2d(startPos,Math.toRadians(90));
 
+        while(opModeInInit()){
+            robot.intake.init_loop();
+        }
         waitForStart();
 
         Actions.runBlocking(new ParallelAction(

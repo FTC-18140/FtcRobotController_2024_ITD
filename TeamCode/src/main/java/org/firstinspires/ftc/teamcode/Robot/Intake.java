@@ -140,6 +140,10 @@ public class Intake {
         }
 
     }
+    public void init_loop(){
+        armPos = arm.getCurrentPosition();
+        update();
+    }
 
     public void preset(Positions position){
         armPos = arm.getCurrentPosition();
