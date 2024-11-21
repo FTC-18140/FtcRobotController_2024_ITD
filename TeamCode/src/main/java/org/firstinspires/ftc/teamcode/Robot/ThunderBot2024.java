@@ -32,6 +32,7 @@ public class ThunderBot2024
     public Intake intake;
     public MecanumDrive drive;
     public Lift lift;
+    public LED led;
     double heading = 0;
     long leftFrontPosition = 0;
     long rightFrontPosition = 0;
@@ -92,6 +93,9 @@ public class ThunderBot2024
 
         lift = new Lift();
         lift.init(hwMap, telem, liftOffset);
+
+        led = new LED();
+        led.init(hwMap, telem);
 
         drive = new MecanumDrive(hwMap, new Pose2d(0,0,0));
 //  This code was somehow preventing the Odometry from updating
