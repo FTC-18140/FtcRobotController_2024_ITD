@@ -19,7 +19,7 @@ public class Lift {
 
     public double offsetPos;
 
-    public final double LIFT_MAX = 2200;
+    public final double LIFT_MAX = 2600;
     public void init(HardwareMap hwMap, Telemetry telem, double startPos){
         offsetPos = startPos;
         hardwareMap = hwMap;

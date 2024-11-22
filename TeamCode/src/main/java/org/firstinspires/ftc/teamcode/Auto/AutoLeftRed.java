@@ -19,7 +19,7 @@ public class AutoLeftRed extends LinearOpMode {
     public static Vector2d startPos = new Vector2d(-15,-60);
     public static Vector2d basketPos = new Vector2d(-53.5,-53);
     public static Vector2d samplePos = new Vector2d(-49,-38);
-    public static Vector2d parkPos = new Vector2d(-26,-11);
+    public static Vector2d parkPos = new Vector2d(-25,-8);
     @Override
     public void runOpMode() throws InterruptedException {
         //Move to basket () and rotate <-+
@@ -36,6 +36,9 @@ public class AutoLeftRed extends LinearOpMode {
         robot.init(hardwareMap,telemetry, 0);
         robot.drive.pose = new Pose2d(startPos,Math.toRadians(90));
 
+        while(opModeInInit()){
+            robot.intake.init_loop();
+        }
         waitForStart();
 
         Actions.runBlocking(new ParallelAction(
@@ -102,7 +105,7 @@ public class AutoLeftRed extends LinearOpMode {
                         robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(45)))
                                 .turn(Math.toRadians(45))
                                 .strafeTo(new Vector2d(-42, -11))
-                                .turn(Math.toRadians(90))
+                                .turn(Math.toRadians(93))
                                 .build(),
                         robot.drive.actionBuilder(new Pose2d(new Vector2d(-42, -11), Math.toRadians(180)))
                                 .strafeTo(parkPos)
