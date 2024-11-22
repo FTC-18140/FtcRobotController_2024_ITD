@@ -73,7 +73,7 @@ public class Teleop extends OpMode
     @Override
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        robot.init(hardwareMap, telemetry, 2200);
+        robot.init(hardwareMap, telemetry, 2500);
         wristPos = robot.intake.WRIST_INIT;
         spinPos = 0.0;
         theGamepad1 = new TBDGamepad( gamepad1);
@@ -96,6 +96,7 @@ public class Teleop extends OpMode
     public void start() {
         runtime.reset();
         robot.led.ledTimer.reset();
+        robot.intake.start();
     }
 
     /*

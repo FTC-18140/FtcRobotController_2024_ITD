@@ -25,6 +25,7 @@ public class AutoParkRight extends LinearOpMode {
         robot.drive.pose = new Pose2d(startPos,Math.toRadians(90));
 
         waitForStart();
+        robot.intake.start();
 
         Actions.runBlocking(
                 robot.drive.actionBuilder(robot.drive.pose)

@@ -48,7 +48,7 @@ public class Intake {
     public final double WRIST_MAX = 1.0;
     public final double ELBOW_MIN = 0;
     public final double ELBOW_MIN_SLOW = 700;
-    public static double ELBOW_MAX = 2275;
+    public static double ELBOW_MAX = 2600;
     public int elbowDirection = 0;
     public final double ARM_MIN = 0;
     public static double ARM_MAX = 42;
@@ -131,9 +131,12 @@ public class Intake {
             arm = hwMap.dcMotor.get("arm");
 
             arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            arm.setTargetPosition(0);
+            arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 //            arm.setDirection(DcMotorSimple.Direction.REVERSE);
             arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+            arm.setPower(0.8);
 
         }catch(Exception e){
             telemetry.addData("arm motor not found in configuration", 0);
@@ -141,8 +144,13 @@ public class Intake {
 
     }
     public void init_loop(){
-        armPos = arm.getCurrentPosition();
         update();
+    }
+    public void start(){
+        arm.setPower(0);
+        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public void preset(Positions position){

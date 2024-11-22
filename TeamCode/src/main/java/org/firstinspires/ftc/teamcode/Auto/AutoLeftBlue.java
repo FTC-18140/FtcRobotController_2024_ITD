@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
 @Autonomous
 public class AutoLeftBlue extends LinearOpMode {
     public static Vector2d startPos = new Vector2d(-15,-60);
-    public static Vector2d basketPos = new Vector2d(-53.5,-53);
+    public static Vector2d basketPos = new Vector2d(-53.5,-53.5);
     public static Vector2d samplePos = new Vector2d(-49,-38);
     public static Vector2d parkPos = new Vector2d(-25,-8);
     @Override
@@ -36,27 +36,25 @@ public class AutoLeftBlue extends LinearOpMode {
         robot.init(hardwareMap,telemetry, 0);
         robot.drive.pose = new Pose2d(startPos,Math.toRadians(90));
 
-        while(opModeInInit()){
-            robot.intake.init_loop();
-        }
         waitForStart();
+        robot.intake.start();
 
         Actions.runBlocking(new ParallelAction(
                         robot.intake.updateAction(),
-                        robot.lift.liftTo(2200),
                         new SequentialAction(
                                 new ParallelAction(
+                                        robot.lift.liftTo(2200),
                                         robot.drive.actionBuilder(robot.drive.pose)
                                                 .strafeTo(new Vector2d(startPos.x,basketPos.y))
                                                 .strafeToLinearHeading(basketPos, Math.toRadians(45))
                                                 .build(),
                                         robot.intake.presetAction(Intake.Positions.HIGH_BASKET),
-                                        robot.intake.armUpAction(28)
+                                        robot.intake.armUpAction(Intake.Positions.HIGH_BASKET.armPos)
                                 ),
                                 new SleepAction(0.5),
                                 new ParallelAction(
                                         robot.intake.spinnerAction(-0.5),
-                                        new SleepAction(1)
+                                        new SleepAction(0.75)
                                 )
                                 ,robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
                                 robot.intake.armDownAction(1),
@@ -76,25 +74,26 @@ public class AutoLeftBlue extends LinearOpMode {
                                                 .strafeTo(samplePos)
                                                 .build()
                                 ),
-                                new SleepAction(1),
+                                new SleepAction(0.75),
                                 new ParallelAction(
-                                        robot.intake.armUpAction(20),
+                                        robot.intake.armUpAction(30),
                                         robot.intake.checkForSample("yellowblue", 5)
                                 ),
-                                new SleepAction(1),
+                                new SleepAction(0.5),
                                 new ParallelAction(
                                         robot.intake.spinnerAction(0),
                                         robot.intake.presetAction(Intake.Positions.HIGH_BASKET),
-                                        robot.intake.armUpAction(28),
+                                        robot.intake.armUpAction(Intake.Positions.HIGH_BASKET.armPos),
                                         robot.drive.actionBuilder(new Pose2d(samplePos, Math.toRadians(90)))
                                                 .turn(Math.toRadians(-45))
                                                 .strafeTo(basketPos)
                                                 .build()
                                 ),
+                                robot.intake.wristMoveAction(0.25),
                                 new SleepAction(0.5),
                                 new ParallelAction(
                                         robot.intake.spinnerAction(-0.5),
-                                        new SleepAction(1)
+                                        new SleepAction(0.75)
                                 )
                                 ,
                                 robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
@@ -109,7 +108,8 @@ public class AutoLeftBlue extends LinearOpMode {
                                         .build(),
                                 robot.drive.actionBuilder(new Pose2d(new Vector2d(-42, -11), Math.toRadians(180)))
                                         .strafeTo(parkPos)
-                                        .build()
+                                        .build(),
+                                robot.lift.liftTo(2500)
                         )
                 )
         );

@@ -36,9 +36,6 @@ public class AutoLeftRed_HoldArmPosition extends LinearOpMode {
         robot.init(hardwareMap,telemetry, 0);
         robot.drive.pose = new Pose2d(startPos,Math.toRadians(90));
 
-        while(opModeInInit()){
-            robot.intake.init_loop();
-        }
         waitForStart();
 
         Actions.runBlocking(new ParallelAction(
