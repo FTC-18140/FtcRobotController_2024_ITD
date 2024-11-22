@@ -38,8 +38,11 @@ public class Intake {
     float hsvValues[] = {0,0,0};
     float hsvValuesL[] = {0,0,0};
     float hsvValuesR[] = {0,0,0};
-    private PIDController controller;
+    private PIDController elbowcontroller;
+    private PIDController armcontroller;
+
     public static double p = 0.005, i = 0, d = 0.0001;
+    public static double p_arm = 0, i_arm = 0, d_arm = 0;
     public static double factor_p_down = 0.45;
     public static double factor_d_down = 1.4;
     public static double f = 0.015;
@@ -95,7 +98,8 @@ public class Intake {
     }
     public void init(HardwareMap hwMap, Telemetry telem) {
         telemetry = telem;
-        controller = new PIDController(p, i, d);
+        elbowcontroller = new PIDController(p, i, d);
+        armcontroller = new PIDController(p_arm, i_arm, d_arm);
 
         //Initialize Sensors
         try{
@@ -196,6 +200,7 @@ public class Intake {
             return "blue";
         }
     }
+    /*
     public void armUp(double power){
         telemetry.addData("arm position : ", armPos/COUNTS_PER_CM);
         if(target < 1000){
@@ -224,6 +229,8 @@ public class Intake {
     public void armStop(){
         arm.setPower(0);
     }
+
+     */
     public void elbowUp(double power) {
         telemetry.addData("elbow position : ", elbowPosition/COUNTS_PER_CM);
         if(target+power <= ELBOW_MAX){
@@ -277,9 +284,9 @@ public class Intake {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 double currentPos = arm.getCurrentPosition();
                 if (pos >= currentPos / COUNTS_PER_CM) {
-                    armUp(1);
+                    //armUp(1);
                 } else {
-                    armStop();
+                    //armStop();
                     return false;
                 }
 
@@ -295,9 +302,9 @@ public class Intake {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 double currentPos = arm.getCurrentPosition();
                 if (pos <= currentPos / COUNTS_PER_CM) {
-                    armDown(-1);
+                    //armDown(-1);
                 } else {
-                    armStop();
+                    //armStop();
                     return false;
                 }
 
@@ -362,19 +369,26 @@ public class Intake {
     }
     public void  update(){
         armPos = arm.getCurrentPosition();
+        double armpid = armcontroller.calculate(armPos, armTarget);
+        arm.setPower(armpid);
+        /*
         if(armTo > 0){
             if(armPos / COUNTS_PER_CM < armTarget){
-                armUp(0.3);
+                //armUp(0.3);
             }else{
                 armTo = 0;
             }
         } else if (armTo < 0) {
             if(armPos / COUNTS_PER_CM > armTarget){
-                armDown(-1.0);
+                //armDown(-1.0);
             }else {
                 armTo = 0;
             }
+
+
         }
+
+         */
         target = directSetTarget;
 
         /* if(elbowDirection == 1){
@@ -403,16 +417,16 @@ public class Intake {
         calculateSensorValues();
         elbowPosition = elbow.getCurrentPosition();
 
-        controller.setPID(p,i,d);
+        elbowcontroller.setPID(p,i,d);
         double ff = Math.cos(Math.toRadians(elbowPosition/ TICKS_PER_ELBOW_DEGREE)) * f;
         if (target >= elbowPosition){
-           controller.setPID(p, i, d);
+           elbowcontroller.setPID(p, i, d);
         } else {
-            controller.setPID(p * factor_p_down * Math.cos(Math.toRadians(clip(elbowPosition/ TICKS_PER_ELBOW_DEGREE,0,180))), i,d * factor_d_down * Math.cos(Math.toRadians(clip(elbowPosition/ TICKS_PER_ELBOW_DEGREE,0,180))));
+            elbowcontroller.setPID(p * factor_p_down * Math.cos(Math.toRadians(clip(elbowPosition/ TICKS_PER_ELBOW_DEGREE,0,180))), i,d * factor_d_down * Math.cos(Math.toRadians(clip(elbowPosition/ TICKS_PER_ELBOW_DEGREE,0,180))));
         }
-        double pid = controller.calculate(elbowPosition, target);
+        double elbowpid = elbowcontroller.calculate(elbowPosition, target);
 
-        double power = pid + ff;
+        double power = elbowpid + ff;
         power = Range.clip(power, -0.5, 0.7);
         if(target<ELBOW_MIN){
             elbow.setPower(0);
