@@ -138,7 +138,7 @@ public class Intake {
             arm = hwMap.dcMotor.get("arm");
 
             arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 //            arm.setDirection(DcMotorSimple.Direction.REVERSE);
             arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -147,7 +147,7 @@ public class Intake {
         }
 
     }
-
+   
     public void preset(Positions position){
         armPos = arm.getCurrentPosition();
         setElbowTo(position.elbowPos);
@@ -197,6 +197,7 @@ public class Intake {
         }
     }
     public void armUp(double power){
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         telemetry.addData("arm position : ", armPos/COUNTS_PER_CM);
         if(target < 1000){
             if(armPos/COUNTS_PER_CM <=ARM_MAX_HORIZONTAL){
@@ -213,6 +214,8 @@ public class Intake {
         }
     }
     public void armDown(double power){
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         telemetry.addData("arm position : ", armPos/COUNTS_PER_CM);
         if(armPos/COUNTS_PER_CM >=ARM_MIN){
             arm.setPower(power);
@@ -222,6 +225,7 @@ public class Intake {
         }
     }
     public void armStop(){
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         arm.setPower(0);
     }
     public void elbowUp(double power) {
@@ -317,7 +321,7 @@ public class Intake {
             }
         };
     }
-    public Action spinnerAction(double power){
+    public Action spinnerAction(double power) {
         return new Action() {
             private double pow = power;
             @Override
@@ -362,6 +366,11 @@ public class Intake {
     }
     public void  update(){
         armPos = arm.getCurrentPosition();
+        arm.setTargetPosition((int) (armTarget * COUNTS_PER_CM));
+
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setPower(.4);
+        /*
         if(armTo > 0){
             if(armPos / COUNTS_PER_CM < armTarget){
                 armUp(0.3);
@@ -375,6 +384,8 @@ public class Intake {
                 armTo = 0;
             }
         }
+
+         */
         target = directSetTarget;
 
         /* if(elbowDirection == 1){
