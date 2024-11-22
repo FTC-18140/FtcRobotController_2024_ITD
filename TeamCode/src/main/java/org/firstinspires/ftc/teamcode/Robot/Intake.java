@@ -48,11 +48,11 @@ public class Intake {
     public final double WRIST_MAX = 1.0;
     public final double ELBOW_MIN = 0;
     public final double ELBOW_MIN_SLOW = 700;
-    public final double ELBOW_MAX = 2400;
+    public static double ELBOW_MAX = 2275;
     public int elbowDirection = 0;
     public final double ARM_MIN = 0;
-    public final double ARM_MAX = 40;
-    public final double ARM_MAX_HORIZONTAL = 35;
+    public static double ARM_MAX = 42;
+    public static double ARM_MAX_HORIZONTAL = 40;
     public final double WRIST_RIGHT_MIN = -5.0;
     public final double WRIST_RIGHT_MAX = 5.0;
 
@@ -76,7 +76,7 @@ public class Intake {
     public enum Positions{
         READY_TO_INTAKE(0.5,1.0,1),
         //Max elbow, Max arm extend, base of intake parallel with floor ↓
-        HIGH_BASKET(0.3,28,2400);
+        HIGH_BASKET(0.3,ARM_MAX,ELBOW_MAX);
         public final double wristPos;
         public final double armPos;
         public final double elbowPos;
