@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class LED {
     Telemetry telemetry;
     Servo led = null;
-    ElapsedTime ledTimer = new ElapsedTime();
+    public ElapsedTime ledTimer = new ElapsedTime();
     public void init(HardwareMap hwMap, Telemetry telem){
         telemetry = telem;
         try{
@@ -20,9 +20,13 @@ public class LED {
         }
     }
     public void update() {
-        if(ledTimer.seconds() < 90){
-            if(led != null){
+        if(led != null) {
+            if (ledTimer.seconds() < 90) {
                 led.setPosition(-0.99);
+            } else if (ledTimer.seconds() < 105) {
+                led.setPosition(0.67);
+            } else {
+                led.setPosition(0.61);
             }
         }
     }

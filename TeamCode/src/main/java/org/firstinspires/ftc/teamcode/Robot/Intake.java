@@ -52,7 +52,7 @@ public class Intake {
     public int elbowDirection = 0;
     public final double ARM_MIN = 0;
     public final double ARM_MAX = 28;
-    public final double ARM_MAX_HORIZONTAL = 20;
+    public final double ARM_MAX_HORIZONTAL = 24;
     public final double WRIST_RIGHT_MIN = -5.0;
     public final double WRIST_RIGHT_MAX = 5.0;
 

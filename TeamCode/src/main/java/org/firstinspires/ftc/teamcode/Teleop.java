@@ -95,6 +95,7 @@ public class Teleop extends OpMode
     @Override
     public void start() {
         runtime.reset();
+        robot.led.ledTimer.reset();
     }
 
     /*
@@ -112,6 +113,7 @@ public class Teleop extends OpMode
         double armSlow = 1.0;
 
         robot.intake.update();
+        robot.led.update();
 
         if(gamepad1.a){
             robot.lift.offsetPos = 0;
