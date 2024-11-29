@@ -69,7 +69,7 @@ public class Intake {
     public final double COUNTS_PER_ELBOW_DEGREE = COUNTS_PER_ELBOW_REV / 360.0;
 
     public static double target = 0;
-    public double directSetTarget = 0;
+    public static double directSetTarget = 0;
     public double armPos;
     public double elbowPosition;
     public double wristLeftPos;
@@ -400,7 +400,7 @@ public class Intake {
         calculateSensorValues();
         elbowPosition = elbow.getCurrentPosition();
 
-        controller.setPID(p,i,d);
+        //controller.setPID(p,i,d);
         double ff = Math.cos(Math.toRadians(elbowPosition/ COUNTS_PER_ELBOW_DEGREE)) * f;
         if (target >= elbowPosition){
             controller.setPID(p, i, d);
@@ -410,14 +410,21 @@ public class Intake {
         double pid = controller.calculate(elbowPosition, target);
 
         double power = pid + ff;
+        elbow.setPower(power);
 
+        /*
         if(target<ELBOW_MIN){
             elbow.setPower(0);
         }else {
             elbow.setPower(power);
         }
+         */
 
         telemetry.addData("power : ", power);
+        telemetry.addData("ff : ", ff);
+        telemetry.addData("pid : ", pid);
+        telemetry.addData("target : ", target);
+        telemetry.addData("elbowpos : ", elbowPosition);
 
         wristPos = wrist.getPosition();
 
