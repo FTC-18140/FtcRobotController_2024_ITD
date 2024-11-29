@@ -367,7 +367,6 @@ public class Intake {
     public void  update(){
         armPos = arm.getCurrentPosition();
         arm.setTargetPosition((int) (armTarget * COUNTS_PER_CM));
-
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         arm.setPower(.4);
         /*

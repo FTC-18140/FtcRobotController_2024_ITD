@@ -24,10 +24,10 @@ public class NathanPID extends OpMode {
 
     public static int target = 0;
 
-    private final double ticks_in_degree = 18.182;
+    private final double ticks_in_degree = 22.253103755555557;
 
 
-    private DcMotorEx arm_motor;
+    private DcMotorEx elbow;
 
 
 
@@ -36,12 +36,12 @@ public class NathanPID extends OpMode {
         controller = new PIDController(p,i,d);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        arm_motor =hardwareMap.get(DcMotorEx.class, "arm_motor");
-        arm_motor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        arm_motor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        arm_motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        elbow = hardwareMap.get(DcMotorEx.class, "elbow");
+        elbow.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        elbow.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        elbow.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        arm_motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        elbow.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
 
     }
@@ -49,7 +49,7 @@ public class NathanPID extends OpMode {
     @Override
     public void loop() {
         controller.setPID(p, i,d);
-        int armpos = arm_motor.getCurrentPosition();
+        int armpos = elbow.getCurrentPosition();
         double target_ticks = target * ticks_in_degree;
         if (target_ticks < armpos) {
             controller.setPID(p * factor_p_down * Math.cos(Math.toRadians(clip(armpos/ticks_in_degree,0,180))), i,d * factor_d_down * Math.cos(Math.toRadians(clip(armpos/ticks_in_degree,0,180))));
@@ -58,7 +58,7 @@ public class NathanPID extends OpMode {
         double ff = Math.cos(Math.toRadians(clip(armpos/ticks_in_degree,0,180))) * f;
 
         double power = pid + ff;
-        arm_motor.setPower(power);
+        elbow.setPower(power);
 
         telemetry.addData("pos", armpos / ticks_in_degree);
         telemetry.addData("target", target);
