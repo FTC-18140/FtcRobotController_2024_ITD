@@ -51,8 +51,11 @@ public class Intake {
     public final double WRIST_MIN = 0.0;
     public final double WRIST_MAX = 1.0;
     public final double ELBOW_MIN = 0;
-    public final double ELBOW_MIN_SLOW = 700;
-    public static double ELBOW_MAX = 2600;
+    public final double ELBOW_MIN_SLOW = 30;
+    public static double ELBOW_MAX = 100;
+    public static double ELBOW_LOW = 70;
+    public static double ELBOW_HIGH_CHAMBER = 70;
+    
     public int elbowDirection = 0;
     public final double ARM_MIN = 0;
     public static double ARM_MAX = 42;
