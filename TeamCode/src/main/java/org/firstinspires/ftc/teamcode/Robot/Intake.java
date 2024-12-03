@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Robot;
 
 
+import static com.qualcomm.robotcore.util.Range.clip;
+
 import android.graphics.Color;
 
 import androidx.annotation.NonNull;
@@ -38,9 +40,13 @@ public class Intake {
     float hsvValuesR[] = {0,0,0};
     private PIDController controller;
     public static double p = 0.005, i = 0, d = 0.0001;
+
+    public static double factor_p_down = 0.45;
+    public static double factor_d_down = 1.4;
+    public static double f = 0.015;
     public static double pDown = 0.01, iDown = 0, dDown = 0.0001;
 
-    public static double f = 0.015;
+
     public static double fDown = 0.25;
 
     public final double WRIST_INIT = 0.0;
@@ -58,9 +64,18 @@ public class Intake {
     public final double WRIST_RIGHT_MIN = -5.0;
     public final double WRIST_RIGHT_MAX = 5.0;
 
+<<<<<<< HEAD
     public static double ticks_in_degree = 0.0777;
+=======
+    public final double ELBOW_GEAR_RATIO = 5.23 * 5.23 * 5.23; // We are using three 5:1 slices
+    public final double ELBOW_SPROCKET_RATIO = 28.0/14.0; // We are using a 14-tooth drive sprocket and a 28-tooth driven sprocket
+    public final double ELBOW_TICKS_PER_MOTOR_REV = 28.0;
+    public final double COUNTS_PER_ELBOW_REV = ELBOW_TICKS_PER_MOTOR_REV * ELBOW_GEAR_RATIO * ELBOW_SPROCKET_RATIO;
+    public final double COUNTS_PER_ELBOW_DEGREE = COUNTS_PER_ELBOW_REV / 360.0;
+
+>>>>>>> AdaptivePID
     public static double target = 0;
-    public double directSetTarget = 0;
+    public static double directSetTarget = 0;
     public double armPos;
     public double elbowPosition;
     public double wristLeftPos;
@@ -385,46 +400,39 @@ public class Intake {
             }
         }
 
-        if(elbowDirection == 1){
-            target = directSetTarget;
-        } else if (elbowDirection == -1) {
-            if(directSetTarget < ELBOW_MIN_SLOW){
-                if(target > ELBOW_MIN_SLOW){
-                    telemetry.addData("go to slowdown",0);
-                    target = ELBOW_MIN_SLOW;
-                }else if(target > directSetTarget){
-                    telemetry.addData("slow down", 0);
-                    target -= 20;
-                }
-            }else{
-                target = directSetTarget;
-            }
-        }
+        target = directSetTarget;
+
         if(target < ELBOW_MIN){
             target = ELBOW_MIN;
         }
         calculateSensorValues();
         elbowPosition = elbow.getCurrentPosition();
 
-        controller.setPID(p,i,d);
-        double ff = Math.cos(Math.toRadians(target/ticks_in_degree)) * f;
-//        if(target >=elbowPosition){
-//            controller.setPID(p, i, d);
-//            ff = Math.cos(Math.toRadians(target/ticks_in_degree)) * f;
-//        }else{
-//            controller.setPID(pDown,iDown,dDown);
-//            ff = Math.cos(Math.toRadians(target/ticks_in_degree)) * fDown;
-//        }
+        //controller.setPID(p,i,d);
+        double ff = Math.cos(Math.toRadians(elbowPosition/ COUNTS_PER_ELBOW_DEGREE)) * f;
+        if (target >= elbowPosition){
+            controller.setPID(p, i, d);
+        } else {
+            controller.setPID(p * factor_p_down * Math.cos(Math.toRadians(clip(elbowPosition/ COUNTS_PER_ELBOW_DEGREE,0,180))), i,d * factor_d_down * Math.cos(Math.toRadians(clip(elbowPosition/ COUNTS_PER_ELBOW_DEGREE,0,180))));
+        }
         double pid = controller.calculate(elbowPosition, target);
 
         double power = pid + ff;
-        power = Range.clip(power, -0.5, 0.7);
+        elbow.setPower(power);
+
+        /*
         if(target<ELBOW_MIN){
             elbow.setPower(0);
         }else {
             elbow.setPower(power);
         }
+         */
+
         telemetry.addData("power : ", power);
+        telemetry.addData("ff : ", ff);
+        telemetry.addData("pid : ", pid);
+        telemetry.addData("target : ", target);
+        telemetry.addData("elbowpos : ", elbowPosition);
 
         wristPos = wrist.getPosition();
 
