@@ -64,16 +64,14 @@ public class Intake {
     public final double WRIST_RIGHT_MIN = -5.0;
     public final double WRIST_RIGHT_MAX = 5.0;
 
-<<<<<<< HEAD
     public static double ticks_in_degree = 0.0777;
-=======
+
     public final double ELBOW_GEAR_RATIO = 5.23 * 5.23 * 5.23; // We are using three 5:1 slices
     public final double ELBOW_SPROCKET_RATIO = 28.0/14.0; // We are using a 14-tooth drive sprocket and a 28-tooth driven sprocket
     public final double ELBOW_TICKS_PER_MOTOR_REV = 28.0;
     public final double COUNTS_PER_ELBOW_REV = ELBOW_TICKS_PER_MOTOR_REV * ELBOW_GEAR_RATIO * ELBOW_SPROCKET_RATIO;
     public final double COUNTS_PER_ELBOW_DEGREE = COUNTS_PER_ELBOW_REV / 360.0;
-
->>>>>>> AdaptivePID
+    
     public static double target = 0;
     public static double directSetTarget = 0;
     public double armPos;
