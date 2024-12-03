@@ -17,7 +17,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Utilities.PIDController;
@@ -44,7 +43,6 @@ public class Intake {
     public static double factor_p_down = 0.45;
     public static double factor_d_down = 1.4;
     public static double f = 0.015;
-    public static double pDown = 0.01, iDown = 0, dDown = 0.0001;
 
 
     public static double fDown = 0.25;
@@ -59,33 +57,32 @@ public class Intake {
     public final double ARM_MIN = 0;
     public static double ARM_MAX = 42;
     public static double ARM_MAX_HORIZONTAL = 40;
-    public final double WRIST_RIGHT_MIN = -5.0;
-    public final double WRIST_RIGHT_MAX = 5.0;
 
-    public final double ELBOW_GEAR_RATIO = 5.23 * 5.23 * 5.23; // We are using three 5:1 slices
+
     public final double ELBOW_SPROCKET_RATIO = 28.0/14.0; // We are using a 14-tooth drive sprocket and a 28-tooth driven sprocket
-    public final double ELBOW_TICKS_PER_MOTOR_REV = 28.0;
-    public final double COUNTS_PER_ELBOW_REV = ELBOW_TICKS_PER_MOTOR_REV * ELBOW_GEAR_RATIO * ELBOW_SPROCKET_RATIO;
+    public final double COUNTS_PER_ELBOW_MOTOR_REV = 3895.9;  // This is the PPR for a 43 RPM goBilda motor
+    public final double COUNTS_PER_ELBOW_REV = COUNTS_PER_ELBOW_MOTOR_REV  * ELBOW_SPROCKET_RATIO;
     public final double COUNTS_PER_ELBOW_DEGREE = COUNTS_PER_ELBOW_REV / 360.0;
 
     public static double target = 0;
     public static double directSetTarget = 0;
     public double armPos;
     public double elbowPosition;
-    public double wristLeftPos;
     public double wristPos;
     public double spinnerPos;
 
     // Lift parameters
-    final private double COUNTS_PER_MOTOR_REV = 28; // REV HD Hex motor
-    final private double DRIVE_GEAR_REDUCTION = 3.61 * 5.23;  // actual gear ratios of the 4:1 and 5:1 UltraPlanetary gear box modules
-    final private double SPOOL_DIAMETER_CM = 3.5;  // slide spool is 35mm in diameter
-    final private double COUNTS_PER_CM = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION)
-            / (SPOOL_DIAMETER_CM * Math.PI);
+    final private double COUNTS_PER_ARM_MOTOR_REV = 28; // REV HD Hex motor
+    final private double ARM_MOTOR_GEAR_REDUCTION = 3.61 * 5.23;  // actual gear ratios of the 4:1 and 5:1 UltraPlanetary gear box modules
+    final private double ARM_SPOOL_DIAMETER_CM = 3.5;  // slide spool is 35mm in diameter
+    final private double COUNTS_PER_ARM_CM = (COUNTS_PER_ARM_MOTOR_REV * ARM_MOTOR_GEAR_REDUCTION)
+            / (ARM_SPOOL_DIAMETER_CM * Math.PI);
 
 
     public enum Positions{
         READY_TO_INTAKE(0.5,1.0,1),
+        LOW_BASKET(0.7,ARM_MAX_HORIZONTAL,ELBOW_LOW),
+        HIGH_CHAMBER(0.6,20, ELBOW_HIGH_CHAMBER),
         //Max elbow, Max arm extend, base of intake parallel with floor ↓
         HIGH_BASKET(0.3,ARM_MAX,ELBOW_MAX);
         public final double wristPos;
@@ -169,7 +166,7 @@ public class Intake {
         setElbowTo(position.elbowPos);
         wristMove(position.wristPos);
         armTarget = position.armPos;
-        armTo = armTarget - armPos/COUNTS_PER_CM;
+        armTo = armTarget - armPos/ COUNTS_PER_ARM_CM;
         telemetry.addData("preset arm: ", armTo);
     }
     public Action presetAction(Positions position){
@@ -213,15 +210,15 @@ public class Intake {
         }
     }
     public void armUp(double power){
-        telemetry.addData("arm position : ", armPos/COUNTS_PER_CM);
+        telemetry.addData("arm position : ", armPos/ COUNTS_PER_ARM_CM);
         if(target < 1000){
-            if(armPos/COUNTS_PER_CM <=ARM_MAX_HORIZONTAL){
+            if(armPos/ COUNTS_PER_ARM_CM <=ARM_MAX_HORIZONTAL){
                 arm.setPower(power);
             }else{
                 armStop();
             }
         }else{
-            if(armPos/COUNTS_PER_CM <=ARM_MAX){
+            if(armPos/ COUNTS_PER_ARM_CM <=ARM_MAX){
                 arm.setPower(power);
             }else{
                 armStop();
@@ -229,8 +226,8 @@ public class Intake {
         }
     }
     public void armDown(double power){
-        telemetry.addData("arm position : ", armPos/COUNTS_PER_CM);
-        if(armPos/COUNTS_PER_CM >=ARM_MIN){
+        telemetry.addData("arm position : ", armPos/ COUNTS_PER_ARM_CM);
+        if(armPos/ COUNTS_PER_ARM_CM >=ARM_MIN){
             arm.setPower(power);
         }
         else{
@@ -241,7 +238,7 @@ public class Intake {
         arm.setPower(0);
     }
     public void elbowUp(double power) {
-        telemetry.addData("elbow position : ", elbowPosition/COUNTS_PER_CM);
+        telemetry.addData("elbow position : ", elbowPosition/ COUNTS_PER_ARM_CM);
         if(target+power <= ELBOW_MAX){
             target+=power;
         }else{
@@ -252,7 +249,7 @@ public class Intake {
 
     }
     public void elbowDown(double power) {
-        telemetry.addData("elbow position : ", elbowPosition/COUNTS_PER_CM);
+        telemetry.addData("elbow position : ", elbowPosition/ COUNTS_PER_ARM_CM);
         if(target-power >= ELBOW_MIN){
             target-=power;
         }else{
@@ -292,7 +289,7 @@ public class Intake {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 double currentPos = arm.getCurrentPosition();
-                if (pos >= currentPos / COUNTS_PER_CM) {
+                if (pos >= currentPos / COUNTS_PER_ARM_CM) {
                     armUp(1);
                 } else {
                     armStop();
@@ -310,7 +307,7 @@ public class Intake {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 double currentPos = arm.getCurrentPosition();
-                if (pos <= currentPos / COUNTS_PER_CM) {
+                if (pos <= currentPos / COUNTS_PER_ARM_CM) {
                     armDown(-1);
                 } else {
                     armStop();
@@ -376,49 +373,66 @@ public class Intake {
             }
         };
     }
-    public void  update(){
+    //
+    public void update()
+    {
+        /////////////////////////
+        // Update telescoping arm
+        /////////////////////////
         armPos = arm.getCurrentPosition();
-        if(armTo > 0){
-            if(armPos / COUNTS_PER_CM < armTarget){
+        if(armTo > 0)
+        {
+            if(armPos / COUNTS_PER_ARM_CM < armTarget)
+            {
                 armUp(0.3);
-            }else{
+            }
+            else
+            {
                 armTo = 0;
             }
-        } else if (armTo < 0) {
-            if(armPos / COUNTS_PER_CM > armTarget){
+        }
+        else if (armTo < 0)
+        {
+            if(armPos / COUNTS_PER_ARM_CM > armTarget)
+            {
                 armDown(-1.0);
-            }else {
+            }
+            else
+            {
                 armTo = 0;
             }
         }
 
+        //        telemetry.addData("arm direction for preset ", armTarget-armPos/COUNTS_PER_CM);
+//        telemetry.addData("arm target: ", armTarget);
+//        telemetry.addData("armPos: ", armPos);
+
+        ////////////////
+        // Update elbow
+        ////////////////
         target = directSetTarget;
 
-        if(target < ELBOW_MIN){
+        if(target < ELBOW_MIN)
+        {
             target = ELBOW_MIN;
         }
-        calculateSensorValues();
         elbowPosition = elbow.getCurrentPosition();
 
-        //controller.setPID(p,i,d);
-        double ff = Math.cos(Math.toRadians(elbowPosition/ COUNTS_PER_ELBOW_DEGREE)) * f;
-        if (target >= elbowPosition){
+        double ff = Math.cos(Math.toRadians(elbowPosition/COUNTS_PER_ELBOW_DEGREE)) * f;
+        if (target >= elbowPosition)
+        {
             controller.setPID(p, i, d);
-        } else {
-            controller.setPID(p * factor_p_down * Math.cos(Math.toRadians(clip(elbowPosition/ COUNTS_PER_ELBOW_DEGREE,0,180))), i,d * factor_d_down * Math.cos(Math.toRadians(clip(elbowPosition/ COUNTS_PER_ELBOW_DEGREE,0,180))));
+        }
+        else
+        {
+            double pDown = Math.abs(p * factor_p_down * Math.cos(Math.toRadians(clip(elbowPosition/COUNTS_PER_ELBOW_DEGREE,0,180))));
+            double dDown = Math.abs(d * factor_d_down * Math.cos(Math.toRadians(clip(elbowPosition/COUNTS_PER_ELBOW_DEGREE,0,180))));
+            controller.setPID(pDown, i, dDown);
         }
         double pid = controller.calculate(elbowPosition, target);
 
         double power = pid + ff;
         elbow.setPower(power);
-
-        /*
-        if(target<ELBOW_MIN){
-            elbow.setPower(0);
-        }else {
-            elbow.setPower(power);
-        }
-         */
 
         telemetry.addData("power : ", power);
         telemetry.addData("ff : ", ff);
@@ -427,6 +441,9 @@ public class Intake {
         telemetry.addData("elbowpos : ", elbowPosition);
 
         wristPos = wrist.getPosition();
+
+        // Look at sample color
+        calculateSensorValues();
 
 
 //        if(hsvValues[2] < 2000){
@@ -442,13 +459,9 @@ public class Intake {
 //        }
 //        telemetry.addData("incrementing target: ", directSetTarget);
 //
-//        telemetry.addData("arm direction for preset ", armTarget-armPos/COUNTS_PER_CM);
-//        telemetry.addData("arm target: ", armTarget);
-//        telemetry.addData("armPos: ", armPos);
 //        telemetry.addData("hue", hsvValues[0]);
 //        telemetry.addData("value", hsvValues[2]);
-//        telemetry.addData("elbowPos : ", elbowPosition);
-//        telemetry.addData("targetPos : ", target);
+
         telemetry.update();
     }
 }
