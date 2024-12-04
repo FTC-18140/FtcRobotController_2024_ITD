@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
 
 @Config
 @Autonomous
-public class AutoLeftRed_ExtraSample extends LinearOpMode {
+public class AutoLeftBlue_ExtraSample extends LinearOpMode {
     public static Vector2d startPos = AutoPositions.Positions.START_LEFT.position;
     public static Vector2d basketPos = new Vector2d(-54, -53);
     public static Vector2d samplePos_1 = AutoPositions.Positions.SAMPLE_1_LEFT.position;
@@ -73,7 +73,7 @@ public class AutoLeftRed_ExtraSample extends LinearOpMode {
                         ),
                         new ParallelAction(
                                 robot.intake.armUpAction(30),
-                                robot.intake.checkForSample("yellowred", 7)
+                                robot.intake.checkForSample("yellowblue", 7)
                         ),
                         new ParallelAction(
                                 robot.intake.presetAction(Intake.Positions.HIGH_BASKET),
@@ -102,7 +102,7 @@ public class AutoLeftRed_ExtraSample extends LinearOpMode {
                         ),
                         new ParallelAction(
                                 robot.intake.armUpAction(30),
-                                robot.intake.checkForSample("yellowred", 7)
+                                robot.intake.checkForSample("yellowblue", 7)
                         ),
                         new ParallelAction(
                                 robot.intake.presetAction(Intake.Positions.HIGH_BASKET),

@@ -56,8 +56,8 @@ public class Intake {
     public final double ELBOW_MIN_SLOW = 30;
 
     public static double ELBOW_MAX = 105;
-    public static double ELBOW_LOW = 40;
-    public static double ELBOW_HIGH_CHAMBER = 40;
+    public static double ELBOW_LOW = 55;
+    public static double ELBOW_HIGH_CHAMBER = 45;
 
     public int elbowDirection = 0;
     public final double ARM_MIN = 0;
@@ -225,22 +225,18 @@ public class Intake {
     }
     public void armUp(double power) {
         telemetry.addData("arm position : ", armPos / COUNTS_PER_ARM_CM);
-        if (target < ELBOW_LOW) {
+        if (target < 30) {
             if (armPos / COUNTS_PER_ARM_CM <= ARM_MAX_HORIZONTAL) {
                 telemetry.addData("arm position : ", armPos / COUNTS_PER_ARM_CM);
-                if (target < 1000) {
-                    if (armPos / COUNTS_PER_ARM_CM <= ARM_MAX_HORIZONTAL) {
-                        arm.setPower(power);
-                    } else {
-                        armStop();
-                    }
-                } else {
-                    if (armPos / COUNTS_PER_ARM_CM <= ARM_MAX) {
-                        arm.setPower(power);
-                    } else {
-                        armStop();
-                    }
-                }
+                arm.setPower(power);
+            } else {
+                armStop();
+            }
+        } else {
+            if (armPos / COUNTS_PER_ARM_CM <= ARM_MAX) {
+                arm.setPower(power);
+            } else {
+                armStop();
             }
         }
     }
@@ -261,10 +257,9 @@ public class Intake {
                     target += power;
                 } else {
                     target = ELBOW_MAX;
-                    directSetTarget = target;
-                    elbowDirection = 0;
                 }
-
+                directSetTarget = target;
+                elbowDirection = 0;
             }
             public void elbowDown ( double power){
                 telemetry.addData("elbow position : ", elbowPosition / COUNTS_PER_ARM_CM);
@@ -435,6 +430,8 @@ public class Intake {
                 //controller.setPID(p,i,d);
                 double ff = f * Math.cos(Math.toRadians(clip(elbowPosition / COUNTS_PER_ELBOW_DEGREE, 0, 180)));
                 if (target >= elbowPosition/COUNTS_PER_ELBOW_DEGREE) {
+                    // the cosine lowers as it approaches half-PI/90°
+                    // the sine balances out the cosine, allowing the arm to raise fully
                     ff = f * Math.cos(Math.toRadians(clip(elbowPosition / COUNTS_PER_ELBOW_DEGREE, 0, 180))) + fSin * Math.sin(Math.toRadians(clip(elbowPosition / COUNTS_PER_ELBOW_DEGREE, 0, 180)));
                     controller.setPID(p, i, d);
                 } else {
