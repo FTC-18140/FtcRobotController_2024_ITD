@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Vector2d;
 
+@Config
 public class AutoPositions {
+    @Config
     public enum Positions {
         START_LEFT(new Vector2d(-15,-60)),
         START_RIGHT(new Vector2d(15, -60)),

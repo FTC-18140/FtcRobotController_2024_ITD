@@ -17,9 +17,9 @@ import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
 @Autonomous
 public class AutoLeftRed_ExtraSample extends LinearOpMode {
     public static Vector2d startPos = AutoPositions.Positions.START_LEFT.position;
-    public static Vector2d basketPos = AutoPositions.Positions.BASKET.position;
+    public static Vector2d basketPos = new Vector2d(-53, -53);
     public static Vector2d samplePos_1 = AutoPositions.Positions.SAMPLE_1_LEFT.position;
-    public static Vector2d samplePos_2 = AutoPositions.Positions.SAMPLE_2_LEFT.position;
+    public static Vector2d samplePos_2 = new Vector2d(-60, -38);
     public static Vector2d parkPos = AutoPositions.Positions.ASCENT_ZONE.position;
     @Override
     public void runOpMode() throws InterruptedException {
@@ -56,7 +56,7 @@ public class AutoLeftRed_ExtraSample extends LinearOpMode {
                         ),
                         new ParallelAction(
                                 robot.intake.spinnerAction(-0.5),
-                                new SleepAction(0.25)
+                                new SleepAction(0.5)
                         )
                         //First Cycle
 
@@ -64,7 +64,7 @@ public class AutoLeftRed_ExtraSample extends LinearOpMode {
                         robot.intake.armDownAction(1),
                         robot.intake.elbowAction(0.5),
                         new ParallelAction(
-                                robot.intake.wristMoveAction(0.73),
+                                robot.intake.wristMoveAction(0.77),
                                 robot.intake.spinnerAction(1),
                                 robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(45)))
                                         .strafeToSplineHeading(new Vector2d(samplePos_1.x, -48), Math.toRadians(90))
@@ -73,20 +73,19 @@ public class AutoLeftRed_ExtraSample extends LinearOpMode {
                         ),
                         new ParallelAction(
                                 robot.intake.armUpAction(30),
-                                robot.intake.checkForSample("yellowred", 5)
+                                robot.intake.checkForSample("yellowred", 7)
                         ),
                         new ParallelAction(
-                                robot.intake.spinnerAction(0),
                                 robot.intake.presetAction(Intake.Positions.HIGH_BASKET),
                                 robot.intake.armUpAction(Intake.Positions.HIGH_BASKET.armPos),
                                 robot.drive.actionBuilder(new Pose2d(samplePos_1, Math.toRadians(90)))
                                         .strafeToSplineHeading(basketPos, Math.toRadians(45))
                                         .build()
                         ),
-                        robot.intake.wristMoveAction(0.25),
+                        robot.intake.wristMoveAction(0.2),
                         new ParallelAction(
                                 robot.intake.spinnerAction(-0.5),
-                                new SleepAction(0.25)
+                                new SleepAction(0.5)
                         ),
                         //Second Cycle
 
@@ -94,7 +93,7 @@ public class AutoLeftRed_ExtraSample extends LinearOpMode {
                         robot.intake.armDownAction(1),
                         robot.intake.elbowAction(0.5),
                         new ParallelAction(
-                                robot.intake.wristMoveAction(0.73),
+                                robot.intake.wristMoveAction(0.77),
                                 robot.intake.spinnerAction(1),
                                 robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(45)))
                                         .strafeToSplineHeading(new Vector2d(samplePos_2.x, -48), Math.toRadians(90))
@@ -103,20 +102,19 @@ public class AutoLeftRed_ExtraSample extends LinearOpMode {
                         ),
                         new ParallelAction(
                                 robot.intake.armUpAction(30),
-                                robot.intake.checkForSample("yellowred", 5)
+                                robot.intake.checkForSample("yellowred", 7)
                         ),
                         new ParallelAction(
-                                robot.intake.spinnerAction(0),
                                 robot.intake.presetAction(Intake.Positions.HIGH_BASKET),
                                 robot.intake.armUpAction(Intake.Positions.HIGH_BASKET.armPos),
                                 robot.drive.actionBuilder(new Pose2d(samplePos_2, Math.toRadians(90)))
                                         .strafeToSplineHeading(basketPos, Math.toRadians(45))
                                         .build()
                         ),
-                        robot.intake.wristMoveAction(0.25),
+                        robot.intake.wristMoveAction(0.2),
                         new ParallelAction(
                                 robot.intake.spinnerAction(-0.5),
-                                new SleepAction(0.25)
+                                new SleepAction(0.5)
                         ),
                         robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
                         robot.intake.armDownAction(1),
