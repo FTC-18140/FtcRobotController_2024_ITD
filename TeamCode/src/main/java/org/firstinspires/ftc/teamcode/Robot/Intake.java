@@ -38,11 +38,12 @@ public class Intake {
     float hsvValuesL[] = {0,0,0};
     float hsvValuesR[] = {0,0,0};
     private PIDController controller;
-    public static double p = 0.85, i = 0, d = 0.0001;
+    public static double p = 0.05, i = 0, d = 0.00025;
 
-    public static double factor_p_down = 0.05;
-    public static double factor_d_down = 1.4;
-    public static double f = 0.55;
+    public static double factor_p_down = 0.09;
+    public static double factor_d_down = 1.25;
+    public static double f = 0.025;
+    public static double fSin = 0.025;
     public static double pDown = 0.01, iDown = 0, dDown = 0.0001;
 
 
@@ -432,8 +433,9 @@ public class Intake {
                 elbowPosition = elbow.getCurrentPosition();
 
                 //controller.setPID(p,i,d);
-                double ff = Math.cos(Math.toRadians(clip(elbowPosition / COUNTS_PER_ELBOW_DEGREE, 0, 180))) * f;
-                if (target >= elbowPosition) {
+                double ff = f * Math.cos(Math.toRadians(clip(elbowPosition / COUNTS_PER_ELBOW_DEGREE, 0, 180)));
+                if (target >= elbowPosition/COUNTS_PER_ELBOW_DEGREE) {
+                    ff = f * Math.cos(Math.toRadians(clip(elbowPosition / COUNTS_PER_ELBOW_DEGREE, 0, 180))) + fSin * Math.sin(Math.toRadians(clip(elbowPosition / COUNTS_PER_ELBOW_DEGREE, 0, 180)));
                     controller.setPID(p, i, d);
                 } else {
                     double pDown = Math.abs(p * factor_p_down * Math.cos(Math.toRadians(clip(elbowPosition / COUNTS_PER_ELBOW_DEGREE, 0, 180))));
