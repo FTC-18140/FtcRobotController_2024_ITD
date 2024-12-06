@@ -63,6 +63,7 @@ public class Teleop extends OpMode
     private TBDGamepad theGamepad2;
 
     public double wristPos;
+    public double clawPos;
     public double spinPos;
 
     public double liftPower = 0;
@@ -75,6 +76,7 @@ public class Teleop extends OpMode
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot.init(hardwareMap, telemetry, 2500);
         wristPos = robot.intake.WRIST_INIT;
+        clawPos = robot.intake.clawPos;
         spinPos = 0.0;
         theGamepad1 = new TBDGamepad( gamepad1);
         theGamepad2 = new TBDGamepad(gamepad2);
@@ -153,12 +155,19 @@ public class Teleop extends OpMode
 //            wristPos = 0;
 //        }
         //Elbow controls
+        clawPos = robot.intake.clawPos;
         if(theGamepad2.getTrigger(TBDGamepad.Trigger.RIGHT_TRIGGER) > 0.1){
             if(theGamepad2.getButton(TBDGamepad.Button.Y)){
                 robot.intake.elbowUp(1.5*armSlow);
             }
             else if(theGamepad2.getButton(TBDGamepad.Button.A)){
                 robot.intake.elbowDown(1.5*armSlow);
+            }
+            else if(theGamepad2.getButton(TBDGamepad.Button.DPAD_LEFT)){
+                robot.intake.clawMove(0);
+            }
+            else if(theGamepad2.getButton(TBDGamepad.Button.DPAD_RIGHT)){
+                robot.intake.clawMove(0.24);
             }
         } else {
             if (theGamepad2.getButton(TBDGamepad.Button.Y)) {

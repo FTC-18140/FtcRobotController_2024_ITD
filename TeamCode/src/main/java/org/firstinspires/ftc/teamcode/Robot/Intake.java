@@ -25,9 +25,12 @@ import org.firstinspires.ftc.teamcode.Utilities.PIDController;
 public class Intake {
     Telemetry telemetry;
     Servo wrist = null;
+    Servo claw = null;
     CRServo spinner = null;
     DcMotor arm = null;
     DcMotor elbow = null;
+
+    public double clawPos;
 
     public double armTo = 0;
     double armTarget = 0;
@@ -52,17 +55,19 @@ public class Intake {
     public final double WRIST_INIT = 0.0;
     public final double WRIST_MIN = 0.0;
     public final double WRIST_MAX = 1.0;
+    public static double CLAW_MIN = 0;
+    public static double CLAW_MAX = 0.24;
     public final double ELBOW_MIN = 0;
     public final double ELBOW_MIN_SLOW = 30;
 
-    public static double ELBOW_MAX = 105;
+    public static double ELBOW_MAX = 110;
     public static double ELBOW_LOW = 55;
     public static double ELBOW_HIGH_CHAMBER = 45;
 
     public int elbowDirection = 0;
     public final double ARM_MIN = 0;
     public static double ARM_MAX = 42;
-    public static double ARM_MAX_HORIZONTAL = 40;
+    public static double ARM_MAX_HORIZONTAL = 36;
 
     public static double ticks_in_degree = 21.64166666666667;
 
@@ -94,7 +99,7 @@ public class Intake {
 
 
     public enum Positions{
-        READY_TO_INTAKE(0.5,1.0,1),
+        READY_TO_INTAKE(0.5,1.0,0),
         LOW_BASKET(0.7,ARM_MAX_HORIZONTAL,ELBOW_LOW),
         HIGH_CHAMBER(0.6,20, ELBOW_HIGH_CHAMBER),
         //Max elbow, Max arm extend, base of intake parallel with floor ↓
@@ -131,6 +136,11 @@ public class Intake {
             wrist.setPosition(WRIST_INIT);
         }catch(Exception e){
             telemetry.addData("wristRight servo not found in configuration",0);
+        }
+        try{
+            claw = hwMap.servo.get("claw");
+        }catch(Exception e){
+            telemetry.addData("claw servo not found in configuration",0);
         }
         try{
             spinner = hwMap.get(CRServo.class, "spinner");
@@ -221,6 +231,11 @@ public class Intake {
             return "none";
         }else{
             return "blue";
+        }
+    }
+    public void clawMove(double position){
+        if(position<=CLAW_MAX || position>=CLAW_MIN) {
+            claw.setPosition(position);
         }
     }
     public void armUp(double power) {
@@ -444,6 +459,8 @@ public class Intake {
                 double power = pid + ff;
                 elbow.setPower(power);
 
+                clawPos = claw.getPosition();
+                telemetry.addData("clawPos: ", claw.getPosition());
                 telemetry.addData("power : ", power);
                 telemetry.addData("ff : ", ff);
                 telemetry.addData("pid : ", pid);

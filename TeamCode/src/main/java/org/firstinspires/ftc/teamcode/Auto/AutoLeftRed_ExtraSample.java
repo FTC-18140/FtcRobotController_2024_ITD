@@ -17,9 +17,10 @@ import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
 @Autonomous
 public class AutoLeftRed_ExtraSample extends LinearOpMode {
     public static Vector2d startPos = AutoPositions.Positions.START_LEFT.position;
-    public static Vector2d basketPos = new Vector2d(-54, -53);
+    public static Vector2d basketPos = new Vector2d(-54.5, -53);
+    public static Vector2d basketPosStart = new Vector2d(-54.5, -54);
     public static Vector2d samplePos_1 = AutoPositions.Positions.SAMPLE_1_LEFT.position;
-    public static Vector2d samplePos_2 = new Vector2d(-60, -38);
+    public static Vector2d samplePos_2 = new Vector2d(-59.5, -38);
     public static Vector2d parkPos = AutoPositions.Positions.ASCENT_ZONE.position;
     @Override
     public void runOpMode() throws InterruptedException {
@@ -47,13 +48,14 @@ public class AutoLeftRed_ExtraSample extends LinearOpMode {
 
                         new ParallelAction(
                                 robot.lift.liftTo(2200),
-                                robot.drive.actionBuilder(robot.drive.pose)
+                                robot.drive.actionBuilder(new Pose2d(startPos, Math.toRadians(90)))
                                         .strafeTo(new Vector2d(startPos.x,basketPos.y))
-                                        .strafeToLinearHeading(basketPos, Math.toRadians(45))
+                                        .strafeToLinearHeading(basketPosStart, Math.toRadians(45))
                                         .build(),
                                 robot.intake.presetAction(Intake.Positions.HIGH_BASKET),
                                 robot.intake.armUpAction(Intake.Positions.HIGH_BASKET.armPos)
                         ),
+                        new SleepAction(0.25),
                         new ParallelAction(
                                 robot.intake.spinnerAction(-0.5),
                                 new SleepAction(0.5)
@@ -62,11 +64,10 @@ public class AutoLeftRed_ExtraSample extends LinearOpMode {
 
                         ,robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
                         robot.intake.armDownAction(1),
-                        robot.intake.elbowAction(0.5),
                         new ParallelAction(
-                                robot.intake.wristMoveAction(0.77),
+                                robot.intake.wristMoveAction(0.81),
                                 robot.intake.spinnerAction(1),
-                                robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(45)))
+                                robot.drive.actionBuilder(new Pose2d(basketPosStart, Math.toRadians(45)))
                                         .strafeToSplineHeading(new Vector2d(samplePos_1.x, -48), Math.toRadians(90))
                                         .strafeTo(samplePos_1)
                                         .build()
@@ -82,7 +83,8 @@ public class AutoLeftRed_ExtraSample extends LinearOpMode {
                                         .strafeToSplineHeading(basketPos, Math.toRadians(45))
                                         .build()
                         ),
-                        robot.intake.wristMoveAction(0.2),
+                        new SleepAction(0.5),
+                        robot.intake.wristMoveAction(0.25),
                         new ParallelAction(
                                 robot.intake.spinnerAction(-0.5),
                                 new SleepAction(0.5)
@@ -91,9 +93,8 @@ public class AutoLeftRed_ExtraSample extends LinearOpMode {
 
                         robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
                         robot.intake.armDownAction(1),
-                        robot.intake.elbowAction(0.5),
                         new ParallelAction(
-                                robot.intake.wristMoveAction(0.77),
+                                robot.intake.wristMoveAction(0.83),
                                 robot.intake.spinnerAction(1),
                                 robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(45)))
                                         .strafeToSplineHeading(new Vector2d(samplePos_2.x, -48), Math.toRadians(90))
@@ -111,7 +112,8 @@ public class AutoLeftRed_ExtraSample extends LinearOpMode {
                                         .strafeToSplineHeading(basketPos, Math.toRadians(45))
                                         .build()
                         ),
-                        robot.intake.wristMoveAction(0.2),
+                        new SleepAction(0.5),
+                        robot.intake.wristMoveAction(0.25),
                         new ParallelAction(
                                 robot.intake.spinnerAction(-0.5),
                                 new SleepAction(0.5)
