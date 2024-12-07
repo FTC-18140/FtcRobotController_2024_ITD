@@ -112,8 +112,8 @@ public class Teleop extends OpMode
         double forward = theGamepad1.getLeftY();
         double strafe = theGamepad1.getLeftX();
         double turn  = theGamepad1.getRightX();
-        double slow = 1;
-        double armSlow = 1.0;
+        double slow = 0.7;
+        double armSlow = 1;
 
         robot.intake.update();
         robot.led.update();
@@ -122,11 +122,11 @@ public class Teleop extends OpMode
             robot.lift.offsetPos = 0;
         }
 
-        if(theGamepad1.getTrigger(TBDGamepad.Trigger.LEFT_TRIGGER)>0.1){
-            slow = 0.5;
-        };
         if(theGamepad1.getTrigger(TBDGamepad.Trigger.RIGHT_TRIGGER)>0.1){
-            slow = 0.2;
+            slow = 1.0;
+        };
+        if(theGamepad1.getTrigger(TBDGamepad.Trigger.LEFT_TRIGGER)>0.1){
+            slow = 0.3;
         }
         if(theGamepad2.getTrigger(TBDGamepad.Trigger.LEFT_TRIGGER)>0.1){
             armSlow = 0.4;
@@ -167,7 +167,7 @@ public class Teleop extends OpMode
                 robot.intake.clawMove(0);
             }
             else if(theGamepad2.getButton(TBDGamepad.Button.DPAD_RIGHT)){
-                robot.intake.clawMove(0.24);
+                robot.intake.clawMove(Intake.CLAW_MAX);
             }
         } else {
             if (theGamepad2.getButton(TBDGamepad.Button.Y)) {

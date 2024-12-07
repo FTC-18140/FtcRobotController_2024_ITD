@@ -56,7 +56,7 @@ public class Intake {
     public final double WRIST_MIN = 0.0;
     public final double WRIST_MAX = 1.0;
     public static double CLAW_MIN = 0;
-    public static double CLAW_MAX = 0.3;
+    public static double CLAW_MAX = 0.35;
     public final double ELBOW_MIN = 0;
     public final double ELBOW_MIN_SLOW = 30;
 
@@ -67,7 +67,7 @@ public class Intake {
     public int elbowDirection = 0;
     public final double ARM_MIN = 0;
     public static double ARM_MAX = 42;
-    public static double ARM_MAX_HORIZONTAL = 36;
+    public static double ARM_MAX_HORIZONTAL = 30;
 
     public static double ticks_in_degree = 21.64166666666667;
 
