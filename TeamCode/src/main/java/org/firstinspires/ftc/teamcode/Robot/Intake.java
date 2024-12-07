@@ -56,7 +56,7 @@ public class Intake {
     public final double WRIST_MIN = 0.0;
     public final double WRIST_MAX = 1.0;
     public static double CLAW_MIN = 0;
-    public static double CLAW_MAX = 0.24;
+    public static double CLAW_MAX = 0.3;
     public final double ELBOW_MIN = 0;
     public final double ELBOW_MIN_SLOW = 30;
 
@@ -99,18 +99,20 @@ public class Intake {
 
 
     public enum Positions{
-        READY_TO_INTAKE(0.5,1.0,0),
-        LOW_BASKET(0.7,ARM_MAX_HORIZONTAL,ELBOW_LOW),
-        HIGH_CHAMBER(0.6,20, ELBOW_HIGH_CHAMBER),
+        READY_TO_INTAKE(0.5,1.0,0, CLAW_MAX),
+        LOW_BASKET(0.7,ARM_MAX_HORIZONTAL,ELBOW_LOW, CLAW_MAX),
+        HIGH_CHAMBER(0.3,20, ELBOW_HIGH_CHAMBER, CLAW_MAX),
         //Max elbow, Max arm extend, base of intake parallel with floor ↓
-        HIGH_BASKET(0.3,ARM_MAX,ELBOW_MAX);
+        HIGH_BASKET(0.3,ARM_MAX,ELBOW_MAX, CLAW_MAX);
         public final double wristPos;
         public final double armPos;
         public final double elbowPos;
-        Positions(double wrist, double arm, double elbow){
+        public final double clawPos;
+        Positions(double wrist, double arm, double elbow, double claw){
             wristPos = wrist;
             armPos = arm;
             elbowPos = elbow;
+            clawPos = claw;
         }
     }
     public void init(HardwareMap hwMap, Telemetry telem) {
@@ -139,6 +141,7 @@ public class Intake {
         }
         try{
             claw = hwMap.servo.get("claw");
+            claw.setPosition(CLAW_MAX);
         }catch(Exception e){
             telemetry.addData("claw servo not found in configuration",0);
         }
@@ -184,11 +187,11 @@ public class Intake {
         arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
-
     public void preset(Positions position){
         armPos = arm.getCurrentPosition();
         setElbowTo(position.elbowPos);
         wristMove(position.wristPos);
+        clawMove(position.clawPos);
         armTarget = position.armPos;
         armTo = armTarget - armPos/ COUNTS_PER_ARM_CM;
         telemetry.addData("preset arm: ", armTo);
