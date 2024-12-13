@@ -5,10 +5,12 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Robot.Intake;
 import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
 
@@ -19,15 +21,19 @@ public class AutoTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         ThunderBot2024 robot = new ThunderBot2024();
         robot.init(hardwareMap,telemetry, 0);
-        robot.drive.pose = new Pose2d(-12,-60,Math.toRadians(90));
+        Pose2d startPos = new Pose2d(-15,-60,Math.toRadians(90));
+        robot.drive.pose = startPos;
 
         waitForStart();
 
         Actions.runBlocking(new ParallelAction(
                 robot.intake.updateAction(),
                 new SequentialAction(
-                        robot.intake.presetAction(Intake.Positions.HIGH_BASKET),
-                        robot.intake.armUpAction(28)
+                        robot.intake.presetAction(Intake.Positions.HIGH_CHAMBER),
+                        robot.drive.actionBuilder(startPos)
+                                .strafeTo(new Vector2d(startPos.position.x, -48))
+                                .build(),
+                        robot.intake.wristMoveAction(0.4)
                 )
             )
         );
