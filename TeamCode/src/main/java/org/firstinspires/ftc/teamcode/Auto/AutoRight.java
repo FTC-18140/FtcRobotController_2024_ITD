@@ -11,12 +11,13 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.Robot.Intake;
 import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
 
 @Config
 @Autonomous
 public class AutoRight extends LinearOpMode {
-    public static Vector2d startPos = new Vector2d(12,-60);
+    public static Vector2d startPos = new Vector2d(15,-60);
     public static Vector2d basketPos = new Vector2d(-40,-54);
     public static Vector2d samplePos = new Vector2d(50,-40);
     public static Vector2d parkPos = new Vector2d(52,-56);
@@ -37,34 +38,22 @@ public class AutoRight extends LinearOpMode {
         robot.drive.pose = new Pose2d(startPos,Math.toRadians(90));
 
         waitForStart();
+        robot.intake.start();
 
         Actions.runBlocking(new ParallelAction(
                 robot.intake.updateAction(),
                 new SequentialAction(
-                        robot.drive.actionBuilder(robot.drive.pose)
-                                .strafeTo(basketPos)
+                        robot.intake.presetAction(Intake.Positions.HIGH_CHAMBER),
+                        robot.intake.armUpAction(Intake.Positions.HIGH_CHAMBER.armPos),
+                        robot.drive.actionBuilder(new Pose2d(startPos, Math.toRadians(90)))
+                                .strafeTo(new Vector2d(10, -42))
                                 .build(),
-                        robot.intake.wristMoveAction(0.75),
-                        new SleepAction(1),
-                        new ParallelAction(
-                                robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(90)))
-                                        .strafeTo(new Vector2d(50,-48))
-                                        .strafeTo(samplePos)
-                                        .build(),
-                                robot.intake.spinnerAction(1)
-                        ),
-                        robot.intake.armUpAction(16),
-                        new SleepAction(2),
-                        new ParallelAction(
-                                robot.intake.wristMoveAction(0),
-                                robot.intake.armDownAction(0),
-                                robot.intake.spinnerAction(0),
-                                robot.drive.actionBuilder(new Pose2d(samplePos, Math.toRadians(90)))
-                                        .strafeTo(new Vector2d(50,-50))
-                                        .strafeTo(basketPos)
-                                        .build()
-                        ),
-                        robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(90)))
+                        robot.intake.wristMoveAction(0.5),
+                        robot.drive.actionBuilder(new Pose2d(10,-42, Math.toRadians(90)))
+                                .strafeTo(new Vector2d(10, -58))
+                                .build(),
+                        robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
+                        robot.drive.actionBuilder(new Pose2d(new Vector2d(10, -58), Math.toRadians(90)))
                                 .strafeTo(parkPos)
                                 .build()
                 )

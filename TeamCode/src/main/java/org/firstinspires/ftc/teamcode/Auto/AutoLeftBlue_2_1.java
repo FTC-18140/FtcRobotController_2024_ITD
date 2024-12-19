@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
 
 @Config
 @Autonomous
-public class AutoLeftBlue_ExtraSample extends LinearOpMode {
+public class AutoLeftBlue_2_1 extends LinearOpMode {
     public static Vector2d startPos = AutoPositions.Positions.START_LEFT.position;
     public static Vector2d basketPos = new Vector2d(-54.5, -53);
     public static Vector2d basketPosStart = new Vector2d(-54.5, -54);
