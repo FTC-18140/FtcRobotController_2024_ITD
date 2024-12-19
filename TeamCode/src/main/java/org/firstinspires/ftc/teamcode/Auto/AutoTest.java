@@ -25,15 +25,22 @@ public class AutoTest extends LinearOpMode {
         robot.drive.pose = startPos;
 
         waitForStart();
+        robot.intake.start();
 
         Actions.runBlocking(new ParallelAction(
                 robot.intake.updateAction(),
                 new SequentialAction(
                         robot.intake.presetAction(Intake.Positions.HIGH_CHAMBER),
+                        robot.intake.armUpAction(Intake.Positions.HIGH_CHAMBER.armPos),
                         robot.drive.actionBuilder(startPos)
-                                .strafeTo(new Vector2d(startPos.position.x, -48))
+                                .strafeTo(new Vector2d(-10, -42))
                                 .build(),
-                        robot.intake.wristMoveAction(0.4)
+                        robot.intake.wristMoveAction(0.5),
+                        robot.drive.actionBuilder(new Pose2d(-10,-42, Math.toRadians(90)))
+                                .strafeTo(new Vector2d(-10, -58))
+                                .build(),
+                        new SleepAction(1),
+                        robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE)
                 )
             )
         );

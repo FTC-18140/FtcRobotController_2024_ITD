@@ -22,7 +22,7 @@ public class LED {
     public void update() {
         if(led != null) {
             if (ledTimer.seconds() < 90) {
-                led.setPosition(-0.99);
+                led.setPosition(0.99);
             } else if (ledTimer.seconds() < 105) {
                 led.setPosition(0.67);
             } else {

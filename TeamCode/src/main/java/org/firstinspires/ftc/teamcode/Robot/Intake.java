@@ -10,6 +10,10 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -394,6 +398,14 @@ public class Intake {
                     @Override
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                         clawMove(pos);
+                        return false;
+                    }
+                };
+            }
+            public Action scoreSpecimenFromStart(Pose2d pose, ThunderBot2024 robot){
+                return new Action() {
+                    @Override
+                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                         return false;
                     }
                 };

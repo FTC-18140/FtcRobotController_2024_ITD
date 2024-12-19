@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
 
 @Config
 @Autonomous
-public class AutoLeftRed_ExtraSample extends LinearOpMode {
+public class AutoLeftRed_Specimen_2_1 extends LinearOpMode {
     public static Vector2d startPos = AutoPositions.Positions.START_LEFT.position;
     public static Vector2d basketPos = new Vector2d(-54.5, -53);
     public static Vector2d basketPosStart = new Vector2d(-54.5, -54);
@@ -44,22 +44,19 @@ public class AutoLeftRed_ExtraSample extends LinearOpMode {
         Actions.runBlocking(new ParallelAction(
                 robot.intake.updateAction(),
                 new SequentialAction(
-                        //Score Preset
+                        //Score Preset Specimen
 
-                        new ParallelAction(
-                                robot.lift.liftTo(2200),
-                                robot.drive.actionBuilder(new Pose2d(startPos, Math.toRadians(90)))
-                                        .strafeTo(new Vector2d(startPos.x,basketPos.y))
-                                        .strafeToLinearHeading(basketPosStart, Math.toRadians(45))
-                                        .build(),
-                                robot.intake.presetAction(Intake.Positions.HIGH_BASKET),
-                                robot.intake.armUpAction(Intake.Positions.HIGH_BASKET.armPos)
-                        ),
-                        new SleepAction(0.25),
-                        new ParallelAction(
-                                robot.intake.spinnerAction(-0.5),
-                                new SleepAction(0.5)
-                        )
+                        robot.intake.presetAction(Intake.Positions.HIGH_CHAMBER),
+                        robot.intake.armUpAction(Intake.Positions.HIGH_CHAMBER.armPos),
+                        robot.drive.actionBuilder(new Pose2d(startPos, Math.toRadians(90)))
+                                .strafeTo(new Vector2d(-10, -42))
+                                .build(),
+                        robot.intake.wristMoveAction(0.5),
+                        robot.drive.actionBuilder(new Pose2d(-10,-42, Math.toRadians(90)))
+                                .strafeTo(new Vector2d(-10, -58))
+                                .strafeTo(basketPosStart)
+                                .build()
+
                         //First Cycle
 
                         ,robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
@@ -67,7 +64,7 @@ public class AutoLeftRed_ExtraSample extends LinearOpMode {
                         new ParallelAction(
                                 robot.intake.wristMoveAction(0.81),
                                 robot.intake.spinnerAction(1),
-                                robot.drive.actionBuilder(new Pose2d(basketPosStart, Math.toRadians(45)))
+                                robot.drive.actionBuilder(new Pose2d(basketPosStart, Math.toRadians(90)))
                                         .strafeToSplineHeading(new Vector2d(samplePos_1.x, -48), Math.toRadians(90))
                                         .strafeTo(samplePos_1)
                                         .build()
@@ -129,8 +126,7 @@ public class AutoLeftRed_ExtraSample extends LinearOpMode {
                                 .build(),
                         robot.drive.actionBuilder(new Pose2d(new Vector2d(-42, -11), Math.toRadians(180)))
                                 .strafeTo(parkPos)
-                                .build(),
-                        robot.lift.liftTo(2500)
+                                .build()
                         )
                 )
         );
