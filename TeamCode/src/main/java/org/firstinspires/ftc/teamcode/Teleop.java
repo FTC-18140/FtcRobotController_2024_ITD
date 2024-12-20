@@ -116,7 +116,7 @@ public class Teleop extends OpMode
         double armSlow = 1;
 
         robot.intake.update();
-        robot.led.update();
+        robot.led.setToColor(robot.intake.getCalculatedColor());
 
         if(gamepad1.a){
             robot.lift.offsetPos = 0;
@@ -140,14 +140,7 @@ public class Teleop extends OpMode
             liftPower = 0;
         }
 
-        if(gamepad2.dpad_up){
-            wristPos = robot.intake.wristPos;
-            wristPos -= 0.03*armSlow;
-        }
-        else if(gamepad2.dpad_down){
-            wristPos = robot.intake.wristPos;
-            wristPos += 0.03*armSlow;
-        }
+
 //        else if (gamepad2.dpad_left){
 //            wristPos = 0.65;
 //        }
@@ -169,7 +162,20 @@ public class Teleop extends OpMode
             else if(theGamepad2.getButton(TBDGamepad.Button.DPAD_RIGHT)){
                 robot.intake.clawMove(Intake.CLAW_MAX);
             }
+            else if (theGamepad2.getButton(TBDGamepad.Button.DPAD_DOWN)) {
+                robot.intake.preset(Intake.Positions.INTAKE_SPECIMEN);
+                wristPos = Intake.Positions.INTAKE_SPECIMEN.wristPos;
+            }
         } else {
+            if(gamepad2.dpad_up){
+                wristPos = robot.intake.wristPos;
+                wristPos -= 0.03*armSlow;
+            }
+            else if(gamepad2.dpad_down){
+                wristPos = robot.intake.wristPos;
+                wristPos += 0.03*armSlow;
+            }
+
             if (theGamepad2.getButton(TBDGamepad.Button.Y)) {
                 robot.intake.preset(Intake.Positions.HIGH_BASKET);
                 wristPos = Intake.Positions.HIGH_BASKET.wristPos;

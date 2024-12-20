@@ -10,24 +10,38 @@ public class LED {
     Telemetry telemetry;
     Servo led = null;
     public ElapsedTime ledTimer = new ElapsedTime();
+    public double red = 0.28;
+    public double blue = 0.62;
+    public double green = 0.5;
+    public double yellow = 0.388;
+    public double purple = 0.72;
+    public double white = 1;
     public void init(HardwareMap hwMap, Telemetry telem){
         telemetry = telem;
         try{
             led = hwMap.servo.get("led");
-            led.setPosition(-0.99);
+            led.setPosition(red);
         }catch (Exception e){
             telemetry.addData("led not found in configuration", 0);
         }
     }
-    public void update() {
+    public void setToColor(String color) {
         if(led != null) {
-            if (ledTimer.seconds() < 90) {
-                led.setPosition(0.99);
-            } else if (ledTimer.seconds() < 105) {
-                led.setPosition(0.67);
-            } else {
-                led.setPosition(0.61);
+            switch(color){
+                case("red"):
+                    led.setPosition(red);
+                    break;
+                case("yellow"):
+                    led.setPosition(yellow);
+                    break;
+                case("blue"):
+                    led.setPosition(blue);
+                    break;
+                default:
+                    led.setPosition(white);
+                    break;
             }
+
         }
     }
 }
