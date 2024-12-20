@@ -124,6 +124,7 @@ public class Teleop extends OpMode
 
         if(theGamepad1.getTrigger(TBDGamepad.Trigger.RIGHT_TRIGGER)>0.1){
             slow = 1.0;
+            theGamepad1.blipDriver();
         };
         if(theGamepad1.getTrigger(TBDGamepad.Trigger.LEFT_TRIGGER)>0.1){
             slow = 0.3;
@@ -220,7 +221,11 @@ public class Teleop extends OpMode
 
         // Send calculated power to wheels
 
-        robot.joystickDrive(forward, strafe, turn * 0.8 * slow, slow);
+        if(theGamepad1.getButton(TBDGamepad.Button.B)){
+
+        }else {
+            robot.joystickDrive(forward, strafe, turn * 0.8 * slow, slow);
+        }
 
 
         // Show the elapsed game time and wheel power.
