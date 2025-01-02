@@ -52,6 +52,10 @@ public class Teleop_withActions extends OpMode {
         // updated based on gamepads
         if(theGamepad1.getButton(TBDGamepad.Button.X)){
             runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(45)).build());
+        }else if(theGamepad1.getButton(TBDGamepad.Button.Y)){
+            runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(90)).build());
+        }else if(theGamepad1.getButton(TBDGamepad.Button.A)){
+            runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(0)).build());
         }
 
         double forward = theGamepad1.getLeftY();
