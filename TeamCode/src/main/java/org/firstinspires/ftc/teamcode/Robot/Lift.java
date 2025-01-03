@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -16,6 +17,8 @@ public class Lift {
     HardwareMap hardwareMap;
     DcMotor liftLeft;
     DcMotor liftRight;
+    Servo leftServo;
+    Servo rightServo;
 
     public double offsetPos;
 
@@ -41,6 +44,16 @@ public class Lift {
             liftRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }catch (Exception e){
             telemetry.addData("right lift motor not found in configuration",0);
+        }
+        try{
+            leftServo = hardwareMap.servo.get("liftServoL");
+        }catch (Exception e){
+            telemetry.addData("'liftServoL' not found in configuration", 0);
+        }
+        try{
+            rightServo = hardwareMap.servo.get("liftServoR");
+        }catch (Exception e){
+            telemetry.addData("'liftServoR' not found in configuration", 0);
         }
     }
     public double getLiftPosR(){
