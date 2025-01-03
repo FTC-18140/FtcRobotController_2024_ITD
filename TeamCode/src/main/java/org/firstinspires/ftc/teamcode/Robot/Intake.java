@@ -219,11 +219,12 @@ public class Intake {
             Color.RGBToHSV((int) (colorR.red() * 255), (int) (colorR.green() * 255), (int) (colorR.blue() * 255), hsvValuesR);
         }
         if(colorL != null && colorR != null){
-            //Creates hsvValues equal to the average of the colors detected by the left and right sensors
-            hsvValues[0] = Math.round((hsvValuesL[0] + hsvValuesR[0])/2);//hue
-            hsvValues[1] = Math.round((hsvValuesL[1] + hsvValuesR[1])/2);//saturation
-            hsvValues[2] = Math.round((hsvValuesL[2] + hsvValuesR[2])/2);//light value
-
+            //Creates hsvValues equal to the highest of the colors detected by the left and right sensors
+            if(hsvValuesL[2] >= hsvValuesR[2]){
+                hsvValues = hsvValuesL;
+            }else{
+                hsvValues = hsvValuesR;
+            }
         }
     }
     public String getCalculatedColor(){

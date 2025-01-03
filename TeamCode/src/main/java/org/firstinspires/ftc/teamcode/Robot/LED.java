@@ -8,7 +8,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class LED {
     Telemetry telemetry;
-    Servo led = null;
+    Servo ledLeft = null;
+    Servo ledRight = null;
     public ElapsedTime ledTimer = new ElapsedTime();
     public double red = 0.28;
     public double blue = 0.62;
@@ -16,31 +17,40 @@ public class LED {
     public double yellow = 0.388;
     public double purple = 0.72;
     public double white = 1;
+    public double theColor = white;
     public void init(HardwareMap hwMap, Telemetry telem){
         telemetry = telem;
         try{
-            led = hwMap.servo.get("led");
-            led.setPosition(red);
+            ledLeft = hwMap.servo.get("ledL");
+            ledLeft.setPosition(red);
         }catch (Exception e){
-            telemetry.addData("led not found in configuration", 0);
+            telemetry.addData("ledL not found in configuration", 0);
+        }
+        try{
+            ledRight = hwMap.servo.get("ledR");
+            ledRight.setPosition(red);
+        }catch (Exception e){
+            telemetry.addData("ledR not found in configuration", 0);
         }
     }
     public void setToColor(String color) {
-        if(led != null) {
+        if(ledLeft != null && ledRight != null) {
             switch(color){
                 case("red"):
-                    led.setPosition(red);
+                    theColor = red;
                     break;
                 case("yellow"):
-                    led.setPosition(yellow);
+                    theColor = yellow;
                     break;
                 case("blue"):
-                    led.setPosition(blue);
+                    theColor = blue;
                     break;
                 default:
-                    led.setPosition(white);
+                    theColor = white;
                     break;
             }
+            ledLeft.setPosition(theColor);
+            ledRight.setPosition(theColor);
 
         }
     }

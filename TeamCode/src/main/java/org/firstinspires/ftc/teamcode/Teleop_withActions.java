@@ -44,6 +44,11 @@ public class Teleop_withActions extends OpMode {
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
     }
+    @Override
+    public void start() {
+        robot.led.ledTimer.reset();
+        robot.intake.start();
+    }
 
     @Override
     public void loop() {
@@ -55,7 +60,7 @@ public class Teleop_withActions extends OpMode {
         }else if(theGamepad1.getButton(TBDGamepad.Button.Y)){
             runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(90)).build());
         }else if(theGamepad1.getButton(TBDGamepad.Button.A)){
-            runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(0)).build());
+            runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(-90)).build());
         }
 
         double forward = theGamepad1.getLeftY();
