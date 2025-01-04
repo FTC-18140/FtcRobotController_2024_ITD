@@ -173,7 +173,7 @@ public class Intake {
             arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             arm.setTargetPosition(0);
             arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            arm.setDirection(DcMotorSimple.Direction.REVERSE);
+            arm.setDirection(DcMotorSimple.Direction.REVERSE);
             arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
             arm.setPower(0.8);

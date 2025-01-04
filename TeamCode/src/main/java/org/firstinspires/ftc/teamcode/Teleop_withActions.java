@@ -5,6 +5,8 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
@@ -16,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
 import java.util.ArrayList;
 import java.util.List;
 
-@TeleOp
+@TeleOp(group = "Teleop")
 public class Teleop_withActions extends OpMode {
     private FtcDashboard dash = FtcDashboard.getInstance();
     private List<Action> runningActions = new ArrayList<>();
@@ -28,6 +30,7 @@ public class Teleop_withActions extends OpMode {
     public double wristPos;
     public double clawPos;
     public double spinPos;
+    public boolean turning = false;
 
     public double liftPower = 0;
 
@@ -73,7 +76,7 @@ public class Teleop_withActions extends OpMode {
         robot.led.setToColor(robot.intake.getCalculatedColor());
 
         if(gamepad1.a){
-            robot.lift.offsetPos = 0;
+            //robot.lift.offsetPos = 0;
         }
 
         if(theGamepad1.getTrigger(TBDGamepad.Trigger.RIGHT_TRIGGER)>0.1){
@@ -174,15 +177,21 @@ public class Teleop_withActions extends OpMode {
         robot.lift.moveLift(liftPower);
 
         // Send calculated power to wheels
-        robot.joystickDrive(forward, strafe, turn * 0.8 * slow, slow);
+        if (!turning){
+            robot.joystickDrive(forward, strafe, turn * 0.8 * slow, slow);
+        }
+
 
 
         // update running actions
         List<Action> newActions = new ArrayList<>();
+        turning = false;
         for (Action action : runningActions) {
             action.preview(packet.fieldOverlay());
             if (action.run(packet)) {
                 newActions.add(action);
+            } else {
+                turning = true;
             }
         }
         runningActions = newActions;
