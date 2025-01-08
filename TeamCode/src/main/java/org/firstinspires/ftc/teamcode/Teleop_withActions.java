@@ -38,7 +38,7 @@ public class Teleop_withActions extends OpMode {
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot.init(hardwareMap, telemetry, 0);
-        robot.drive.pose = new Pose2d(AutoPositions.Positions.START_LEFT.position, Math.toRadians(90));
+        robot.drive.pose = new Pose2d(AutoPositions.Positions.START_LEFT.position, Math.toRadians(45));
         wristPos = robot.intake.WRIST_INIT;
         clawPos = robot.intake.clawPos;
         spinPos = 0.0;
@@ -59,11 +59,22 @@ public class Teleop_withActions extends OpMode {
 
         // updated based on gamepads
         if(theGamepad1.getButton(TBDGamepad.Button.X)){
-            runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(45)).build());
+            if(!turning) {
+                runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(45)).build());
+                turning = true;
+            }
         }else if(theGamepad1.getButton(TBDGamepad.Button.Y)){
-            runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(90)).build());
+            if(!turning) {
+                runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(90)).build());
+                turning = true;
+            }
         }else if(theGamepad1.getButton(TBDGamepad.Button.A)){
-            runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(-90)).build());
+            if(!turning) {
+                runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(-90)).build());
+                turning = true;
+            }
+        }else{
+            turning = false;
         }
 
         double forward = theGamepad1.getLeftY();
@@ -185,13 +196,10 @@ public class Teleop_withActions extends OpMode {
 
         // update running actions
         List<Action> newActions = new ArrayList<>();
-        turning = false;
         for (Action action : runningActions) {
             action.preview(packet.fieldOverlay());
-            if (action.run(packet)) {
+            if(action.run(packet)) {
                 newActions.add(action);
-            } else {
-                turning = true;
             }
         }
         runningActions = newActions;

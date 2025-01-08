@@ -106,7 +106,7 @@ public class Intake {
         READY_TO_INTAKE(0.5,1.0,0, CLAW_MAX),
         LOW_BASKET(0.7,ARM_MAX_HORIZONTAL,ELBOW_LOW, CLAW_MAX),
         HIGH_CHAMBER(0.3,20, ELBOW_HIGH_CHAMBER, CLAW_MAX),
-        INTAKE_SPECIMEN(0.3, 5, 15, CLAW_MIN),
+        INTAKE_SPECIMEN(0.27, 5, 8, CLAW_MIN),
         //Max elbow, Max arm extend, base of intake parallel with floor ↓
         HIGH_BASKET(0.3,ARM_MAX,ELBOW_MAX, CLAW_MAX);
         public final double wristPos;
