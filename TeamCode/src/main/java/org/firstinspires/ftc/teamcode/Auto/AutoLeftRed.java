@@ -43,7 +43,7 @@ public class AutoLeftRed extends LinearOpMode {
                 robot.intake.updateAction(),
                 new SequentialAction(
                         new ParallelAction(
-                                robot.lift.liftTo(2200),
+                                robot.lift.liftToAction(2200),
                                 robot.drive.actionBuilder(robot.drive.pose)
                                         .strafeTo(new Vector2d(startPos.x,basketPos.y))
                                         .strafeToLinearHeading(basketPos, Math.toRadians(45))
@@ -109,7 +109,7 @@ public class AutoLeftRed extends LinearOpMode {
                         robot.drive.actionBuilder(new Pose2d(new Vector2d(-42, -11), Math.toRadians(180)))
                                 .strafeTo(parkPos)
                                 .build(),
-                        robot.lift.liftTo(2500)
+                        robot.lift.liftToAction(2500)
                         )
                 )
         );

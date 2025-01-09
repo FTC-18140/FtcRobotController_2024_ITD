@@ -47,7 +47,7 @@ public class AutoLeftBlue_2_1 extends LinearOpMode {
                                 //Score Preset
 
                                 new ParallelAction(
-                                        robot.lift.liftTo(2200),
+                                        robot.lift.liftToAction(2200),
                                         robot.drive.actionBuilder(new Pose2d(startPos, Math.toRadians(90)))
                                                 .strafeTo(new Vector2d(startPos.x,basketPos.y))
                                                 .strafeToLinearHeading(basketPosStart, Math.toRadians(45))
@@ -130,7 +130,7 @@ public class AutoLeftBlue_2_1 extends LinearOpMode {
                                 robot.drive.actionBuilder(new Pose2d(new Vector2d(-42, -11), Math.toRadians(180)))
                                         .strafeTo(parkPos)
                                         .build(),
-                                robot.lift.liftTo(2500)
+                                robot.lift.liftToAction(2500)
                         )
                 )
         );

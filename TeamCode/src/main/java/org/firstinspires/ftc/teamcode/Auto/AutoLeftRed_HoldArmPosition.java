@@ -42,7 +42,7 @@ public class AutoLeftRed_HoldArmPosition extends LinearOpMode {
 
         Actions.runBlocking(new ParallelAction(
                 robot.intake.updateAction(),
-                robot.lift.liftTo(2200),
+                robot.lift.liftToAction(2200),
                 new SequentialAction(
                         new ParallelAction(
                                 robot.drive.actionBuilder(robot.drive.pose)

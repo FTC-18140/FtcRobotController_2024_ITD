@@ -84,6 +84,7 @@ public class Teleop_withActions extends OpMode {
         double armSlow = 1;
 
         robot.intake.update();
+        robot.lift.update();
         robot.led.setToColor(robot.intake.getCalculatedColor());
 
         if(gamepad1.a){
@@ -102,7 +103,8 @@ public class Teleop_withActions extends OpMode {
         }
 
         if(gamepad1.dpad_up){
-            liftPower = 1;
+            robot.lift.moveToMax();
+            liftPower = 0;
         }else if(gamepad1.dpad_down){
             liftPower = -1;
         }else if(gamepad1.dpad_left){
