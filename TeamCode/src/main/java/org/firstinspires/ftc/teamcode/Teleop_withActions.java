@@ -5,8 +5,6 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
@@ -103,11 +101,14 @@ public class Teleop_withActions extends OpMode {
         }
 
         if(gamepad1.dpad_up){
-            robot.lift.moveToMax();
+            robot.lift.moveToTop();
             liftPower = 0;
         }else if(gamepad1.dpad_down){
-            liftPower = -1;
+            robot.lift.lift_target = 1;
         }else if(gamepad1.dpad_left){
+            liftPower = 0;
+        }else if(theGamepad1.getButton(TBDGamepad.Button.DPAD_RIGHT)){
+            robot.lift.moveToMin();
             liftPower = 0;
         }
 

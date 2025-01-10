@@ -21,8 +21,9 @@ public class Lift {
 
     public double offsetPos;
 
-    public final double LIFT_MAX = 2600;
-    public final double LIFT_SERVO_MAX = 0.3;
+    public final double LIFT_MAX = 700;
+    public final double LIFT_SERVO_MAX = 0.15;
+    public final double LIFT_SERVO_LIFT = 0.1;
 
     public double lift_target = 0;
     public void init(HardwareMap hwMap, Telemetry telem, double startPos){
@@ -40,7 +41,7 @@ public class Lift {
         }
         try{
             liftRight = hardwareMap.dcMotor.get("liftR");
-            liftRight.setDirection(DcMotorSimple.Direction.REVERSE);
+            //liftRight.setDirection(DcMotorSimple.Direction.REVERSE);
             liftRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             liftRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             liftRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -49,11 +50,15 @@ public class Lift {
         }
         try{
             leftServo = hardwareMap.servo.get("liftServoL");
+            //leftServo.setDirection(Servo.Direction.REVERSE);
+            leftServo.setPosition(0);
         }catch (Exception e){
             telemetry.addData("'liftServoL' not found in configuration", 0);
         }
         try{
             rightServo = hardwareMap.servo.get("liftServoR");
+            rightServo.setDirection(Servo.Direction.REVERSE);
+            rightServo.setPosition(0);
         }catch (Exception e){
             telemetry.addData("'liftServoR' not found in configuration", 0);
         }
@@ -93,18 +98,18 @@ public class Lift {
         }
 
     }
-    public void moveToMax(){
-        leftServo.setPosition(LIFT_SERVO_MAX);
-        rightServo.setPosition(LIFT_SERVO_MAX);
+    public void moveToTop(){
+        leftServo.setPosition(0);
+        rightServo.setPosition(0);
         lift_target = LIFT_MAX;
     }
     public void moveToMin(){
-        leftServo.setPosition(0);
-        rightServo.setPosition(0);
+        leftServo.setPosition(LIFT_SERVO_MAX);
+        rightServo.setPosition(LIFT_SERVO_MAX);
         lift_target = 1;
     }
     public boolean liftUpTo(double position){
-        if(Math.abs(position-getLiftPosR())<=250){
+        if(Math.abs(position-getLiftPosR())<=50){
             moveLift(0);
             return false;
         }else{
@@ -114,7 +119,7 @@ public class Lift {
 
     }
     public boolean liftDownTo(double position){
-        if(Math.abs(position-getLiftPosR())<=250){
+        if(Math.abs(getLiftPosR()-position)<=50){
             moveLift(0);
             return false;
         }else{
