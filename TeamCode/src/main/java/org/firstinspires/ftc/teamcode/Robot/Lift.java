@@ -52,14 +52,14 @@ public class Lift {
         try{
             leftServo = hardwareMap.servo.get("liftServoL");
             //leftServo.setDirection(Servo.Direction.REVERSE);
-            leftServo.setPosition(0);
+            leftServo.setPosition(LIFT_SERVO_MAX);
         }catch (Exception e){
             telemetry.addData("'liftServoL' not found in configuration", 0);
         }
         try{
             rightServo = hardwareMap.servo.get("liftServoR");
             rightServo.setDirection(Servo.Direction.REVERSE);
-            rightServo.setPosition(0);
+            rightServo.setPosition(LIFT_SERVO_MAX_R);
         }catch (Exception e){
             telemetry.addData("'liftServoR' not found in configuration", 0);
         }
