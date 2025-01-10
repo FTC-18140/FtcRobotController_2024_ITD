@@ -104,7 +104,7 @@ public class Teleop_withActions extends OpMode {
             robot.lift.moveToTop();
             liftPower = 0;
         }else if(gamepad1.dpad_down){
-            robot.lift.lift_target = 1;
+            robot.lift.lift_target = 0;
         }else if(gamepad1.dpad_left){
             liftPower = 0;
         }else if(theGamepad1.getButton(TBDGamepad.Button.DPAD_RIGHT)){
@@ -206,6 +206,9 @@ public class Teleop_withActions extends OpMode {
             }
         }
         runningActions = newActions;
+
+        telemetry.addData("left lift servo: ",robot.lift.getLeftServoPos());
+        telemetry.addData("right lift servo: ",robot.lift.getRightServoPos());
 
         dash.sendTelemetryPacket(packet);
     }

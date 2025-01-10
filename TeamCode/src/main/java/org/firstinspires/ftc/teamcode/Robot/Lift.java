@@ -23,6 +23,7 @@ public class Lift {
 
     public final double LIFT_MAX = 700;
     public final double LIFT_SERVO_MAX = 0.15;
+    public final double LIFT_SERVO_MAX_R = 0.13;
     public final double LIFT_SERVO_LIFT = 0.1;
 
     public double lift_target = 0;
@@ -69,6 +70,12 @@ public class Lift {
     public double getLiftPosL(){
         return liftLeft.getCurrentPosition()+offsetPos;
     }
+    public double getLeftServoPos(){
+        return leftServo.getPosition();
+    }
+    public double getRightServoPos(){
+        return rightServo.getPosition();
+    }
     public void moveLift(double power){
         if(power > 0){
             if(getLiftPosL() >= LIFT_MAX){
@@ -105,8 +112,8 @@ public class Lift {
     }
     public void moveToMin(){
         leftServo.setPosition(LIFT_SERVO_MAX);
-        rightServo.setPosition(LIFT_SERVO_MAX);
-        lift_target = 1;
+        rightServo.setPosition(LIFT_SERVO_MAX_R);
+        lift_target = 0;
     }
     public boolean liftUpTo(double position){
         if(Math.abs(position-getLiftPosR())<=50){
