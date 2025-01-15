@@ -56,17 +56,17 @@ public class Teleop_withActions extends OpMode {
         TelemetryPacket packet = new TelemetryPacket();
 
         // updated based on gamepads
-        if(theGamepad1.getButton(TBDGamepad.Button.X)){
+        if(theGamepad1.getButton(TBDGamepad.Button.DPAD_LEFT)){
             if(!turning) {
                 runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(45)).build());
                 turning = true;
             }
-        }else if(theGamepad1.getButton(TBDGamepad.Button.Y)){
+        }else if(theGamepad1.getButton(TBDGamepad.Button.DPAD_UP)){
             if(!turning) {
                 runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(90)).build());
                 turning = true;
             }
-        }else if(theGamepad1.getButton(TBDGamepad.Button.A)){
+        }else if(theGamepad1.getButton(TBDGamepad.Button.DPAD_DOWN)){
             if(!turning) {
                 runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(-90)).build());
                 turning = true;
@@ -100,14 +100,14 @@ public class Teleop_withActions extends OpMode {
             armSlow = 0.4;
         }
 
-        if(gamepad1.dpad_up){
+        if(theGamepad1.getButton(TBDGamepad.Button.Y)){
             robot.lift.moveToTop();
             liftPower = 0;
-        }else if(gamepad1.dpad_down){
+        }else if(theGamepad1.getButton(TBDGamepad.Button.A)){
             robot.lift.lift_target = 1;
-        }else if(gamepad1.dpad_left){
+        }else if(theGamepad1.getButton(TBDGamepad.Button.X)){
             liftPower = 0;
-        }else if(theGamepad1.getButton(TBDGamepad.Button.DPAD_RIGHT)){
+        }else if(theGamepad1.getButton(TBDGamepad.Button.B)){
             robot.lift.moveToMin();
             liftPower = 0;
         }

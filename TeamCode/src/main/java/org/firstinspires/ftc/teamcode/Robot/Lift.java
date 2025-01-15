@@ -22,8 +22,8 @@ public class Lift {
     public double offsetPos;
 
     public final double LIFT_MAX = 790;
-    public final double LIFT_SERVO_MAX = 0.15;
-    public final double LIFT_SERVO_MAX_R = 0.13;
+    public final double LIFT_SERVO_MAX = 0.1;
+    public final double LIFT_SERVO_MAX_R = 0.3;
     public final double LIFT_SERVO_LIFT = 0.1;
 
     public double lift_target = 0;
@@ -51,7 +51,7 @@ public class Lift {
         }
         try{
             leftServo = hardwareMap.servo.get("liftServoL");
-            //leftServo.setDirection(Servo.Direction.REVERSE);
+            leftServo.setDirection(Servo.Direction.REVERSE);
             leftServo.setPosition(LIFT_SERVO_MAX);
         }catch (Exception e){
             telemetry.addData("'liftServoL' not found in configuration", 0);
@@ -106,8 +106,8 @@ public class Lift {
 
     }
     public void moveToTop(){
-        leftServo.setPosition(0);
-        rightServo.setPosition(0);
+        leftServo.setPosition(-0.3);
+        rightServo.setPosition(-0.3);
         lift_target = LIFT_MAX;
     }
     public void moveToMin(){
