@@ -517,6 +517,6 @@ public class Intake {
 //        telemetry.addData("hue", hsvValues[0]);
 //        telemetry.addData("value", hsvValues[2]);
 
-                telemetry.update();
+                //telemetry.update();
             }
 }

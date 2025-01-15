@@ -21,7 +21,7 @@ public class Lift {
 
     public double offsetPos;
 
-    public final double LIFT_MAX = 700;
+    public final double LIFT_MAX = 790;
     public final double LIFT_SERVO_MAX = 0.15;
     public final double LIFT_SERVO_MAX_R = 0.13;
     public final double LIFT_SERVO_LIFT = 0.1;
@@ -89,12 +89,12 @@ public class Lift {
                 liftRight.setPower(power);
             }
         }else if(power < 0){
-            if(getLiftPosL() <= 100){
+            if(getLiftPosL() <= 1){
                 liftLeft.setPower(0);
             }else{
                 liftLeft.setPower(power);
             }
-            if(getLiftPosR() <= 100){
+            if(getLiftPosR() <= 1){
                 liftRight.setPower(0);
             }else{
                 liftRight.setPower(power);
@@ -116,21 +116,25 @@ public class Lift {
         lift_target = 0;
     }
     public boolean liftUpTo(double position){
-        if(Math.abs(position-getLiftPosR())<=50){
+        if(Math.abs(position-getLiftPosR())<=1){
             moveLift(0);
+            telemetry.addData("at the top", 0);
             return false;
         }else{
             moveLift(1);
+            telemetry.addData("going up",0);
             return true;
         }
 
     }
     public boolean liftDownTo(double position){
-        if(Math.abs(getLiftPosR()-position)<=50){
+        if(Math.abs(getLiftPosR()-position)<=1){
             moveLift(0);
+            telemetry.addData("at the bottom", 0);
             return false;
         }else{
             moveLift(-1);
+            telemetry.addData("going down", 0);
             return true;
         }
 
@@ -144,10 +148,12 @@ public class Lift {
         };
     }
     public void update(){
-        if(getLiftPosR()>lift_target){
+        if(lift_target < 50){
             liftDownTo(lift_target);
-        }else if(getLiftPosR()< lift_target){
+            telemetry.addData("lift up", 0);
+        }else if(lift_target > 500){
             liftUpTo(lift_target);
+            telemetry.addData("lift down", 0);
         }
 
     }

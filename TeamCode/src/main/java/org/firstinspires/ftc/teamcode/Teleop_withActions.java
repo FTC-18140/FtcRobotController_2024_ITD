@@ -104,7 +104,7 @@ public class Teleop_withActions extends OpMode {
             robot.lift.moveToTop();
             liftPower = 0;
         }else if(gamepad1.dpad_down){
-            robot.lift.lift_target = 0;
+            robot.lift.lift_target = 1;
         }else if(gamepad1.dpad_left){
             liftPower = 0;
         }else if(theGamepad1.getButton(TBDGamepad.Button.DPAD_RIGHT)){
@@ -188,7 +188,7 @@ public class Teleop_withActions extends OpMode {
         wristPos = Range.clip(wristPos, robot.intake.WRIST_MIN, robot.intake.WRIST_MAX);
         robot.intake.wristMove(wristPos);
 
-        robot.lift.moveLift(liftPower);
+        //robot.lift.moveLift(liftPower);
 
         // Send calculated power to wheels
         if (!turning){
@@ -209,6 +209,9 @@ public class Teleop_withActions extends OpMode {
 
         telemetry.addData("left lift servo: ",robot.lift.getLeftServoPos());
         telemetry.addData("right lift servo: ",robot.lift.getRightServoPos());
+        telemetry.addData("left motor position: ", robot.lift.getLiftPosL());
+        telemetry.addData("right motor position: ", robot.lift.getLiftPosR());
+        telemetry.addData("lift target position: ", robot.lift.lift_target);
 
         dash.sendTelemetryPacket(packet);
     }
