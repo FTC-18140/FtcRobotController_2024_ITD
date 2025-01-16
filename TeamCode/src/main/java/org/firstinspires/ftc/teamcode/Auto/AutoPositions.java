@@ -9,7 +9,7 @@ public class AutoPositions {
     public enum Positions {
         START_LEFT(new Vector2d(-15,-60)),
         START_RIGHT(new Vector2d(15, -60)),
-        BASKET(new Vector2d(-53.5, -53.5)),
+        BASKET(new Vector2d(-53.5, -53)),
         SAMPLE_1_LEFT(new Vector2d(-49, -38)),
         SAMPLE_2_LEFT(new Vector2d(-54, -38)),
         SAMPLE_3_LEFT(new Vector2d(-59, -38)),

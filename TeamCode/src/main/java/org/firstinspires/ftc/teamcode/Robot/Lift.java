@@ -35,7 +35,8 @@ public class Lift {
             liftLeft = hardwareMap.dcMotor.get("liftL");
             liftLeft.setDirection(DcMotorSimple.Direction.REVERSE);
             liftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            liftLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            liftLeft.setTargetPosition(0);
+            liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             liftLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }catch (Exception e){
             telemetry.addData("left lift motor not found in configuration",0);
@@ -44,7 +45,8 @@ public class Lift {
             liftRight = hardwareMap.dcMotor.get("liftR");
             //liftRight.setDirection(DcMotorSimple.Direction.REVERSE);
             liftRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            liftRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            liftRight.setTargetPosition(0);
+            liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             liftRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }catch (Exception e){
             telemetry.addData("right lift motor not found in configuration",0);
@@ -106,11 +108,15 @@ public class Lift {
 
     }
     public void moveToTop(){
+        liftLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftServo.setPosition(-0.3);
         rightServo.setPosition(-0.3);
         lift_target = LIFT_MAX;
     }
     public void moveToMin(){
+        liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftServo.setPosition(LIFT_SERVO_MAX);
         rightServo.setPosition(LIFT_SERVO_MAX_R);
         lift_target = 0;
@@ -149,12 +155,14 @@ public class Lift {
     }
     public void update(){
         if(lift_target < 50){
-            liftDownTo(lift_target);
+            //liftDownTo(lift_target);
             telemetry.addData("lift up", 0);
         }else if(lift_target > 500){
-            liftUpTo(lift_target);
+            //liftUpTo(lift_target);
             telemetry.addData("lift down", 0);
         }
+        liftLeft.setTargetPosition((int)lift_target);
+        liftRight.setTargetPosition((int)lift_target);
 
     }
 }
