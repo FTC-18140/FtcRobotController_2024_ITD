@@ -368,7 +368,7 @@ public class Intake {
         };
     }
     public void  update(){
-        armPos = arm.getCurrentPosition();
+        //armPos = arm.getCurrentPosition();
         double armpid = armcontroller.calculate(armPos, armTarget);
         arm.setPower(armpid);
         /*
