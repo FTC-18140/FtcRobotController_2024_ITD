@@ -73,6 +73,9 @@ public class Intake {
     public static double ARM_MAX = 42;
     public static double ARM_MAX_HORIZONTAL = 30;
 
+    public double arm_offset = 0;
+    public boolean arm_override = false;
+
     public static double ticks_in_degree = 21.64166666666667;
 
     public final double ELBOW_GEAR_RATIO = 5.23 * 5.23 * 5.23; // We are using three 5:1 slices
@@ -198,7 +201,7 @@ public class Intake {
         wristMove(position.wristPos);
         clawMove(position.clawPos);
         armTarget = position.armPos;
-        armTo = armTarget - armPos/ COUNTS_PER_ARM_CM;
+        armTo = armTarget - ((armPos/ COUNTS_PER_ARM_CM) - arm_offset);
         telemetry.addData("preset arm: ", armTo);
     }
     public Action presetAction(Positions position){
@@ -248,16 +251,16 @@ public class Intake {
         }
     }
     public void armUp(double power) {
-        telemetry.addData("arm position : ", armPos / COUNTS_PER_ARM_CM);
+        telemetry.addData("arm position : ", (armPos / COUNTS_PER_ARM_CM) - arm_offset);
         if (target < 30) {
-            if (armPos / COUNTS_PER_ARM_CM <= ARM_MAX_HORIZONTAL) {
-                telemetry.addData("arm position : ", armPos / COUNTS_PER_ARM_CM);
+            if ((armPos / COUNTS_PER_ARM_CM) - arm_offset <= ARM_MAX_HORIZONTAL) {
+                telemetry.addData("arm position : ", (armPos / COUNTS_PER_ARM_CM) - arm_offset);
                 arm.setPower(power);
             } else {
                 armStop();
             }
         } else {
-            if (armPos / COUNTS_PER_ARM_CM <= ARM_MAX) {
+            if ((armPos / COUNTS_PER_ARM_CM) - arm_offset <= ARM_MAX) {
                 arm.setPower(power);
             } else {
                 armStop();
@@ -266,10 +269,14 @@ public class Intake {
     }
             public void armDown ( double power){
                 telemetry.addData("arm position : ", armPos / COUNTS_PER_ARM_CM);
-                if (armPos / COUNTS_PER_ARM_CM >= ARM_MIN) {
+                if(!arm_override) {
+                    if ((armPos / COUNTS_PER_ARM_CM) - arm_offset >= ARM_MIN) {
+                        arm.setPower(power);
+                    } else {
+                        armStop();
+                    }
+                }else{
                     arm.setPower(power);
-                } else {
-                    armStop();
                 }
             }
             public void armStop () {
@@ -442,13 +449,13 @@ public class Intake {
                 /////////////////////////
                 armPos = arm.getCurrentPosition();
                 if (armTo > 0) {
-                    if (armPos / COUNTS_PER_ARM_CM < armTarget) {
+                    if ((armPos / COUNTS_PER_ARM_CM) - arm_offset < armTarget) {
                         armUp(0.3);
                     } else {
                         armTo = 0;
                     }
                 } else if (armTo < 0) {
-                    if (armPos / COUNTS_PER_ARM_CM > armTarget) {
+                    if ((armPos / COUNTS_PER_ARM_CM) - arm_offset > armTarget) {
                         armDown(-1.0);
                     } else {
                         armTo = 0;

@@ -218,7 +218,7 @@ public class Teleop extends OpMode
         wristPos = Range.clip(wristPos, robot.intake.WRIST_MIN, robot.intake.WRIST_MAX);
         robot.intake.wristMove(wristPos);
 
-        robot.lift.moveLift(liftPower);
+        //robot.lift.moveLift(liftPower);
 
         // Send calculated power to wheels
 

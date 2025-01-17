@@ -100,14 +100,22 @@ public class Teleop_withActions extends OpMode {
             armSlow = 0.4;
         }
 
+        if(theGamepad2.getButton(TBDGamepad.Button.LEFT_STICK_BUTTON)){
+            robot.intake.arm_override = true;
+            robot.intake.arm_offset = robot.intake.armPos;
+        }
+
+
+
+
         if(theGamepad1.getButton(TBDGamepad.Button.Y)){
             robot.lift.moveToTop();
             liftPower = 0;
-        }else if(theGamepad1.getButton(TBDGamepad.Button.A)){
-            robot.lift.lift_target = 1;
+        }else if(theGamepad1.getButton(TBDGamepad.Button.B)){
+            robot.lift.moveToHanging();
         }else if(theGamepad1.getButton(TBDGamepad.Button.X)){
             liftPower = 0;
-        }else if(theGamepad1.getButton(TBDGamepad.Button.B)){
+        }else if(theGamepad1.getButton(TBDGamepad.Button.A)){
             robot.lift.moveToMin();
             liftPower = 0;
         }

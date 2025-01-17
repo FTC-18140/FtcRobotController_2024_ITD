@@ -22,9 +22,10 @@ public class Lift {
     public double offsetPos;
 
     public final double LIFT_MAX = 790;
-    public final double LIFT_SERVO_MAX = 0.1;
-    public final double LIFT_SERVO_MAX_R = 0.3;
+    public final double LIFT_SERVO_MAX = 0.14;
+    public final double LIFT_SERVO_MAX_R = 0.13;
     public final double LIFT_SERVO_LIFT = 0.1;
+    public final double LIFT_SERVO_LIFT_R = 0.1;
 
     public double lift_target = 0;
     public void init(HardwareMap hwMap, Telemetry telem, double startPos){
@@ -35,7 +36,7 @@ public class Lift {
             liftLeft = hardwareMap.dcMotor.get("liftL");
             liftLeft.setDirection(DcMotorSimple.Direction.REVERSE);
             liftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            liftLeft.setTargetPosition(0);
+            liftLeft.setTargetPosition((int)lift_target);
             liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             liftLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }catch (Exception e){
@@ -45,7 +46,7 @@ public class Lift {
             liftRight = hardwareMap.dcMotor.get("liftR");
             //liftRight.setDirection(DcMotorSimple.Direction.REVERSE);
             liftRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            liftRight.setTargetPosition(0);
+            liftRight.setTargetPosition((int)lift_target);
             liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             liftRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }catch (Exception e){
@@ -53,7 +54,7 @@ public class Lift {
         }
         try{
             leftServo = hardwareMap.servo.get("liftServoL");
-            leftServo.setDirection(Servo.Direction.REVERSE);
+            //leftServo.setDirection(Servo.Direction.REVERSE);
             leftServo.setPosition(LIFT_SERVO_MAX);
         }catch (Exception e){
             telemetry.addData("'liftServoL' not found in configuration", 0);
@@ -108,17 +109,18 @@ public class Lift {
 
     }
     public void moveToTop(){
-        liftLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        liftRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftServo.setPosition(-0.3);
         rightServo.setPosition(-0.3);
         lift_target = LIFT_MAX;
     }
     public void moveToMin(){
-        liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftServo.setPosition(LIFT_SERVO_MAX);
         rightServo.setPosition(LIFT_SERVO_MAX_R);
+        lift_target = 0;
+    }
+    public void moveToHanging(){
+        leftServo.setPosition(LIFT_SERVO_LIFT);
+        rightServo.setPosition(LIFT_SERVO_LIFT_R);
         lift_target = 0;
     }
     public boolean liftUpTo(double position){
@@ -154,6 +156,8 @@ public class Lift {
         };
     }
     public void update(){
+        liftLeft.setPower(1);
+        liftRight.setPower(1);
         if(lift_target < 50){
             //liftDownTo(lift_target);
             telemetry.addData("lift up", 0);
