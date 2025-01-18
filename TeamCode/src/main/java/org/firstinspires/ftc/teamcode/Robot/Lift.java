@@ -16,16 +16,19 @@ public class Lift {
     HardwareMap hardwareMap;
     DcMotor liftLeft;
     DcMotor liftRight;
-    Servo leftServo;
-    Servo rightServo;
+    public Servo leftServo;
+    public Servo rightServo;
+    public Servo podServo;
 
     public double offsetPos;
 
+    public double podServoPos = 0;
+
     public final double LIFT_MAX = 790;
-    public final double LIFT_SERVO_MAX = 0.14;
-    public final double LIFT_SERVO_MAX_R = 0.13;
-    public final double LIFT_SERVO_LIFT = 0.1;
-    public final double LIFT_SERVO_LIFT_R = 0.1;
+    public final double LIFT_SERVO_MAX = 0.35;
+    public final double LIFT_SERVO_MAX_R = 0.35;
+    public final double LIFT_SERVO_LIFT = 0.12;
+    public final double LIFT_SERVO_LIFT_R = 0.12;
 
     public double lift_target = 0;
     public void init(HardwareMap hwMap, Telemetry telem, double startPos){
@@ -63,6 +66,12 @@ public class Lift {
             rightServo = hardwareMap.servo.get("liftServoR");
             rightServo.setDirection(Servo.Direction.REVERSE);
             rightServo.setPosition(LIFT_SERVO_MAX_R);
+        }catch (Exception e){
+            telemetry.addData("'liftServoR' not found in configuration", 0);
+        }
+        try{
+            podServo = hardwareMap.servo.get("podServo");
+            podServo.setPosition(0);
         }catch (Exception e){
             telemetry.addData("'liftServoR' not found in configuration", 0);
         }
@@ -111,6 +120,7 @@ public class Lift {
     public void moveToTop(){
         leftServo.setPosition(-0.3);
         rightServo.setPosition(-0.3);
+        podServoPos = 1;
         lift_target = LIFT_MAX;
     }
     public void moveToMin(){
@@ -167,6 +177,6 @@ public class Lift {
         }
         liftLeft.setTargetPosition((int)lift_target);
         liftRight.setTargetPosition((int)lift_target);
-
+        podServo.setPosition(podServoPos);
     }
 }

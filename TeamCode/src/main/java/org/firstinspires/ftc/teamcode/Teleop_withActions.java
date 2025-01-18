@@ -29,6 +29,7 @@ public class Teleop_withActions extends OpMode {
     public double clawPos;
     public double spinPos;
     public boolean turning = false;
+    public double liftServoPos;
 
     public double liftPower = 0;
 
@@ -36,6 +37,7 @@ public class Teleop_withActions extends OpMode {
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot.init(hardwareMap, telemetry, 0);
+        liftServoPos  = robot.lift.LIFT_SERVO_MAX;
         robot.drive.pose = new Pose2d(AutoPositions.Positions.START_LEFT.position, Math.toRadians(45));
         wristPos = robot.intake.WRIST_INIT;
         clawPos = robot.intake.clawPos;
@@ -83,6 +85,8 @@ public class Teleop_withActions extends OpMode {
 
         robot.intake.update();
         robot.lift.update();
+//        robot.lift.leftServo.setPosition(liftServoPos);
+//        robot.lift.rightServo.setPosition(liftServoPos);
         robot.led.setToColor(robot.intake.getCalculatedColor());
 
         if(gamepad1.a){
@@ -92,7 +96,7 @@ public class Teleop_withActions extends OpMode {
         if(theGamepad1.getTrigger(TBDGamepad.Trigger.LEFT_TRIGGER)>0.1){
             slow = 1.0;
             theGamepad1.blipDriver();
-        };
+        }
         if(theGamepad1.getTrigger(TBDGamepad.Trigger.RIGHT_TRIGGER)>0.1){
             slow = 0.3;
         }
@@ -103,6 +107,8 @@ public class Teleop_withActions extends OpMode {
         if(theGamepad2.getButton(TBDGamepad.Button.LEFT_STICK_BUTTON)){
             robot.intake.arm_override = true;
             robot.intake.arm_offset = robot.intake.armPos;
+        }else{
+            robot.intake.arm_override = false;
         }
 
 
@@ -110,13 +116,21 @@ public class Teleop_withActions extends OpMode {
 
         if(theGamepad1.getButton(TBDGamepad.Button.Y)){
             robot.lift.moveToTop();
+//            if (liftServoPos+0.01 < robot.lift.LIFT_SERVO_MAX){
+//                liftServoPos += 0.01;
+//            }
             liftPower = 0;
         }else if(theGamepad1.getButton(TBDGamepad.Button.B)){
             robot.lift.moveToHanging();
-        }else if(theGamepad1.getButton(TBDGamepad.Button.X)){
-            liftPower = 0;
+        }else if(theGamepad1.getButton(TBDGamepad.Button.LEFT_BUMPER)){
+            robot.lift.lift_target = 0;
+        }else if(theGamepad1.getButton(TBDGamepad.Button.RIGHT_BUMPER)){
+            robot.lift.lift_target = robot.lift.LIFT_MAX;
         }else if(theGamepad1.getButton(TBDGamepad.Button.A)){
             robot.lift.moveToMin();
+//            if (liftServoPos-0.01 > 0){
+//                liftServoPos -= 0.01;
+//            }
             liftPower = 0;
         }
 
