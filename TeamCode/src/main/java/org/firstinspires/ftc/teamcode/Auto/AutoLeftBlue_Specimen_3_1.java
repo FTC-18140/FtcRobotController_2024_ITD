@@ -71,7 +71,7 @@ public class AutoLeftBlue_Specimen_3_1 extends LinearOpMode {
                                         .build()
                         ),
                         new ParallelAction(
-                                robot.intake.armUpAction(30),
+                                robot.intake.armUpAction(24),
                                 robot.intake.checkForSample("yellowblue", 7)
                         ),
                         new ParallelAction(
@@ -100,7 +100,7 @@ public class AutoLeftBlue_Specimen_3_1 extends LinearOpMode {
                                         .build()
                         ),
                         new ParallelAction(
-                                robot.intake.armUpAction(30),
+                                robot.intake.armUpAction(24),
                                 robot.intake.checkForSample("yellowblue", 7)
                         ),
                         new ParallelAction(

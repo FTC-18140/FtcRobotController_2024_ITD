@@ -64,14 +64,14 @@ public class Intake {
     public final double ELBOW_MIN = 0;
     public final double ELBOW_MIN_SLOW = 30;
 
-    public static double ELBOW_MAX = 110;
+    public static double ELBOW_MAX = 105;
     public static double ELBOW_LOW = 55;
     public static double ELBOW_HIGH_CHAMBER = 50;
 
     public int elbowDirection = 0;
     public final double ARM_MIN = 0;
     public static double ARM_MAX = 42;
-    public static double ARM_MAX_HORIZONTAL = 30;
+    public static double ARM_MAX_HORIZONTAL = 25;
 
     public double arm_offset = 0;
     public boolean arm_override = false;
