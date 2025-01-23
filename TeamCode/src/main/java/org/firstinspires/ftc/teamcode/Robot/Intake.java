@@ -67,6 +67,7 @@ public class Intake {
     public static double ELBOW_MAX = 105;
     public static double ELBOW_LOW = 55;
     public static double ELBOW_HIGH_CHAMBER = 50;
+    public static double ELBOW_HIGH_CHAMBER_SCORING = 41;
 
     public int elbowDirection = 0;
     public final double ARM_MIN = 0;
@@ -109,7 +110,8 @@ public class Intake {
         READY_TO_INTAKE(0.5,1.0,0, CLAW_MAX),
         LOW_BASKET(0.7,ARM_MAX_HORIZONTAL,ELBOW_LOW, CLAW_MAX),
         HIGH_CHAMBER(0.3,20, ELBOW_HIGH_CHAMBER, CLAW_MAX),
-        INTAKE_SPECIMEN(0.27, 5, 8, CLAW_MIN),
+        HIGH_CHAMBER_SCORING(0,25, ELBOW_HIGH_CHAMBER_SCORING, CLAW_MAX),
+        INTAKE_SPECIMEN(0.27, 5, 13, CLAW_MIN),
         //Max elbow, Max arm extend, base of intake parallel with floor ↓
         HIGH_BASKET(0.3,ARM_MAX,ELBOW_MAX, CLAW_MAX);
         public final double wristPos;
@@ -334,6 +336,7 @@ public class Intake {
                     @Override
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                         double currentPos = arm.getCurrentPosition();
+                        armTarget = pos;
                         if (pos >= currentPos / COUNTS_PER_ARM_CM) {
                             armUp(1);
                         } else {
@@ -353,6 +356,7 @@ public class Intake {
                     @Override
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                         double currentPos = arm.getCurrentPosition();
+                        armTarget = pos;
                         if (pos <= currentPos / COUNTS_PER_ARM_CM) {
                             armDown(-1);
                         } else {

@@ -118,8 +118,8 @@ public class Lift {
 
     }
     public void moveToTop(){
-        leftServo.setPosition(-0.3);
-        rightServo.setPosition(-0.3);
+        leftServo.setPosition(-0.35);
+        rightServo.setPosition(-0.35);
         podServoPos = 1;
         lift_target = LIFT_MAX;
     }

@@ -163,11 +163,11 @@ public class Teleop_withActions extends OpMode {
         } else {
             if(gamepad2.dpad_up){
                 wristPos = robot.intake.wristPos;
-                wristPos -= 0.03*armSlow;
+                wristPos -= 0.05*armSlow;
             }
             else if(gamepad2.dpad_down){
                 wristPos = robot.intake.wristPos;
-                wristPos += 0.03*armSlow;
+                wristPos += 0.05*armSlow;
             }
 
             if (theGamepad2.getButton(TBDGamepad.Button.Y)) {
@@ -180,8 +180,8 @@ public class Teleop_withActions extends OpMode {
                 robot.intake.preset(Intake.Positions.LOW_BASKET);
                 wristPos = Intake.Positions.LOW_BASKET.wristPos;
             } else if (theGamepad2.getButton(TBDGamepad.Button.DPAD_RIGHT)) {
-                robot.intake.preset(Intake.Positions.HIGH_CHAMBER);
-                wristPos = Intake.Positions.HIGH_CHAMBER.wristPos;
+                robot.intake.preset(Intake.Positions.HIGH_CHAMBER_SCORING);
+                wristPos = Intake.Positions.HIGH_CHAMBER_SCORING.wristPos;
             }
         }
         // Arm controls
