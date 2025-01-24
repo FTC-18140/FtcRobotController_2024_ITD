@@ -337,6 +337,7 @@ public class Intake {
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                         double currentPos = arm.getCurrentPosition();
                         armTarget = pos;
+                        armTo = 0;
                         if (pos >= currentPos / COUNTS_PER_ARM_CM) {
                             armUp(1);
                         } else {
@@ -357,6 +358,7 @@ public class Intake {
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                         double currentPos = arm.getCurrentPosition();
                         armTarget = pos;
+                        armTo = 0;
                         if (pos <= currentPos / COUNTS_PER_ARM_CM) {
                             armDown(-1);
                         } else {
