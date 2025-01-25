@@ -64,7 +64,7 @@ public class Intake {
     public final double ELBOW_MIN = 0;
     public final double ELBOW_MIN_SLOW = 30;
 
-    public static double ELBOW_MAX = 105;
+    public static double ELBOW_MAX = 100;
     public static double ELBOW_LOW = 55;
     public static double ELBOW_HIGH_CHAMBER = 50;
     public static double ELBOW_HIGH_CHAMBER_SCORING = 41;
