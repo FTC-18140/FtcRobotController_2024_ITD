@@ -72,7 +72,7 @@ public class Intake {
     public int elbowDirection = 0;
     public final double ARM_MIN = 0;
     public static double ARM_MAX = 42;
-    public static double ARM_MAX_HORIZONTAL = 25;
+    public static double ARM_MAX_HORIZONTAL = 32;
 
     public double arm_offset = 0;
     public boolean arm_override = false;
