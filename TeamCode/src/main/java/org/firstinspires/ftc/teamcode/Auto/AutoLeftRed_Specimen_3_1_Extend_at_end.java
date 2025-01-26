@@ -21,7 +21,7 @@ public class AutoLeftRed_Specimen_3_1_Extend_at_end extends LinearOpMode {
     public static Vector2d basketPosStart = new Vector2d(-54.5, -54);
     public static Vector2d samplePos_1 = AutoPositions.Positions.SAMPLE_1_LEFT.position;
     public static Vector2d samplePos_2 = new Vector2d(-59.5, -38);
-    public static Vector2d samplePos_3 = new Vector2d(-55.5, -40);
+    public static Vector2d samplePos_3 = new Vector2d(-55, -38);
     public static Vector2d parkPos = AutoPositions.Positions.ASCENT_ZONE.position;
     @Override
     public void runOpMode() throws InterruptedException {
@@ -147,6 +147,7 @@ public class AutoLeftRed_Specimen_3_1_Extend_at_end extends LinearOpMode {
                                 new SleepAction(0.5)
                         ),
                         robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
+                        new SleepAction(1),
                         robot.intake.armUpAction(Intake.ARM_MAX_HORIZONTAL),
                         robot.intake.spinnerAction(0),
                         robot.intake.wristMoveAction(0)
