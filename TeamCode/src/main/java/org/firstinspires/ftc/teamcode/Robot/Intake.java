@@ -64,7 +64,7 @@ public class Intake {
     public final double ELBOW_MIN = 0;
     public final double ELBOW_MIN_SLOW = 30;
 
-    public static double ELBOW_MAX = 103;
+    public static double ELBOW_MAX = 105;
     public static double ELBOW_LOW = 55;
     public static double ELBOW_HIGH_CHAMBER = 50;
     public static double ELBOW_HIGH_CHAMBER_SCORING = 41;
@@ -111,9 +111,10 @@ public class Intake {
         LOW_BASKET(0.7,ARM_MAX_HORIZONTAL,ELBOW_LOW, CLAW_MAX),
         HIGH_CHAMBER(0.3,20, ELBOW_HIGH_CHAMBER, CLAW_MAX),
         HIGH_CHAMBER_SCORING(0,25, ELBOW_HIGH_CHAMBER_SCORING, CLAW_MAX),
+        HIGH_CHAMBER_SCORING_AUTO(0.1,25, ELBOW_HIGH_CHAMBER_SCORING, CLAW_MAX),
         INTAKE_SPECIMEN(0.27, 5, 13, CLAW_MIN),
         //Max elbow, Max arm extend, base of intake parallel with floor ↓
-        HIGH_BASKET(0.3,ARM_MAX,ELBOW_MAX, CLAW_MAX);
+        HIGH_BASKET(0.26,ARM_MAX,ELBOW_MAX, CLAW_MAX);
         public final double wristPos;
         public final double armPos;
         public final double elbowPos;

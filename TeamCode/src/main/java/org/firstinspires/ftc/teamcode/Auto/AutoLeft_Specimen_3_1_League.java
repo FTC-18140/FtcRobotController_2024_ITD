@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Robot.ThunderBot2024;
 
 @Config
 @Autonomous
-public class AutoLeftRed_Specimen_3_1_NewSpecimenMethod extends LinearOpMode {
+public class AutoLeft_Specimen_3_1_League extends LinearOpMode {
     public static Vector2d startPos = AutoPositions.Positions.START_LEFT.position;
     public static Vector2d basketPos = new Vector2d(-54.5, -53);
     public static Vector2d basketPosStart = new Vector2d(-54.5, -54);
@@ -47,23 +47,24 @@ public class AutoLeftRed_Specimen_3_1_NewSpecimenMethod extends LinearOpMode {
                 new SequentialAction(
                         //Score Preset Specimen
 
-                        robot.intake.presetAction(Intake.Positions.HIGH_CHAMBER_SCORING),
-                        robot.intake.armUpAction(Intake.Positions.HIGH_CHAMBER_SCORING.armPos),
+                        robot.intake.presetAction(Intake.Positions.HIGH_CHAMBER_SCORING_AUTO),
+                        robot.intake.armUpAction(Intake.Positions.HIGH_CHAMBER_SCORING_AUTO.armPos),
+                        new SleepAction(0.5),
                         robot.drive.actionBuilder(new Pose2d(startPos, Math.toRadians(90)))
-                                .strafeTo(new Vector2d(-10, -36))
+                                .strafeTo(new Vector2d(-7, -56))
+                                .strafeTo(new Vector2d(-7, -34))
                                 .build(),
-                        robot.intake.clawAction(robot.intake.CLAW_MIN),
+                        robot.intake.clawAction(0),
+
                         robot.drive.actionBuilder(new Pose2d(-10,-42, Math.toRadians(90)))
-                                .strafeTo(new Vector2d(-10, -58))
+                                .strafeTo(new Vector2d(-10, -54))
                                 .strafeTo(basketPosStart)
-                                .build()
-
-                        //First Cycle
-
-                        ,robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
+                                .build(),
+                        robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
                         robot.intake.armDownAction(1),
+                        //First Cycle
                         new ParallelAction(
-                                robot.intake.wristMoveAction(0.81),
+                                robot.intake.wristMoveAction(0.78),
                                 robot.intake.spinnerAction(1),
                                 robot.drive.actionBuilder(new Pose2d(basketPosStart, Math.toRadians(45)))
                                         .strafeToSplineHeading(new Vector2d(samplePos_1.x, -48), Math.toRadians(90))
@@ -92,7 +93,7 @@ public class AutoLeftRed_Specimen_3_1_NewSpecimenMethod extends LinearOpMode {
                         robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
                         robot.intake.armDownAction(1),
                         new ParallelAction(
-                                robot.intake.wristMoveAction(0.83),
+                                robot.intake.wristMoveAction(0.78),
                                 robot.intake.spinnerAction(1),
                                 robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(45)))
                                         .strafeToSplineHeading(new Vector2d(samplePos_2.x, -48), Math.toRadians(90))
@@ -121,7 +122,7 @@ public class AutoLeftRed_Specimen_3_1_NewSpecimenMethod extends LinearOpMode {
                         robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
                         robot.intake.armDownAction(1),
                         new ParallelAction(
-                                robot.intake.wristMoveAction(0.83),
+                                robot.intake.wristMoveAction(0.7),
                                 robot.intake.spinnerAction(1),
                                 robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(45)))
                                         .strafeToSplineHeading(new Vector2d(samplePos_3.x, -50), Math.toRadians(135))
@@ -129,14 +130,21 @@ public class AutoLeftRed_Specimen_3_1_NewSpecimenMethod extends LinearOpMode {
                                         .build()
                         ),
                         new ParallelAction(
-                                robot.intake.armUpAction(20),
+                                robot.intake.wristMoveAction(0.8),
+                                robot.intake.armUpAction(17),
                                 robot.intake.checkForSample("yellowred", 10)
                         ),
                         new SleepAction(1),
                         new ParallelAction(
+                                robot.intake.armDownAction(1),
+                                robot.drive.actionBuilder(new Pose2d(samplePos_3, Math.toRadians(135)))
+                                        .strafeToSplineHeading(new Vector2d(samplePos_3.x+5, samplePos_3.y-5), Math.toRadians(90))
+                                        .build()
+                        ),
+                        new ParallelAction(
                                 robot.intake.presetAction(Intake.Positions.HIGH_BASKET),
                                 robot.intake.armUpAction(Intake.Positions.HIGH_BASKET.armPos),
-                                robot.drive.actionBuilder(new Pose2d(samplePos_3, Math.toRadians(135)))
+                                robot.drive.actionBuilder(new Pose2d(new Vector2d(samplePos_3.x+5, samplePos_3.y-5), Math.toRadians(90)))
                                         .strafeToSplineHeading(basketPos, Math.toRadians(45))
                                         .build()
                         ),
