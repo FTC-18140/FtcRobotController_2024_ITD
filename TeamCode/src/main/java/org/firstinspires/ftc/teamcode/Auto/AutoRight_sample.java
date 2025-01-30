@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -41,23 +42,68 @@ public class AutoRight_sample extends LinearOpMode {
         Actions.runBlocking(new ParallelAction(
                 robot.intake.updateAction(),
                 new SequentialAction(
-                        robot.intake.presetAction(Intake.Positions.HIGH_CHAMBER),
-                        robot.intake.armUpAction(Intake.Positions.HIGH_CHAMBER.armPos),
+                        robot.intake.presetAction(Intake.Positions.HIGH_CHAMBER_SCORING_AUTO),
+                        robot.intake.armUpAction(Intake.Positions.HIGH_CHAMBER_SCORING_AUTO.armPos),
+                        new SleepAction(0.5),
                         robot.drive.actionBuilder(new Pose2d(startPos, Math.toRadians(90)))
-                                .strafeTo(new Vector2d(10, -42))
+                                .strafeTo(new Vector2d(7, -56))
+                                .strafeTo(new Vector2d(7, -34))
                                 .build(),
-                        robot.intake.wristMoveAction(0.5),
+                        robot.intake.clawAction(0),
                         robot.drive.actionBuilder(new Pose2d(10,-42, Math.toRadians(90)))
-                                .strafeTo(new Vector2d(10, -58))
+                                .strafeTo(new Vector2d(7, -54))
                                 .build(),
                         robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
+
                         robot.drive.actionBuilder(new Pose2d(new Vector2d(10, -58), Math.toRadians(90)))
-                                .strafeTo(new Vector2d(48, -58))
-                                .splineTo(new Vector2d(48, -42), Math.toRadians(90))
+                                .strafeToSplineHeading(new Vector2d(32, -40), Math.toRadians(45))
                                 .build(),
-                        robot.drive.actionBuilder(new Pose2d(new Vector2d(10, -58), Math.toRadians(90)))
-                                .strafeTo(parkPos)
-                                .build()
+                        robot.intake.wristMoveAction(0.79),
+                        new ParallelAction(
+                                robot.intake.spinnerAction(1),
+                                robot.intake.armUpAction(25),
+                                robot.intake.checkForSample("red", 8)
+                        ),
+                        new SleepAction(0.5),
+                        new ParallelAction(
+                            robot.intake.spinnerAction(0),
+                            robot.intake.armDownAction(10),
+                            robot.intake.wristMoveAction(0.5),
+                            robot.drive.actionBuilder(new Pose2d(new Vector2d(30, -42), Math.toRadians(45)))
+                                    .strafeToSplineHeading(new Vector2d(36, -44), Math.toRadians(-30))
+                                    .build()
+                        ),
+                        robot.intake.spinnerAction(-1),
+                        new SleepAction(1)
+                        //sample 2
+                        ,
+                        robot.drive.actionBuilder(new Pose2d(new Vector2d(36, -44), Math.toRadians(-30)))
+                                .strafeToSplineHeading(new Vector2d(41, -42), Math.toRadians(45))
+                                .build(),
+                        robot.intake.wristMoveAction(0.79),
+                        new ParallelAction(
+                                robot.intake.spinnerAction(1),
+                                robot.intake.armUpAction(25),
+                                robot.intake.checkForSample("red", 8)
+                        ),
+                        new SleepAction(0.5),
+                        new ParallelAction(
+                                robot.intake.spinnerAction(0),
+                                robot.intake.armDownAction(10),
+                                robot.intake.wristMoveAction(0.5),
+                                robot.drive.actionBuilder(new Pose2d(new Vector2d(44, -42), Math.toRadians(45)))
+                                        .strafeToSplineHeading(new Vector2d(36, -44), Math.toRadians(-30))
+                                        .build()
+                        ),
+                        robot.intake.spinnerAction(-1),
+                        new SleepAction(1),
+                        robot.intake.spinnerAction(0)
+
+
+//                        ,
+//                        robot.drive.actionBuilder(new Pose2d(new Vector2d(10, -58), Math.toRadians(90)))
+//                                .strafeTo(parkPos)
+//                                .build()
                 )
         ));
 
