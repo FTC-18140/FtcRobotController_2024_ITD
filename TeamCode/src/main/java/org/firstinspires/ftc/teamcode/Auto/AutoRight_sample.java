@@ -19,7 +19,7 @@ public class AutoRight_sample extends LinearOpMode {
     public static Vector2d startPos = new Vector2d(15,-60);
     public static Vector2d basketPos = new Vector2d(-40,-54);
     public static Vector2d samplePos = new Vector2d(50,-40);
-    public static Vector2d parkPos = new Vector2d(52,-56);
+    public static Vector2d parkPos = new Vector2d(44,-58);
     @Override
     public void runOpMode() throws InterruptedException {
         //Move to basket () and rotate <-+
@@ -64,46 +64,71 @@ public class AutoRight_sample extends LinearOpMode {
                                 robot.intake.armUpAction(25),
                                 robot.intake.checkForSample("red", 8)
                         ),
-                        new SleepAction(0.5),
+                        new SleepAction(0.7),
                         new ParallelAction(
                             robot.intake.spinnerAction(0),
                             robot.intake.armDownAction(10),
                             robot.intake.wristMoveAction(0.5),
                             robot.drive.actionBuilder(new Pose2d(new Vector2d(30, -42), Math.toRadians(45)))
-                                    .strafeToSplineHeading(new Vector2d(36, -44), Math.toRadians(-30))
+                                    .strafeToSplineHeading(new Vector2d(38, -48), Math.toRadians(-30))
                                     .build()
                         ),
                         robot.intake.spinnerAction(-1),
                         new SleepAction(1)
                         //sample 2
                         ,
-                        robot.drive.actionBuilder(new Pose2d(new Vector2d(36, -44), Math.toRadians(-30)))
-                                .strafeToSplineHeading(new Vector2d(41, -42), Math.toRadians(45))
+                        robot.drive.actionBuilder(new Pose2d(new Vector2d(38, -48), Math.toRadians(-30)))
+                                .strafeToSplineHeading(new Vector2d(38, -42), Math.toRadians(45))
                                 .build(),
                         robot.intake.wristMoveAction(0.79),
                         new ParallelAction(
                                 robot.intake.spinnerAction(1),
-                                robot.intake.armUpAction(25),
+                                robot.intake.armUpAction(28),
                                 robot.intake.checkForSample("red", 8)
                         ),
-                        new SleepAction(0.5),
+                        new SleepAction(0.7),
                         new ParallelAction(
                                 robot.intake.spinnerAction(0),
                                 robot.intake.armDownAction(10),
                                 robot.intake.wristMoveAction(0.5),
                                 robot.drive.actionBuilder(new Pose2d(new Vector2d(44, -42), Math.toRadians(45)))
-                                        .strafeToSplineHeading(new Vector2d(36, -44), Math.toRadians(-30))
+                                        .strafeToSplineHeading(new Vector2d(38, -48), Math.toRadians(-30))
+                                        .build()
+                        ),
+                        robot.intake.spinnerAction(-1),
+                        new SleepAction(1)
+
+                        //sample 3
+                        ,
+                        robot.drive.actionBuilder(new Pose2d(new Vector2d(38, -48), Math.toRadians(-30)))
+                                .strafeToSplineHeading(new Vector2d(50, -42), Math.toRadians(45))
+                                .build(),
+                        robot.intake.wristMoveAction(0.79),
+                        new ParallelAction(
+                                robot.intake.spinnerAction(1),
+                                robot.intake.armUpAction(28),
+                                robot.intake.checkForSample("red", 8)
+                        ),
+                        new SleepAction(0.7),
+                        new ParallelAction(
+                                robot.intake.spinnerAction(0),
+                                robot.intake.armDownAction(10),
+                                robot.intake.wristMoveAction(0.5),
+                                robot.drive.actionBuilder(new Pose2d(new Vector2d(44, -42), Math.toRadians(45)))
+                                        .strafeToSplineHeading(new Vector2d(38, -48), Math.toRadians(-30))
                                         .build()
                         ),
                         robot.intake.spinnerAction(-1),
                         new SleepAction(1),
-                        robot.intake.spinnerAction(0)
-
-
-//                        ,
-//                        robot.drive.actionBuilder(new Pose2d(new Vector2d(10, -58), Math.toRadians(90)))
-//                                .strafeTo(parkPos)
-//                                .build()
+                        robot.intake.spinnerAction(0),
+                        robot.intake.armDownAction(1)
+                        ,
+                        robot.drive.actionBuilder(new Pose2d(new Vector2d(38, -48), Math.toRadians(-30)))
+                                .turn(Math.toRadians(120))
+                                .strafeTo(parkPos)
+                                .build(),
+                        robot.intake.armUpAction(Intake.ARM_MAX_HORIZONTAL),
+                        robot.intake.wristMoveAction(0)
                 )
         ));
 
