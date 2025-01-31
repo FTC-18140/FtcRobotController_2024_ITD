@@ -27,7 +27,8 @@ public class AutoTest extends LinearOpMode {
         waitForStart();
         robot.intake.start();
 
-        Actions.runBlocking(new ParallelAction(
+        Actions.runBlocking(
+                new ParallelAction(
                 robot.intake.updateAction(),
                 new SequentialAction(
                         robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),

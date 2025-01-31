@@ -43,17 +43,19 @@ public class AutoRight extends LinearOpMode {
         Actions.runBlocking(new ParallelAction(
                 robot.intake.updateAction(),
                 new SequentialAction(
-                        robot.intake.presetAction(Intake.Positions.HIGH_CHAMBER),
-                        robot.intake.armUpAction(Intake.Positions.HIGH_CHAMBER.armPos),
+                        robot.intake.presetAction(Intake.Positions.HIGH_CHAMBER_SCORING_AUTO),
+                        robot.intake.armUpAction(Intake.Positions.HIGH_CHAMBER_SCORING_AUTO.armPos),
+                        new SleepAction(0.5),
                         robot.drive.actionBuilder(new Pose2d(startPos, Math.toRadians(90)))
-                                .strafeTo(new Vector2d(10, -42))
+                                .strafeTo(new Vector2d(7, -56))
+                                .strafeTo(new Vector2d(7, -34))
                                 .build(),
-                        robot.intake.wristMoveAction(0.5),
+                        robot.intake.clawAction(0),
                         robot.drive.actionBuilder(new Pose2d(10,-42, Math.toRadians(90)))
-                                .strafeTo(new Vector2d(10, -58))
+                                .strafeTo(new Vector2d(7, -54))
                                 .build(),
                         robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
-                        robot.drive.actionBuilder(new Pose2d(new Vector2d(10, -58), Math.toRadians(90)))
+                        robot.drive.actionBuilder(new Pose2d(new Vector2d(7, -58), Math.toRadians(90)))
                                 .strafeTo(parkPos)
                                 .build()
                 )
