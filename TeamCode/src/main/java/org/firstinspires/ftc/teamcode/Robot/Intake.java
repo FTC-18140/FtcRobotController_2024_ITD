@@ -502,9 +502,9 @@ public class Intake {
 
                 clawPos = claw.getPosition();
 //                telemetry.addData("clawPos: ", claw.getPosition());
-//                telemetry.addData("power : ", power);
-//                telemetry.addData("ff : ", ff);
-//                telemetry.addData("pid : ", pid);
+                telemetry.addData("power : ", power);
+                telemetry.addData("ff : ", ff);
+                telemetry.addData("pid : ", pid);
                 telemetry.addData("target : ", target);
                 telemetry.addData("elbowpos : ", elbowPosition);
                 telemetry.addData("elbowpos in degrees: ", elbowPosition / COUNTS_PER_ELBOW_DEGREE);
