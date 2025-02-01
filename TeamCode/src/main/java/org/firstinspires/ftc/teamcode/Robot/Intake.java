@@ -505,9 +505,9 @@ public class Intake {
 //                telemetry.addData("power : ", power);
 //                telemetry.addData("ff : ", ff);
 //                telemetry.addData("pid : ", pid);
-//                telemetry.addData("target : ", target);
-//                telemetry.addData("elbowpos : ", elbowPosition);
-//                telemetry.addData("elbowpos in degrees: ", elbowPosition / COUNTS_PER_ELBOW_DEGREE);
+                telemetry.addData("target : ", target);
+                telemetry.addData("elbowpos : ", elbowPosition);
+                telemetry.addData("elbowpos in degrees: ", elbowPosition / COUNTS_PER_ELBOW_DEGREE);
 
                 wristPos = wrist.getPosition();
 
