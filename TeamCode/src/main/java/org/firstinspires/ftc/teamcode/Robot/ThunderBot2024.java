@@ -4,7 +4,10 @@ import static org.firstinspires.ftc.teamcode.Robot.ThunderBot2024.GearRatio.TWEL
 import static java.lang.Math.abs;
 import static java.lang.Math.toRadians;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.DualNum;
 import com.acmerobotics.roadrunner.HolonomicController;
@@ -33,6 +36,7 @@ public class ThunderBot2024
     public MecanumDrive drive;
     public Lift lift;
     public LED led;
+    public LimelightVision limelight;
     double heading = 0;
     long leftFrontPosition = 0;
     long rightFrontPosition = 0;
@@ -97,6 +101,9 @@ public class ThunderBot2024
         led = new LED();
         led.init(hwMap, telem);
 
+        limelight = new LimelightVision();
+        limelight.init(hwMap, telem);
+
         drive = new MecanumDrive(hwMap, new Pose2d(0,0,0));
 //  This code was somehow preventing the Odometry from updating
 //        try {
@@ -136,8 +143,6 @@ public class ThunderBot2024
      */
     public boolean drive(double targetHeading, double distance, double power)
     {
-
-
         double currentAngle = heading;
 
         // Set desired angle and initial distanceMoved
@@ -372,7 +377,35 @@ public class ThunderBot2024
         }
     }
 
+    public boolean alignToSpecimen( double power )
+    {
+        double Kp = 0.5;
+        double targetX = limelight.getTargetX();
+        if (targetX > 1)  // FIX THIS! - what is a proper termination condition?
+        {
+            double powertoStrafe = Kp*limelight.getTargetX();
+            led.setToColor("purple");
+            joystickDrive(0, powertoStrafe, 0, power);
+            return false;
+        }
+        else
+        {
+            stop();
+            led.setToColor("green");
+            return true;
+        }
+    }
 
+    public Action alignToSpecimenAction ( double power){
+        return new Action() {
+            private double pow = power;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                return alignToSpecimen(pow);
+            }
+        };
+    }
 
     private void update()
     {

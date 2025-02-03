@@ -45,6 +45,12 @@ public class LED {
                 case("blue"):
                     theColor = blue;
                     break;
+                case("purple"):
+                    theColor = purple;
+                    break;
+                case("green"):
+                    theColor = green;
+                    break;
                 default:
                     theColor = white;
                     break;

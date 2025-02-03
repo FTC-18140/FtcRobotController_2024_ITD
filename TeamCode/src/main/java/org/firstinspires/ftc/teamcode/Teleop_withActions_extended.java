@@ -37,7 +37,7 @@ public class Teleop_withActions_extended extends OpMode {
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot.init(hardwareMap, telemetry, 0);
-        robot.intake.arm_offset = Intake.ARM_MAX_HORIZONTAL;
+        //robot.intake.armOffset = Intake.ARM_MAX_HORIZONTAL;
         liftServoPos  = robot.lift.LIFT_SERVO_MAX;
         robot.drive.pose = new Pose2d(AutoPositions.Positions.START_LEFT.position, Math.toRadians(45));
         wristPos = robot.intake.WRIST_INIT;
@@ -106,10 +106,12 @@ public class Teleop_withActions_extended extends OpMode {
         }
 
         if(theGamepad2.getButton(TBDGamepad.Button.LEFT_STICK_BUTTON)){
-            robot.intake.arm_override = true;
-            robot.intake.arm_offset = robot.intake.armPos;
+//            robot.intake.armOverride = true;
+//            robot.intake.armOffset = robot.intake.armPos;
+            robot.intake.overRideArmPos(true);
         }else{
-            robot.intake.arm_override = false;
+//            robot.intake.armOverride = false;
+            robot.intake.overRideArmPos(false);
         }
 
 

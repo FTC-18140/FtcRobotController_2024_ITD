@@ -1,10 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.TBDGamepad.Trigger.LEFT_TRIGGER;
+import static org.firstinspires.ftc.teamcode.TBDGamepad.Trigger.RIGHT_TRIGGER;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
@@ -57,68 +61,89 @@ public class Teleop_withActions extends OpMode {
     public void loop() {
         TelemetryPacket packet = new TelemetryPacket();
 
-        // updated based on gamepads
-        if(theGamepad1.getButton(TBDGamepad.Button.DPAD_LEFT)){
-            if(!turning) {
-                runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(45)).build());
-                turning = true;
-            }
-        }else if(theGamepad1.getButton(TBDGamepad.Button.DPAD_UP)){
-            if(!turning) {
-                runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(90)).build());
-                turning = true;
-            }
-        }else if(theGamepad1.getButton(TBDGamepad.Button.DPAD_DOWN)){
-            if(!turning) {
-                runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(-90)).build());
-                turning = true;
-            }
-        }else{
-            turning = false;
+        // Update based on Gamepads 1 and 2
+
+        if ( theGamepad1.getButtonPressed(TBDGamepad.Button.DPAD_LEFT))
+        {
+            runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(45)).build());
+        }
+        else if ( theGamepad1.getButtonPressed(TBDGamepad.Button.DPAD_UP))
+        {
+            runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(90)).build());
+        }
+        else if ( theGamepad1.getButtonPressed(TBDGamepad.Button.DPAD_DOWN))
+        {
+            runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(-90)).build());
         }
 
+//        if(theGamepad1.getButton(TBDGamepad.Button.DPAD_LEFT)){
+//            if(!turning) {
+//                runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(45)).build());
+//                turning = true;
+//            }
+//        }else if(theGamepad1.getButton(TBDGamepad.Button.DPAD_UP)){
+//            if(!turning) {
+//                runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(90)).build());
+//                turning = true;
+//            }
+//        }else if(theGamepad1.getButton(TBDGamepad.Button.DPAD_DOWN)){
+//            if(!turning) {
+//                runningActions.add(robot.drive.actionBuilder(robot.drive.pose).turnTo(Math.toRadians(-90)).build());
+//                turning = true;
+//            }
+//        }else{
+//            turning = false;
+//        }
+
+
+        // If the XXXXXXXX button is pressed, strafe to the specimen locaiton.
+        if ( false )  // FIX THIS! Need a button press assignment.
+        {
+            robot.alignToSpecimen(0.6);
+        }
+        else {
+            // the alignToSpecimen method changes the LED color to notify the driver that
+            // the robot is done aligning to the specimen.  Don't want the intake to override
+            // the LED color, so put the LED to the intake's preference when the
+            // alignToSpecimen method is not active.
+            robot.led.setToColor(robot.intake.getCalculatedColor());
+        }
+
+        // Grab drive commands from Gamepad1
         double forward = theGamepad1.getLeftY();
         double strafe = theGamepad1.getLeftX();
         double turn  = theGamepad1.getRightX();
         double slow = 0.7;
         double armSlow = 1;
 
+        // Update the mechanisms for the current loop iteration
         robot.intake.update();
         robot.lift.update();
-//        robot.lift.leftServo.setPosition(liftServoPos);
-//        robot.lift.rightServo.setPosition(liftServoPos);
-        robot.led.setToColor(robot.intake.getCalculatedColor());
+//        robot.led.setToColor(robot.intake.getCalculatedColor());
 
-        if(gamepad1.a){
-            //robot.lift.offsetPos = 0;
-        }
-
-        if(theGamepad1.getTrigger(TBDGamepad.Trigger.LEFT_TRIGGER)>0.1){
+//        if(theGamepad1.getTrigger(LEFT_TRIGGER)>0.1)
+        if(theGamepad1.getTriggerBoolean(LEFT_TRIGGER)) {
             slow = 1.0;
             theGamepad1.blipDriver();
         }
-        if(theGamepad1.getTrigger(TBDGamepad.Trigger.RIGHT_TRIGGER)>0.1){
+//        if(theGamepad1.getTrigger(TBDGamepad.Trigger.RIGHT_TRIGGER)>0.1)
+        if(theGamepad1.getTriggerBoolean(RIGHT_TRIGGER)) {
             slow = 0.3;
         }
-        if(theGamepad2.getTrigger(TBDGamepad.Trigger.LEFT_TRIGGER)>0.1){
+//        if(theGamepad2.getTrigger(LEFT_TRIGGER)>0.1)
+        if(theGamepad2.getTriggerBoolean(LEFT_TRIGGER)) {
             armSlow = 0.4;
         }
 
         if(theGamepad2.getButton(TBDGamepad.Button.LEFT_STICK_BUTTON)){
-            robot.intake.arm_override = true;
-            robot.intake.arm_offset = robot.intake.armPos;
+            robot.intake.overRideArmPos(true);
         }else{
-            robot.intake.arm_override = false;
+            robot.intake.overRideArmPos(false);;
         }
 
-
-
-
+        // Lift Controls
         if(theGamepad1.getButton(TBDGamepad.Button.Y)){
             robot.lift.moveToTop();
-//            if (liftServoPos+0.01 < robot.lift.LIFT_SERVO_MAX){
-//                liftServoPos += 0.01;
-//            }
             liftPower = 0;
         }else if(theGamepad1.getButton(TBDGamepad.Button.B)){
             robot.lift.moveToHanging();
@@ -128,20 +153,10 @@ public class Teleop_withActions extends OpMode {
             robot.lift.lift_target = robot.lift.LIFT_MAX;
         }else if(theGamepad1.getButton(TBDGamepad.Button.A)){
             robot.lift.moveToMin();
-//            if (liftServoPos-0.01 > 0){
-//                liftServoPos -= 0.01;
-//            }
             liftPower = 0;
         }
 
-
-//        else if (gamepad2.dpad_left){
-//            wristPos = 0.65;
-//        }
-//        else if(gamepad2.dpad_right){
-//            wristPos = 0;
-//        }
-        //Elbow controls
+        // Arm controls
         clawPos = robot.intake.clawPos;
         if(theGamepad2.getTrigger(TBDGamepad.Trigger.RIGHT_TRIGGER) > 0.1){
             if(theGamepad2.getButton(TBDGamepad.Button.Y)){
@@ -184,7 +199,7 @@ public class Teleop_withActions extends OpMode {
                 wristPos = Intake.Positions.HIGH_CHAMBER_SCORING.wristPos;
             }
         }
-        // Arm controls
+        // Manual Arm controls
         if(theGamepad2.getButton(TBDGamepad.Button.X)){
             robot.intake.armUp(0.4*armSlow);
         }
@@ -197,6 +212,7 @@ public class Teleop_withActions extends OpMode {
             }
         }
 
+        // Intake boot wheel spinner controls
         if(theGamepad2.getButton(TBDGamepad.Button.LEFT_BUMPER)){
             robot.intake.spin(1);
             telemetry.addData("intaking",0);
@@ -210,14 +226,10 @@ public class Teleop_withActions extends OpMode {
         wristPos = Range.clip(wristPos, robot.intake.WRIST_MIN, robot.intake.WRIST_MAX);
         robot.intake.wristMove(wristPos);
 
-        //robot.lift.moveLift(liftPower);
-
         // Send calculated power to wheels
         if (!turning){
             robot.joystickDrive(forward, strafe, turn * 0.8 * slow, slow);
         }
-
-
 
         // update running actions
         List<Action> newActions = new ArrayList<>();
