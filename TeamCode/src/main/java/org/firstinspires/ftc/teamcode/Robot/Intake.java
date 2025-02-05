@@ -67,7 +67,7 @@ public class Intake {
     public static double ARM_MAX = 42;
     public static double ARM_MAX_HORIZONTAL = 32;
 
-    private double armOffset = 0;
+    public double armOffset = 0;
     private boolean armOverride = false;
     public static double COUNTS_PER_ELBOW_DEGREE = 21.64166666666667;
 
@@ -90,8 +90,8 @@ public class Intake {
         READY_TO_INTAKE(0.5,1.0,0, CLAW_MAX),
         LOW_BASKET(0.7,ARM_MAX_HORIZONTAL,ELBOW_LOW, CLAW_MAX),
         HIGH_CHAMBER(0.3,20, ELBOW_HIGH_CHAMBER, CLAW_MAX),
-        HIGH_CHAMBER_SCORING(0,25, ELBOW_HIGH_CHAMBER_SCORING, CLAW_MAX),
-        HIGH_CHAMBER_SCORING_AUTO(0.1,25, ELBOW_HIGH_CHAMBER_SCORING, CLAW_MAX),
+        HIGH_CHAMBER_SCORING(0.15,25, ELBOW_HIGH_CHAMBER_SCORING, CLAW_MAX),
+        HIGH_CHAMBER_SCORING_AUTO(0.15,25, ELBOW_HIGH_CHAMBER_SCORING, CLAW_MAX),
         INTAKE_SPECIMEN(0.27, 5, 13, CLAW_MIN),
         //Max elbow, Max arm extend, base of intake parallel with floor ↓
         HIGH_BASKET(0.26,ARM_MAX,ELBOW_MAX, CLAW_MAX);

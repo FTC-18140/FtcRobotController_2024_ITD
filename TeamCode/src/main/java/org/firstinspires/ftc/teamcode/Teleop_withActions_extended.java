@@ -37,7 +37,7 @@ public class Teleop_withActions_extended extends OpMode {
     public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot.init(hardwareMap, telemetry, 0);
-        //robot.intake.armOffset = Intake.ARM_MAX_HORIZONTAL;
+        robot.intake.armOffset = Intake.ARM_MAX_HORIZONTAL;
         liftServoPos  = robot.lift.LIFT_SERVO_MAX;
         robot.drive.pose = new Pose2d(AutoPositions.Positions.START_LEFT.position, Math.toRadians(45));
         wristPos = robot.intake.WRIST_INIT;
