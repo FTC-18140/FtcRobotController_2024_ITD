@@ -99,14 +99,14 @@ public class Teleop_withActions extends OpMode {
         // If the XXXXXXXX button is pressed, strafe to the specimen locaiton.
         if ( false )  // FIX THIS! Need a button press assignment.
         {
-            robot.alignToSpecimen(0.6);
+            //robot.alignToSpecimen(0.6);
         }
         else {
             // the alignToSpecimen method changes the LED color to notify the driver that
             // the robot is done aligning to the specimen.  Don't want the intake to override
             // the LED color, so put the LED to the intake's preference when the
             // alignToSpecimen method is not active.
-            robot.led.setToColor(robot.intake.getCalculatedColor());
+            //robot.led.setToColor(robot.intake.getCalculatedColor());
         }
 
         // Grab drive commands from Gamepad1
