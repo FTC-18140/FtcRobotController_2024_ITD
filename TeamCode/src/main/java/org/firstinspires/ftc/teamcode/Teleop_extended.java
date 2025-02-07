@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @TeleOp(group = "Teleop")
-public class Teleop_withActions_extended extends OpMode {
+public class Teleop_extended extends OpMode {
     private FtcDashboard dash = FtcDashboard.getInstance();
     private List<Action> runningActions = new ArrayList<>();
 
@@ -52,6 +52,7 @@ public class Teleop_withActions_extended extends OpMode {
     public void start() {
         robot.led.ledTimer.reset();
         robot.intake.start();
+        robot.intake.setToExtended();
     }
 
     @Override

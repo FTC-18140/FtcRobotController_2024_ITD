@@ -13,7 +13,7 @@ public class AutoPositions {
         SAMPLE_1_LEFT(new Vector2d(-49, -38)),
         SAMPLE_2_LEFT(new Vector2d(-54, -38)),
         SAMPLE_3_LEFT(new Vector2d(-59, -38)),
-        ASCENT_ZONE(new Vector2d(-24,-8)),
+        ASCENT_ZONE(new Vector2d(-28,-9.5)),
         OBSERVATION_ZONE(new Vector2d(58,-59));
         public final Vector2d position;
         Positions(Vector2d pos){

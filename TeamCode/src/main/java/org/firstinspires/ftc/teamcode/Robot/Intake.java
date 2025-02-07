@@ -67,7 +67,7 @@ public class Intake {
     public static double ARM_MAX = 42;
     public static double ARM_MAX_HORIZONTAL = 32;
 
-    public double armOffset = 0;
+    public double armOffset;
     private boolean armOverride = false;
     public static double COUNTS_PER_ELBOW_DEGREE = 21.64166666666667;
 
@@ -88,7 +88,7 @@ public class Intake {
 
     public enum Positions{
         READY_TO_INTAKE(0.5,1.0,0, CLAW_MAX),
-        LOW_BASKET(0.7,ARM_MAX_HORIZONTAL,ELBOW_LOW, CLAW_MAX),
+        LOW_BASKET(0.25,20,ELBOW_MAX, CLAW_MAX),
         HIGH_CHAMBER(0.3,20, ELBOW_HIGH_CHAMBER, CLAW_MAX),
         HIGH_CHAMBER_SCORING(0.15,25, ELBOW_HIGH_CHAMBER_SCORING, CLAW_MAX),
         HIGH_CHAMBER_SCORING_AUTO(0.15,25, ELBOW_HIGH_CHAMBER_SCORING, CLAW_MAX),
@@ -107,6 +107,7 @@ public class Intake {
         }
     }
     public void init(HardwareMap hwMap, Telemetry telem) {
+        armOffset = 0;
         telemetry = telem;
         controller = new PIDController(p, i, d);
 
@@ -234,6 +235,9 @@ public class Intake {
         }
     }
 
+    public void setToExtended(){
+        armOffset = ARM_MAX_HORIZONTAL;
+    }
     public void overRideArmPos(boolean doIt)
     {
         if (doIt)
@@ -265,7 +269,7 @@ public class Intake {
         }
     }
     public void armDown ( double power){
-        telemetry.addData("arm position : ", armPos / COUNTS_PER_ARM_CM);
+        telemetry.addData("arm position : ", armPos - armOffset);
         if(!armOverride) {
             if (armPos - armOffset >= ARM_MIN) {
                 arm.setPower(power);

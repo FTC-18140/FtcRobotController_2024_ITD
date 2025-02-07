@@ -396,6 +396,21 @@ public class ThunderBot2024
         }
     }
 
+    public double specimenOffsetX(){
+        double Kp = 0.5;
+        double targetX = limelight.getTargetX();
+        if(Math.abs(0-targetX) < 10)
+        {
+            led.setToColor("green");
+            return 0.0;
+        }
+        else
+        {
+            led.setToColor("purple");
+            return targetX*Kp;
+        }
+    }
+
     public Action alignToSpecimenAction ( double power){
         return new Action() {
             private double pow = power;
