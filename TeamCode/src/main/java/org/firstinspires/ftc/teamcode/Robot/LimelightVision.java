@@ -37,12 +37,12 @@ public class LimelightVision
      * @param telemtry The telemetry object for sending data back to the Driver Station.
      * @throws RuntimeException If an error occurs during Limelight initialization.
      */
-    public void init(HardwareMap hwMap, Telemetry telemtry)
+    public void init(HardwareMap hwMap, Telemetry telemtry, String color)
     {
         try
         {
             limelight = hwMap.get(Limelight3A.class, "limelight");
-            limelight.pipelineSwitch(1); // color pipeline
+            setColorPipeline(color);
             limelight.start();
         }
         catch (Exception e)
@@ -53,11 +53,34 @@ public class LimelightVision
     }
 
     /**
+     * Sets the Limelight pipeline based on the given color.
+     *
+     * @param color The color to set the pipeline to (case-insensitive).
+     *              Supported colors are "red" and "blue".
+     *              If an unsupported color is provided, the pipeline is not changed.
+     */
+    public void setColorPipeline(String color) {
+        if (color == null) {
+            System.err.println("Error: Color cannot be null.");
+            return; // Exit early if color is null
+        }
+
+        if (color.equalsIgnoreCase("red")) {
+            limelight.pipelineSwitch(1); // Red pipeline
+        } else if (color.equalsIgnoreCase("blue")) {
+            limelight.pipelineSwitch(2); // Blue pipeline
+        } else {
+            System.err.println("Warning: Unsupported color: " + color + ". Pipeline not changed.");
+        }
+    }
+
+
+    /**
      * Retrieves the target's X-coordinate (horizontal offset) from the Limelight camera's results.
      *
      * @return The target's X-coordinate in degrees, or DEFAULT_TARGET_X if no valid target is found.
      */
-    public double getTargetX()
+    public double getSpecimenX()
     {
         LLResult result = limelight.getLatestResult();
 

@@ -9,15 +9,9 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.DualNum;
-import com.acmerobotics.roadrunner.HolonomicController;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Pose2dDual;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.Rotation2dDual;
-import com.acmerobotics.roadrunner.Time;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.Vector2dDual;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
@@ -102,7 +96,7 @@ public class ThunderBot2024
         led.init(hwMap, telem);
 
 //        limelight = new LimelightVision();
-//        limelight.init(hwMap, telem);
+//        limelight.init(hwMap, telem, "red");
 
         drive = new MecanumDrive(hwMap, new Pose2d(0,0,0));
 //  This code was somehow preventing the Odometry from updating
@@ -380,10 +374,10 @@ public class ThunderBot2024
     public boolean alignToSpecimen( double power )
     {
         double Kp = 0.5;
-        double targetX = limelight.getTargetX();
+        double targetX = limelight.getSpecimenX();
         if (targetX > 1)  // FIX THIS! - what is a proper termination condition?
         {
-            double powertoStrafe = Kp*limelight.getTargetX();
+            double powertoStrafe = Kp*limelight.getSpecimenX();
             led.setToColor("purple");
             joystickDrive(0, powertoStrafe, 0, power);
             return false;
@@ -398,7 +392,7 @@ public class ThunderBot2024
 
     public double specimenOffsetX(){
         double Kp = 0.5;
-        double targetX = limelight.getTargetX();
+        double targetX = limelight.getSpecimenX();
         if(Math.abs(0-targetX) < 10)
         {
             led.setToColor("green");
