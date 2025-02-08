@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Robot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -15,6 +16,7 @@ public class LED {
     public double blue = 0.62;
     public double green = 0.5;
     public double yellow = 0.388;
+    public double orange = 0.32;
     public double purple = 0.72;
     public double white = 1;
     public double theColor = white;
@@ -50,6 +52,12 @@ public class LED {
                     break;
                 case("green"):
                     theColor = green;
+                    break;
+                case("rainbow"):
+                    theColor = Range.clip(0.22*Math.sin(ledTimer.seconds()/3)+0.5, 0.28, 0.72);
+                    break;
+                case("orange"):
+                    theColor = orange;
                     break;
                 default:
                     theColor = white;

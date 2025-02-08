@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Auto.AutoPositions;
@@ -20,6 +21,8 @@ import java.util.List;
 public class Teleop_extended extends OpMode {
     private FtcDashboard dash = FtcDashboard.getInstance();
     private List<Action> runningActions = new ArrayList<>();
+
+    private ElapsedTime teleopTimer = new ElapsedTime();
 
     private ThunderBot2024 robot = new ThunderBot2024();
     private TBDGamepad theGamepad1;
@@ -53,6 +56,7 @@ public class Teleop_extended extends OpMode {
         robot.led.ledTimer.reset();
         robot.intake.start();
         robot.intake.setToExtended();
+        teleopTimer.reset();
     }
 
     @Override
@@ -89,7 +93,7 @@ public class Teleop_extended extends OpMode {
         robot.lift.update();
 //        robot.lift.leftServo.setPosition(liftServoPos);
 //        robot.lift.rightServo.setPosition(liftServoPos);
-        robot.led.setToColor(robot.intake.getCalculatedColor());
+
 
         if(gamepad1.a){
             //robot.lift.offsetPos = 0;
@@ -99,12 +103,27 @@ public class Teleop_extended extends OpMode {
             slow = 1.0;
             theGamepad1.blipDriver();
         }
-        if(theGamepad1.getTrigger(TBDGamepad.Trigger.RIGHT_TRIGGER)>0.1){
+        else if(theGamepad1.getTrigger(TBDGamepad.Trigger.RIGHT_TRIGGER)>0.1){
             slow = 0.3;
         }
         if(theGamepad2.getTrigger(TBDGamepad.Trigger.LEFT_TRIGGER)>0.1){
             armSlow = 0.4;
         }
+
+
+        if(teleopTimer.seconds() > 105)
+        {
+            robot.led.setToColor("orange");
+        }
+        else if (slow == 1.0)
+        {
+            robot.led.setToColor("rainbow");
+        }
+        else
+        {
+            robot.led.setToColor(robot.intake.getCalculatedColor());
+        }
+
 
         if(theGamepad2.getButton(TBDGamepad.Button.LEFT_STICK_BUTTON)){
 //            robot.intake.armOverride = true;
@@ -238,6 +257,7 @@ public class Teleop_extended extends OpMode {
         telemetry.addData("left motor position: ", robot.lift.getLiftPosL());
         telemetry.addData("right motor position: ", robot.lift.getLiftPosR());
         telemetry.addData("lift target position: ", robot.lift.lift_target);
+        telemetry.addData("timer: ", teleopTimer.seconds());
 
         dash.sendTelemetryPacket(packet);
     }

@@ -236,7 +236,7 @@ public class Intake {
     }
 
     public void setToExtended(){
-        armOffset = ARM_MAX_HORIZONTAL;
+        armOffset = -ARM_MAX_HORIZONTAL;
     }
     public void overRideArmPos(boolean doIt)
     {

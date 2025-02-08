@@ -49,8 +49,8 @@ public class AutoLeft_Sample_3_1_Regional_ParkInAscent extends LinearOpMode {
 
                         new ParallelAction(
                                 robot.drive.actionBuilder(new Pose2d(startPos, Math.toRadians(90)))
-                                        .strafeTo(new Vector2d(startPos.x,basketPosStart.y))
-                                        .strafeToLinearHeading(basketPosStart, Math.toRadians(45))
+                                        .setTangent(Math.toRadians(120))
+                                        .splineToSplineHeading(new Pose2d(basketPosStart, Math.toRadians(45)), Math.toRadians(180))
                                         .build(),
                                 robot.intake.presetAction(Intake.Positions.HIGH_BASKET),
                                 robot.intake.armUpAction(Intake.Positions.HIGH_BASKET.armPos)
@@ -152,11 +152,10 @@ public class AutoLeft_Sample_3_1_Regional_ParkInAscent extends LinearOpMode {
                         robot.intake.wristMoveAction(0.25),
                         new ParallelAction(
                                 robot.intake.spinnerAction(-0.5),
-                                new SleepAction(0.25)
+                                new SleepAction(0.75)
                         ),
                         robot.intake.spinnerAction(0),
                         robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
-                        new SleepAction(0.5),
                         new ParallelAction(
                                 robot.drive.actionBuilder(new Pose2d(basketPos, Math.toRadians(45)))
                                         .splineToSplineHeading(new Pose2d(-48, parkPos.y, Math.toRadians(180)), Math.toRadians(0))

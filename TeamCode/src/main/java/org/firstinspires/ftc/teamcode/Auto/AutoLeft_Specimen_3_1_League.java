@@ -58,7 +58,6 @@ public class AutoLeft_Specimen_3_1_League extends LinearOpMode {
 
                         robot.drive.actionBuilder(new Pose2d(-10,-42, Math.toRadians(90)))
                                 .strafeTo(new Vector2d(-10, -54))
-                                .strafeTo(basketPosStart)
                                 .build(),
                         robot.intake.presetAction(Intake.Positions.READY_TO_INTAKE),
                         robot.intake.armDownAction(1),
@@ -66,8 +65,8 @@ public class AutoLeft_Specimen_3_1_League extends LinearOpMode {
                         new ParallelAction(
                                 robot.intake.wristMoveAction(0.78),
                                 robot.intake.spinnerAction(1),
-                                robot.drive.actionBuilder(new Pose2d(basketPosStart, Math.toRadians(45)))
-                                        .strafeToSplineHeading(new Vector2d(samplePos_1.x, -48), Math.toRadians(90))
+                                robot.drive.actionBuilder(new Pose2d(new Vector2d(-10, -54), Math.toRadians(90)))
+                                        .splineToConstantHeading(new Vector2d(samplePos_1.x, -46), Math.toRadians(90))
                                         .strafeTo(samplePos_1)
                                         .build()
                         ),
@@ -131,7 +130,7 @@ public class AutoLeft_Specimen_3_1_League extends LinearOpMode {
                         ),
                         new ParallelAction(
                                 robot.intake.wristMoveAction(0.8),
-                                robot.intake.armUpAction(17),
+                                robot.intake.armUpAction(15),
                                 robot.intake.checkForSample("yellowred", 10)
                         ),
                         new SleepAction(1),
