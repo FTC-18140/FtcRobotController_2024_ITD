@@ -1,14 +1,16 @@
 package org.firstinspires.ftc.teamcode.Robot;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import java.util.List;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.NavUtil;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
 
 /**
  * This class provides methods for interacting with the Limelight camera and processing its results.
@@ -20,8 +22,9 @@ public class LimelightVision
     private Telemetry telemetry;
 
     public static final double SPECIMEN_X = 36 / 39.37008;
-    private static final double DEFAULT_TARGET_X = 0.0;
-    private static final double MINIMUM_TARGET_AREA = 10.0; // Example value, adjust as needed
+    private static final double TARGET_BOTPOSE_X = 36.0;
+    private static final double TARGET_BOTPOSE_Y = 36.0;
+    private Position specimenPosition;
 
     /**
      * Initializes the Limelight camera and configures its pipeline.
@@ -52,6 +55,23 @@ public class LimelightVision
             throw new RuntimeException(e);
         }
         this.telemetry = telemtry;
+        specimenPosition = new Position(DistanceUnit.INCH, TARGET_BOTPOSE_X, TARGET_BOTPOSE_Y, 0, 0);
+    }
+
+    public Position relativeSpecimenPosition()
+    {
+        LLResult result = limelight.getLatestResult();
+        // Early exit if no valid result is available.
+        if (!isValidResult(result))
+        {
+            telemetry.addData("Limelight", "No valid result found.");
+        }
+
+        // Log basic Limelight data.
+        logLimelightData(result);
+
+        Position botPosition = result.getBotpose().getPosition();
+        return NavUtil.minus(botPosition, specimenPosition);
     }
 
     /**
@@ -66,7 +86,7 @@ public class LimelightVision
         if (!isValidResult(result))
         {
             telemetry.addData("Limelight", "No valid result found.");
-            return DEFAULT_TARGET_X;
+            return TARGET_BOTPOSE_X;
         }
 
         // Log basic Limelight data.
@@ -91,7 +111,7 @@ public class LimelightVision
         if (!isValidResult(result))
         {
             telemetry.addData("Limelight", "No valid result found.");
-            return DEFAULT_TARGET_X;
+            return TARGET_BOTPOSE_X;
         }
 
         // Log basic Limelight data.
@@ -118,7 +138,7 @@ public class LimelightVision
         if (!isValidResult(result))
         {
             telemetry.addData("Limelight", "No valid result found.");
-            return DEFAULT_TARGET_X;
+            return TARGET_BOTPOSE_X;
         }
 
         // Log basic Limelight data.
@@ -154,7 +174,7 @@ public class LimelightVision
         if (!isValidResult(result))
         {
             telemetry.addData("Limelight", "No valid result found.");
-            return DEFAULT_TARGET_X;
+            return TARGET_BOTPOSE_X;
         }
 
         // Log basic Limelight data.
@@ -191,7 +211,7 @@ public class LimelightVision
         if (!isValidResult(result))
         {
             telemetry.addData("Limelight", "No valid result found.");
-            return DEFAULT_TARGET_X;
+            return TARGET_BOTPOSE_X;
         }
 
         // Log basic Limelight data.
@@ -234,38 +254,39 @@ public class LimelightVision
     private void logLimelightData(LLResult result)
     {
         Pose3D botpose = result.getBotpose(); // Consider using this if needed
-        telemetry.addData("tx", result.getTx());
-        telemetry.addData("ty", result.getTy());
+        telemetry.addData("BotPose X: ", botpose.getPosition().x);
+        telemetry.addData("BotPose Y: ", botpose.getPosition().y);
+        telemetry.addData("BotPose Heading: ", botpose.getOrientation().getYaw());
     }
 
-    /**
-     * Finds the best color result from the Limelight result based on target area.
-     *
-     * @param result The Limelight result containing color results.
-     * @return The best color result, or null if no suitable result is found.
-     */
-    private LLResultTypes.ColorResult findBestColorResult(LLResult result)
-    {
-        List<LLResultTypes.ColorResult> colorResults = result.getColorResults();
-
-        if (colorResults == null || colorResults.isEmpty())
-        {
-            telemetry.addData("Limelight", "No color results found.");
-            return null;
-        }
-
-        LLResultTypes.ColorResult bestResult = null;
-        for (LLResultTypes.ColorResult cr : colorResults)
-        {
-            telemetry.addData("Color", "X: %.2f, Y: %.2f, Area: %.2f", cr.getTargetXDegrees(), cr.getTargetYDegrees(), cr.getTargetArea());
-            if (cr.getTargetArea() > MINIMUM_TARGET_AREA)
-            {
-                // If we find a result that meets the minimum area, we consider it the best.
-                // You could add logic here to compare multiple results and choose the best one.
-                bestResult = cr;
-                break; // Exit the loop after finding the first suitable result.
-            }
-        }
-        return bestResult;
-    }
+//    /**
+//     * Finds the best color result from the Limelight result based on target area.
+//     *
+//     * @param result The Limelight result containing color results.
+//     * @return The best color result, or null if no suitable result is found.
+//     */
+//    private LLResultTypes.ColorResult findBestColorResult(LLResult result)
+//    {
+//        List<LLResultTypes.ColorResult> colorResults = result.getColorResults();
+//
+//        if (colorResults == null || colorResults.isEmpty())
+//        {
+//            telemetry.addData("Limelight", "No color results found.");
+//            return null;
+//        }
+//
+//        LLResultTypes.ColorResult bestResult = null;
+//        for (LLResultTypes.ColorResult cr : colorResults)
+//        {
+//            telemetry.addData("Color", "X: %.2f, Y: %.2f, Area: %.2f", cr.getTargetXDegrees(), cr.getTargetYDegrees(), cr.getTargetArea());
+//            if (cr.getTargetArea() > MINIMUM_TARGET_AREA)
+//            {
+//                // If we find a result that meets the minimum area, we consider it the best.
+//                // You could add logic here to compare multiple results and choose the best one.
+//                bestResult = cr;
+//                break; // Exit the loop after finding the first suitable result.
+//            }
+//        }
+//        return bestResult;
+//    }
 }

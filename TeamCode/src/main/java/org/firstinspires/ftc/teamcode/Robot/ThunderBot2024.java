@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.Robot;
 
 import static org.firstinspires.ftc.teamcode.Robot.ThunderBot2024.GearRatio.TWELVE_TO_ONE;
 import static java.lang.Math.abs;
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
 import static java.lang.Math.toRadians;
 
 import androidx.annotation.NonNull;
@@ -23,6 +25,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.NavUtil;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 import java.util.List;
@@ -379,18 +383,65 @@ public class ThunderBot2024
 
     public boolean alignToSpecimen( double power )
     {
-        double Kp = 0.5;
-        double targetX = limelight.getTargetX(false);
-        if (targetX > 1)  // FIX THIS! - what is a proper termination condition?
+
+        Position specimenOffset = limelight.relativeSpecimenPosition();
+        double distanceToSpecimen = sqrt(pow(specimenOffset.x,2) + pow(specimenOffset.y, 2));
+        double scaleFactor = 0.7/distanceToSpecimen;  // The scale factor is used to make sure the power values
+                                                      // are not too large.  The 0.7 in the numerator is the max allowed.
+        double powerToStrafe = specimenOffset.x * scaleFactor;
+        double powerToForward = specimenOffset.y * scaleFactor;
+
+        if ( distanceToSpecimen < 5 ) // Within 5 inches, scale back on the power
         {
-            double powertoStrafe = Kp*limelight.getTargetX(false);
+            powerToStrafe *= Range.scale( distanceToSpecimen, 0, 5, 0.1, 1);
+            powerToForward *= Range.scale( distanceToSpecimen, 0,5, 0.1, 1);
+        }
+
+        // NEED TO ROTATE THIS BY THE HEADING......
+        // THE LINES AFTER THIS ARE NOT CORRECT YET
+        
+        // Updates current angle
+        double currentAngle = heading;
+
+        double angleError = 90 - currentAngle;
+        double angleErrorMagnitude = Math.abs(angleError);
+
+        if (angleError < 0.0)
+        {
+            power *= -1.0;
+        }
+
+        // If the difference between the current angle and the target angle is small (<10), scale
+        // the power proportionally to how far you have left to go.  But... don't let the power
+        // get too small because the robot won't have enough power to complete the turn if the
+        // power gets too small.
+        if ( angleErrorMagnitude < 10)
+        {
+            power = power * angleErrorMagnitude / 50.0;
+
+            if (power > 0)
+            {
+                power = Range.clip(power, 0.1, 1);
+            }
+            else
+            {
+                power = Range.clip(power, -1, -0.1);
+            }
+        }
+
+
+
+
+
+        if (distanceToSpecimen > 0.5)  // if we are more than 0.5 inches away, move closer.
+        {
             led.setToColor("purple");
-            joystickDrive(0, powertoStrafe, 0, power);
+            joystickDrive(powerToForward, powerToStrafe, 0, power);
             return false;
         }
         else
         {
-            stop();
+            stop();  // theoretically, I am within 0.5 inches of the target
             led.setToColor("green");
             return true;
         }
