@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.Robot;
 
+import static com.qualcomm.robotcore.util.Range.clip;
 import static org.firstinspires.ftc.teamcode.Robot.ThunderBot2024.GearRatio.TWELVE_TO_ONE;
 import static java.lang.Math.abs;
 import static java.lang.Math.pow;
+import static java.lang.Math.signum;
+import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
 import static java.lang.Math.toRadians;
 
@@ -46,7 +49,6 @@ public class ThunderBot2024
     long rightFrontPosition = 0;
     long leftRearPosition = 0;
     long rightRearPosition = 0;
-    List<LynxModule> allHubs;
 
     public static boolean useFieldCenteredDrive = false;
     boolean moving = false;
@@ -109,19 +111,8 @@ public class ThunderBot2024
         limelight.init(hwMap, telem);
 
         drive = new MecanumDrive(hwMap, new Pose2d(0,0,0));
-//  This code was somehow preventing the Odometry from updating
-//        try {
-//            allHubs = hwMap.getAll(LynxModule.class);
-//
-//            for (LynxModule module : allHubs) {
-//                module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
-//            }
-//        }
-//        catch (Exception e) {
-//            telemetry.addData("Lynx Module not initialized", 0);
-//        }
-
     }
+
     public void joystickDrive(double forward, double right, double clockwise, double slow) {
         PoseVelocity2d thePose;
         Vector2d theVector;
@@ -129,11 +120,9 @@ public class ThunderBot2024
         theVector = theVector.times(slow);
         thePose = new PoseVelocity2d(theVector, -clockwise);
 
-
         PoseVelocity2d currentVel = drive.updatePoseEstimate();
         //PoseVelocity2d finalVel = new PoseVelocity2d(new Vector2d(thePose.linearVel.x+0.5*(thePose.linearVel.x-currentVel.linearVel.x),thePose.linearVel.y+0.5*(thePose.linearVel.y-currentVel.linearVel.y)), thePose.angVel+0.5*(thePose.angVel-currentVel.angVel));
         drive.setDrivePowers(thePose);
-
 
         telemetry.addData("Odometry X: ", drive.pose.position.x);
         telemetry.addData("Odometry Y: ", drive.pose.position.y);
@@ -167,19 +156,19 @@ public class ThunderBot2024
 
         if (distanceMovedInCM <= 0.1 * distance){
             currentPower += 0.00001;
-            currentPower = Range.clip(currentPower, 0.1, 1.0);
+            currentPower = clip(currentPower, 0.1, 1.0);
         } else if (distanceMovedInCM > 0.9 * distance){
             currentPower -= 0.00001;
-            currentPower = Range.clip(currentPower, 0.1, 1.0);
+            currentPower = clip(currentPower, 0.1, 1.0);
         } else {
             currentPower=power;
         }
-        double xValue = Math.sin(toRadians(targetHeading)) * currentPower;
+        double xValue = sin(toRadians(targetHeading)) * currentPower;
         double yValue = Math.cos(toRadians(targetHeading)) * currentPower;
         // calculates required speed to adjust to gyStartAngle
         double angleError = (startAngle - currentAngle) / 25;
         // Setting range of adjustments
-        angleError = Range.clip(angleError, -1, 1);
+        angleError = clip(angleError, -1, 1);
 
         if (distanceMovedInCM >= distance)
         {
@@ -233,9 +222,9 @@ public class ThunderBot2024
             if (distanceRemaining < 30) {
                 power = (distanceRemaining / 30) * power;
                 if (power < 0) {
-                    power = Range.clip(power, -1.0, -0.1);
+                    power = clip(power, -1.0, -0.1);
                 } else {
-                    power = Range.clip(power, 0.1, 1.0);
+                    power = clip(power, 0.1, 1.0);
                 }
 
             }
@@ -246,7 +235,7 @@ public class ThunderBot2024
         // calculates required speed to adjust to gyStartAngle
         double angleError = (targetHeading - currentAngle) / 20;
         // Setting range of adjustments
-        angleError = Range.clip(angleError, -1, 1);
+        angleError = clip(angleError, -1, 1);
 
         if (distanceMovedInCM >= distance)
         {
@@ -342,11 +331,11 @@ public class ThunderBot2024
 
             if (power > 0)
             {
-                power = Range.clip(power, 0.1, 1);
+                power = clip(power, 0.1, 1);
             }
             else
             {
-                power = Range.clip(power, -1, -0.1);
+                power = clip(power, -1, -0.1);
             }
         }
 
@@ -383,60 +372,43 @@ public class ThunderBot2024
 
     public boolean alignToSpecimen( double power )
     {
+        // CAREFUL:   THIS NEEDS TO BE TESTED!!!!
 
+        // This method approximates a lineToLinearHeading move to the location where the robot can pick up a specimen.
+        // It combines a proportional control on the heading of the robot with a straight line motion to the
+        // specimen location relative to the April Tag to pick up a specimen.
+
+        // Figure out how we need to rotate to get perpendicular to the wall
+        double headingError = limelight.relativeSpecimenHeading();
+        double powerToRotate = headingError * 0.02;
+        powerToRotate = clip(abs(powerToRotate), 0.05, 1 );
+        powerToRotate = signum(headingError)*powerToRotate;
+
+        // Figure out how we need to drive to get to the spot where we can pick up a specimen.
         Position specimenOffset = limelight.relativeSpecimenPosition();
-        double distanceToSpecimen = sqrt(pow(specimenOffset.x,2) + pow(specimenOffset.y, 2));
-        double scaleFactor = 0.7/distanceToSpecimen;  // The scale factor is used to make sure the power values
-                                                      // are not too large.  The 0.7 in the numerator is the max allowed.
-        double powerToStrafe = specimenOffset.x * scaleFactor;
-        double powerToForward = specimenOffset.y * scaleFactor;
+        // Correct for the fact that the robot isn't perfectly facing the wall.  The rotation of the robot
+        // relative to the wall also adjust the strafe and forward commands to the chassis.
+        double powerToStrafe = Math.cos(Math.toRadians(headingError))*specimenOffset.x - Math.sin(Math.toRadians(headingError))*specimenOffset.y;
+        double powerToForward = Math.sin(Math.toRadians(headingError))*specimenOffset.x + Math.cos(Math.toRadians(headingError))*specimenOffset.y;
 
-        if ( distanceToSpecimen < 5 ) // Within 5 inches, scale back on the power
+        // Scale the powers for driving so that they are not too large.  (motor commands are limited to +/- 1)
+        double distanceToSpecimen = sqrt(pow(specimenOffset.x,2) + pow(specimenOffset.y, 2));
+        double scaleFactor = 1.0/distanceToSpecimen;  // The scale factor is used to make sure the power values are not more than +/- 1
+
+        powerToStrafe *= scaleFactor;
+        powerToForward *= scaleFactor;
+
+        if ( distanceToSpecimen < 5 ) // Within 5 inches, scale back on the power to get ready to stop
         {
+            // This scales the powers down based on how close we are to the target.  Keep a minimum of 0.1 though.
             powerToStrafe *= Range.scale( distanceToSpecimen, 0, 5, 0.1, 1);
             powerToForward *= Range.scale( distanceToSpecimen, 0,5, 0.1, 1);
         }
 
-        // NEED TO ROTATE THIS BY THE HEADING......
-        // THE LINES AFTER THIS ARE NOT CORRECT YET
-        
-        // Updates current angle
-        double currentAngle = heading;
-
-        double angleError = 90 - currentAngle;
-        double angleErrorMagnitude = Math.abs(angleError);
-
-        if (angleError < 0.0)
-        {
-            power *= -1.0;
-        }
-
-        // If the difference between the current angle and the target angle is small (<10), scale
-        // the power proportionally to how far you have left to go.  But... don't let the power
-        // get too small because the robot won't have enough power to complete the turn if the
-        // power gets too small.
-        if ( angleErrorMagnitude < 10)
-        {
-            power = power * angleErrorMagnitude / 50.0;
-
-            if (power > 0)
-            {
-                power = Range.clip(power, 0.1, 1);
-            }
-            else
-            {
-                power = Range.clip(power, -1, -0.1);
-            }
-        }
-
-
-
-
-
         if (distanceToSpecimen > 0.5)  // if we are more than 0.5 inches away, move closer.
         {
             led.setToColor("purple");
-            joystickDrive(powerToForward, powerToStrafe, 0, power);
+            joystickDrive(powerToForward, powerToStrafe, powerToRotate, power);
             return false;
         }
         else
@@ -545,14 +517,17 @@ public class ThunderBot2024
         };
     }
 
-    private void update()
+    public void update()
     {
         // Bulk data read.  MUST DO THIS EACH TIME THROUGH loop()
-        for (LynxModule module : allHubs)
-        {
-            module.clearBulkCache();
-        }
+//        for (LynxModule module : allHubs)
+//        {
+//            module.clearBulkCache();
+//        }
+
         drive.updatePoseEstimate();
+        intake.update();
+        lift.update();
 
         // Need to move these to not require motor encoders since the Into the Deep season won't use them
         heading = drive.pose.heading.toDouble();

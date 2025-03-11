@@ -74,6 +74,25 @@ public class LimelightVision
         return NavUtil.minus(botPosition, specimenPosition);
     }
 
+    public double relativeSpecimenHeading()
+    {
+        LLResult result = limelight.getLatestResult();
+
+        // Early exit if no valid result is available.
+        if (!isValidResult(result))
+        {
+            telemetry.addData("Limelight", "No valid result found.");
+            return TARGET_BOTPOSE_X;
+        }
+
+        // Log basic Limelight data.
+        logLimelightData(result);
+
+        return result.getBotpose().getOrientation().getYaw();
+
+    }
+
+
     /**
      * Retrieves the target's X-coordinate (horizontal offset) from the Limelight camera's results.
      *
@@ -95,7 +114,6 @@ public class LimelightVision
         // Find the best color result based on target area.
         Pose3D botpose = result.getBotpose();
         double offset = botpose.getOrientation().getYaw();
-        telemetry.addData("limelight return position Angle: ", offset);
 
         if(!isBLue){
             return -90 - offset;

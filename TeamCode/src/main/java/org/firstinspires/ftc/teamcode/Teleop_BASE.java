@@ -100,14 +100,7 @@ public class Teleop_BASE extends OpMode {
         double slow = 0.7;
         double armSlow = 1;
 
-        robot.intake.update();
-        robot.lift.update();
-//        robot.lift.leftServo.setPosition(liftServoPos);
-//        robot.lift.rightServo.setPosition(liftServoPos);
-
-        if(gamepad1.a){
-            //robot.lift.offsetPos = 0;
-        }
+        robot.update();
 
         if(theGamepad1.getTrigger(TBDGamepad.Trigger.LEFT_TRIGGER)>0.1){
             slow = 1.0;
@@ -145,29 +138,28 @@ public class Teleop_BASE extends OpMode {
 
 
 
-
-        if(theGamepad1.getButton(TBDGamepad.Button.B)){
+        if(theGamepad1.getButton(TBDGamepad.Button.B))
+        {
             robot.lift.hang();
         }
-//        else if(theGamepad1.getButton(TBDGamepad.Button.Y) || (teleopTimer.seconds() > 110 && !robot.lift.hanging)){
         else if(theGamepad1.getButton(TBDGamepad.Button.Y) ||
-                (useDeadlines && hangTimer.hasExpired() && !robot.lift.hanging)){
+                (useDeadlines && hangTimer.hasExpired() && !robot.lift.hanging))
+        {
             robot.lift.moveToTop();
             liftPower = 0;
-        }else if(theGamepad1.getButton(TBDGamepad.Button.RIGHT_BUMPER)){
-            //robot.lift.lift_target = 0;
-            strafe = -robot.specimenOffsetX(isBlue);
-            turn -= 0.5 * robot.specimenAngle(isBlue);
-        }else if(theGamepad1.getButton(TBDGamepad.Button.LEFT_BUMPER)){
-            //robot.lift.lift_target = robot.lift.LIFT_MAX;
-            strafe = -robot.specimenOffsetX(isBlue);
-            turn -= 0.5 * robot.specimenAngle(isBlue);
-            //telemetry.addData("AprilTag offset X: ", robot.specimenOffsetX());
-        }else if(theGamepad1.getButton(TBDGamepad.Button.A)){
+        }
+        else if(theGamepad1.getButton(TBDGamepad.Button.RIGHT_BUMPER) ||
+                theGamepad1.getButton(TBDGamepad.Button.LEFT_BUMPER) )
+        {
+            robot.alignToSpecimen( 0.7);
+        }
+//        else if(theGamepad1.getButton(TBDGamepad.Button.LEFT_BUMPER))
+//        {
+//            robot.alignToSpecimen(0.7);
+//        }
+        else if(theGamepad1.getButton(TBDGamepad.Button.A))
+        {
             robot.lift.moveToMin();
-//            if (liftServoPos-0.01 > 0){
-//                liftServoPos -= 0.01;
-//            }
             liftPower = 0;
         }
 
