@@ -16,6 +16,7 @@ public class AutoTest extends LinearOpMode {
         waitForStart();
 
         Actions.runBlocking(
+                //Build new Trajectory
                 drive.actionBuilder(new Pose2d(0,0,Math.toRadians(90)))
                         .splineToConstantHeading(new Vector2d(-24, 24), Math.toRadians(90))
                         .splineToSplineHeading(new Pose2d(-12, 12, 0), 0)

@@ -35,11 +35,7 @@ public class ThunderBot2025_Summer
         theVector = theVector.times(speed);
         thePose = new PoseVelocity2d(theVector, -clockwise);
 
-
-        PoseVelocity2d currentVel = drive.updatePoseEstimate();
-        //PoseVelocity2d finalVel = new PoseVelocity2d(new Vector2d(thePose.linearVel.x+0.5*(thePose.linearVel.x-currentVel.linearVel.x),thePose.linearVel.y+0.5*(thePose.linearVel.y-currentVel.linearVel.y)), thePose.angVel+0.5*(thePose.angVel-currentVel.angVel));
         drive.setDrivePowers(thePose);
-
 
         telemetry.addData("Odometry X: ", drive.localizer.getPose().position.x);
         telemetry.addData("Odometry Y: ", drive.localizer.getPose().position.y);
