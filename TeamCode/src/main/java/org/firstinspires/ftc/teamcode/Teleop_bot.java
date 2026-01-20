@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 import static android.os.SystemClock.sleep;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,6 +13,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.IMU;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp
 public class Teleop_bot extends OpMode {
@@ -18,9 +24,11 @@ public class Teleop_bot extends OpMode {
     DcMotorEx ShootMotor;
     Servo servo1;
     Servo servo2;
+    IMU imu;
 
     @Override
     public void init() {
+        imu = hardwareMap.get(IMU.class, "imu");
         leftDrive = hardwareMap.get(DcMotor.class, "leftMotor");
         leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightDrive = hardwareMap.get(DcMotor.class, "rightMotor");
@@ -42,7 +50,16 @@ public class Teleop_bot extends OpMode {
                 DcMotor.RunMode.RUN_USING_ENCODER,
                 new PIDFCoefficients(36.0, 0.007, 0.9, 16)
         );
+        IMU.Parameters parameters = new IMU.Parameters
+                (new RevHubOrientationOnRobot
+                        (RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                RevHubOrientationOnRobot.UsbFacingDirection.UP));
+                imu.initialize(parameters);
+                imu.resetYaw();
         telemetry.addData("Status", "Initalized");
+    }
+    public double getHeading(){
+        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
     }
 
 
@@ -100,6 +117,16 @@ public class Teleop_bot extends OpMode {
 
 
         }
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        TelemetryPacket packet = new TelemetryPacket();
+
+        packet.put("power", leftDrive.getPower());
+        packet.put("power", rightDrive.getPower());
+        packet.put("ShootMotor rpm", ShootMotor.getVelocity());
+        packet.put("ShootMotor PID", ShootMotor.getPIDFCoefficients(ShootMotor.getMode()));
+        packet.put("Servo1 position", servo1.getPosition());
+        packet.put("Servo2 position", servo2.getPosition());
+        dashboard.sendTelemetryPacket(packet);
         telemetry.addData("Velocity:", ShootMotor.getVelocity());
         telemetry.addData("Left wheel speed", leftDrive.getPower());
         telemetry.addData("Right wheel speed:", rightDrive.getPower());

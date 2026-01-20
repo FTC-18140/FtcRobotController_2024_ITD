@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 import static android.os.SystemClock.sleep;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -47,11 +50,11 @@ public class AutoFar extends OpMode {
         leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        imu = hardwareMap.get(IMU.class, "imu");//Feel free to delete all th imu stuff
+        imu = hardwareMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(
                 new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
+                        RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                        RevHubOrientationOnRobot.UsbFacingDirection.UP
                 )
         ));
 
@@ -61,6 +64,7 @@ public class AutoFar extends OpMode {
     public void start() {
         //What the auto does
         driveForward(0.5, 5500);
+        Turn(0.2, 1);
         Shoot(315);
         reload();
         sleep(2000);
@@ -117,22 +121,37 @@ public class AutoFar extends OpMode {
     }
 
     // ---------------- TURN ----------------
-    public void Turn(double power, long timeMs) {
-        leftDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftDrive.setPower(power);
-        rightDrive.setPower(power);
-        sleep(timeMs);
-        stopMotors();
+    public double  Turn(double power, long timeMs) {
+        double target = 90; // turn to 90 degrees
+        double heading = imu.getRobotYawPitchRollAngles().getYaw(BNO055IMU.AngleUnit.DEGREES.toAngleUnit());
+        double error = target - heading;
 
+        double kP = 0.01; // tune this
+        double turnPower = kP * error;
+
+        leftDrive.setPower(turnPower);
+        rightDrive.setPower(-turnPower);
+        return heading;
     }
+
     public void loop(){
         //Information
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        TelemetryPacket packet = new TelemetryPacket();
+
+        packet.put("power", leftDrive.getPower());
+        packet.put("power", rightDrive.getPower());
+        packet.put("ShootMotor rpm", ShootMotor.getVelocity());
+        packet.put("ShootMotor PID", ShootMotor.getPIDFCoefficients(ShootMotor.getMode()));
+        packet.put("Servo1 position", servo1.getPosition());
+        packet.put("Servo2 position", servo2.getPosition());
+        dashboard.sendTelemetryPacket(packet);
         telemetry.addData("ShootMotor rpm:", ShootMotor.getVelocity());
         telemetry.addData("PID Coefficients:", ShootMotor.getPIDFCoefficients(ShootMotor.getMode()));
         telemetry.addData("Servo1 position:", servo1.getPosition());
         telemetry.addData("Servo2 position:", servo2.getPosition());
         telemetry.addData("Left motor power:", leftDrive.getPower());
         telemetry.addData("Right motor power:", rightDrive.getPower());
+        telemetry.update();
     }
 }

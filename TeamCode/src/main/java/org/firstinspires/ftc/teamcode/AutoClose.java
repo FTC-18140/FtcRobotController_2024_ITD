@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 import static android.os.SystemClock.sleep;
-
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -12,6 +14,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @Autonomous(name="AutoClose")
 public class AutoClose extends OpMode {
@@ -44,14 +48,8 @@ public class AutoClose extends OpMode {
 
         leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //was going to use encoders decide to use time based//Feel free to delete all th imu stuff
-        imu = hardwareMap.get(IMU.class, "imu");
-        imu.initialize(new IMU.Parameters(
-                new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
-                )
-        ));
+
+
     }
 
     // ---------------- STOP ----------------
@@ -77,27 +75,6 @@ public class AutoClose extends OpMode {
         servo1.setPosition(0);
         servo2.setPosition(0);
     }
-
-    // ---------------- TURN ----------------
-    public void Turn(double power, long timeMs) {
-        leftDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftDrive.setPower(power);
-        rightDrive.setPower(power);
-        sleep(timeMs);
-        stopMotors();
-    }
-
-        // ---------------- DRIVE BACKWARD ----------------
-
-        public void driveBackward(double power, long timeMs){
-            leftDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-            rightDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-            leftDrive.setPower(power);
-            rightDrive.setPower(power);
-            sleep(timeMs);
-            stopMotors();
-        }
         public void start(){
         //What the auto does
             Shoot(315);
@@ -109,15 +86,29 @@ public class AutoClose extends OpMode {
             Shoot(315);
             reload();
             sleep(2000);
+            stopMotors();
         }
         public void loop(){
         //Information
+            FtcDashboard dashboard = FtcDashboard.getInstance();
+            TelemetryPacket packet = new TelemetryPacket();
+
+            packet.put("power", leftDrive.getPower());
+            packet.put("power", rightDrive.getPower());
+            packet.put("ShootMotor rpm", ShootMotor.getVelocity());
+            packet.put("ShootMotor PID", ShootMotor.getPIDFCoefficients(ShootMotor.getMode()));
+            packet.put("Servo1 position", servo1.getPosition());
+            packet.put("Servo2 position", servo2.getPosition());
+            packet.put("Imu heading:", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+            dashboard.sendTelemetryPacket(packet);
         telemetry.addData("ShootMotor rpm:", ShootMotor.getVelocity());
         telemetry.addData("PID Coefficients:", ShootMotor.getPIDFCoefficients(ShootMotor.getMode()));
         telemetry.addData("Servo1 position:", servo1.getPosition());
         telemetry.addData("Servo2 position:", servo2.getPosition());
         telemetry.addData("Left motor power:", leftDrive.getPower());
         telemetry.addData("Right motor power:", rightDrive.getPower());
+        telemetry.addData("Imu heading", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+        telemetry.update();
     }
 
 }
