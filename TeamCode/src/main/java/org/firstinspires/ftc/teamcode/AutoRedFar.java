@@ -4,21 +4,22 @@ import static android.os.SystemClock.sleep;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.hardware.bosch.BHI260IMU;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name="AutoFar")
-public class AutoFar extends OpMode {
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
+@Autonomous(name="AutoRed_Far")
+public class AutoRedFar extends OpMode {
     DcMotor leftDrive, rightDrive;
     DcMotorEx ShootMotor;//Flywheel
     IMU imu;
@@ -44,7 +45,7 @@ public class AutoFar extends OpMode {
         ShootMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         ShootMotor.setPIDFCoefficients(
                 DcMotor.RunMode.RUN_USING_ENCODER,
-                new PIDFCoefficients(34.0, 0.007, 0.95, 16)
+                new PIDFCoefficients(34.0, 0.007, 0.9, 16)
         );
 
         leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -54,28 +55,52 @@ public class AutoFar extends OpMode {
         imu.initialize(new IMU.Parameters(
                 new RevHubOrientationOnRobot(
                         RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                        RevHubOrientationOnRobot.UsbFacingDirection.UP
+                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
                 )
         ));
 
     }
+    int autoStep = 0;
+
+    boolean isTurning = false;
+    double targetAngle = 0;
+    double kP = 0.01;
 
     @Override
     public void start() {
-        //What the auto does
-        driveForward(0.5, 5500);
-        Turn(0.2, 1);
-        Shoot(315);
-        reload();
-        sleep(2000);
-        Shoot(315);
-        reload();
-        sleep(2000);
-        Shoot(315);
-        reload();
-        sleep(2000);
-        Turn(0.3, 2000);
-        driveBackward(0.5, 3700);
+        switch (autoStep) {
+
+            case 0:
+                driveForward(0.5, 3000);
+                autoStep++;
+
+            case 1:
+                Turn(70);
+                autoStep++;
+
+            case 2:
+              if (!isTurning){
+                  driveForward(0.5,500);
+                  autoStep++;
+
+                }
+
+
+            case 3:
+                if (!isTurning) {
+                    Shoot(315);
+                    reload();
+                    autoStep++;
+                }
+
+            case 4:
+                if (!isTurning) {
+                    Shoot(315);
+                    reload();
+                    autoStep++;
+                }
+                break;
+        }
     }
     // ---------------- STOP ----------------
     public void stopMotors() {
@@ -121,20 +146,29 @@ public class AutoFar extends OpMode {
     }
 
     // ---------------- TURN ----------------
-    public double  Turn(double power, long timeMs) {
-        double target = 90; // turn to 90 degrees
-        double heading = imu.getRobotYawPitchRollAngles().getYaw(BNO055IMU.AngleUnit.DEGREES.toAngleUnit());
-        double error = target - heading;
+    public void Turn(double angle) {
+        targetAngle = angle;
+        isTurning = true;
 
-        double kP = 0.01; // tune this
-        double turnPower = kP * error;
-
-        leftDrive.setPower(turnPower);
-        rightDrive.setPower(-turnPower);
-        return heading;
     }
 
     public void loop(){
+        if (isTurning) {
+            double heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+            double error = AngleUnit.normalizeDegrees(targetAngle - heading);
+
+            double turnPower = kP * error;
+            turnPower = Math.max(-0.4, Math.min(0.4, turnPower));
+
+            leftDrive.setPower(turnPower);
+            rightDrive.setPower(-turnPower);
+
+            if (Math.abs(error) < 1.0) {
+                leftDrive.setPower(0);
+                rightDrive.setPower(0);
+                isTurning = false;
+            }
+        }
         //Information
         FtcDashboard dashboard = FtcDashboard.getInstance();
         TelemetryPacket packet = new TelemetryPacket();
@@ -155,3 +189,5 @@ public class AutoFar extends OpMode {
         telemetry.update();
     }
 }
+
+

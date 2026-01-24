@@ -3,13 +3,10 @@ package org.firstinspires.ftc.teamcode;
 import static android.os.SystemClock.sleep;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -17,8 +14,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@Autonomous(name="AutoClose")
-public class AutoClose extends OpMode {
+@Autonomous(name="AutoRed_Depot")
+public class AutoRed_Depot extends OpMode {
 
     DcMotor leftDrive, rightDrive;
     DcMotorEx ShootMotor;//flywheel
@@ -43,7 +40,7 @@ public class AutoClose extends OpMode {
         ShootMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         ShootMotor.setPIDFCoefficients(
                 DcMotor.RunMode.RUN_USING_ENCODER,
-                new PIDFCoefficients(34.0, 0.007, 0.9, 16)
+                new PIDFCoefficients(34.0, 0.007, 1, 14)
         );
 
         leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -99,7 +96,7 @@ public class AutoClose extends OpMode {
             packet.put("ShootMotor PID", ShootMotor.getPIDFCoefficients(ShootMotor.getMode()));
             packet.put("Servo1 position", servo1.getPosition());
             packet.put("Servo2 position", servo2.getPosition());
-            packet.put("Imu heading:", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+            //packet.put("Imu heading:", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
             dashboard.sendTelemetryPacket(packet);
         telemetry.addData("ShootMotor rpm:", ShootMotor.getVelocity());
         telemetry.addData("PID Coefficients:", ShootMotor.getPIDFCoefficients(ShootMotor.getMode()));
@@ -107,7 +104,7 @@ public class AutoClose extends OpMode {
         telemetry.addData("Servo2 position:", servo2.getPosition());
         telemetry.addData("Left motor power:", leftDrive.getPower());
         telemetry.addData("Right motor power:", rightDrive.getPower());
-        telemetry.addData("Imu heading", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+        //telemetry.addData("Imu heading", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
         telemetry.update();
     }
 
