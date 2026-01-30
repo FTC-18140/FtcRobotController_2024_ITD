@@ -16,7 +16,13 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+
+import java.util.List;
 
 @Autonomous(name="AutoRed_Far")
 public class AutoRedFar extends OpMode {
@@ -25,14 +31,29 @@ public class AutoRedFar extends OpMode {
     IMU imu;
     Servo servo1;
     Servo servo2;
+    WebcamName webcam;
+
+    AprilTagProcessor aprilTagProcessor;
+    VisionPortal visionPortal;
 
     @Override
     public void init() {
-
+        webcam = hardwareMap.get(WebcamName.class, "Webcam 1");
         leftDrive = hardwareMap.get(DcMotor.class, "leftMotor");
         rightDrive = hardwareMap.get(DcMotor.class, "rightMotor");
         ShootMotor = hardwareMap.get(DcMotorEx.class, "ShootMotor");
-
+        aprilTagProcessor = new AprilTagProcessor.Builder()
+                .setDrawAxes(true)
+                .setDrawCubeProjection(true)
+                .setDrawTagID(true)
+                .setDrawTagOutline(true)
+                .build();
+        visionPortal = new VisionPortal.Builder()
+                .setCamera(webcam)
+                .addProcessor(aprilTagProcessor)
+                .enableLiveView(true)
+                .setAutoStartStreamOnBuild(true)
+                .build();
 
         // Match your TeleOp directions
         servo1 = hardwareMap.get(Servo.class, "servo1");
@@ -45,7 +66,7 @@ public class AutoRedFar extends OpMode {
         ShootMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         ShootMotor.setPIDFCoefficients(
                 DcMotor.RunMode.RUN_USING_ENCODER,
-                new PIDFCoefficients(34.0, 0.007, 0.9, 16)
+                new PIDFCoefficients(34.0, 0.007, 1.4, 14)
         );
 
         leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -60,6 +81,7 @@ public class AutoRedFar extends OpMode {
         ));
 
     }
+
     int autoStep = 0;
 
     boolean isTurning = false;
@@ -75,30 +97,56 @@ public class AutoRedFar extends OpMode {
                 autoStep++;
 
             case 1:
-                Turn(70);
+                try {
+                    List<AprilTagDetection> detections = aprilTagProcessor  .getDetections();
+
+                    if (detections.isEmpty()) {
+                        AprilTagDetection tag = detections.get(1);
+
+                        double x = tag.ftcPose.x;          // left/right offset (inches)
+                        double y = tag.ftcPose.y;          // forward/back distance (inches)
+                        double heading = tag.ftcPose.yaw;  // rotation needed (degrees)
+
+                        telemetry.addData("Tag ID", tag.id);
+                        telemetry.addData("X Offset (in)", x);
+                        telemetry.addData("Y Distance (in)", y);
+                        telemetry.addData("Yaw (deg)", heading);
+
+                        // --- ALIGNMENT LOGIC ---
+                        double strafePower = x * 0.05;     // tune this
+                        double turnPower = heading * 0.05; // tune this
+
+                        telemetry.addData("Strafe Power", strafePower);
+                        telemetry.addData("Turn Power", turnPower);
+                    } else {
+                        telemetry.addLine("No AprilTag detected");
+                    }
+                }catch (IndexOutOfBoundsException e){
+                    telemetry.addLine("No apriltag seen");
+                    telemetry.update();
+                }
+                autoStep ++;
+            case 2:
+                Turn(50);
                 autoStep++;
 
-            case 2:
-              if (!isTurning){
-                  driveForward(0.5,500);
-                  autoStep++;
-
-                }
-
-
             case 3:
-                if (!isTurning) {
-                    Shoot(315);
-                    reload();
-                    autoStep++;
-                }
+                driveForward(0.5,500);
+                autoStep++;
+
+
 
             case 4:
-                if (!isTurning) {
-                    Shoot(315);
-                    reload();
-                    autoStep++;
-                }
+                Shoot(375);
+                reload();
+                autoStep++;
+
+
+            case 5:
+                Shoot(315);
+                reload();
+                autoStep++;
+
                 break;
         }
     }

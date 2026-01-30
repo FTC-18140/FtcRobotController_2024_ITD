@@ -19,7 +19,6 @@ public class AutoRed_Depot extends OpMode {
 
     DcMotor leftDrive, rightDrive;
     DcMotorEx ShootMotor;//flywheel
-    IMU imu;
     Servo servo1;
     Servo servo2;
 
@@ -40,7 +39,7 @@ public class AutoRed_Depot extends OpMode {
         ShootMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         ShootMotor.setPIDFCoefficients(
                 DcMotor.RunMode.RUN_USING_ENCODER,
-                new PIDFCoefficients(34.0, 0.007, 1, 14)
+                new PIDFCoefficients(34.0, 0.007, 1.4, 14)
         );
 
         leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -48,6 +47,7 @@ public class AutoRed_Depot extends OpMode {
 
 
     }
+    int autoStep = 0;
 
     // ---------------- STOP ----------------
     public void stopMotors() {
@@ -73,17 +73,37 @@ public class AutoRed_Depot extends OpMode {
         servo2.setPosition(0);
     }
         public void start(){
-        //What the auto does
-            Shoot(315);
-            reload();
-            sleep(2000);
-            Shoot(315);
-            reload();
-            sleep(2000);
-            Shoot(315);
-            reload();
-            sleep(2000);
-            stopMotors();
+        switch (autoStep){
+
+            case 0:
+                Shoot(315);
+                reload();
+                sleep(2000);
+                telemetry.addLine("case 0 finished");
+                telemetry.update();
+                autoStep++;
+
+            case 1:
+                Shoot(315);
+                reload();
+                sleep(2000);
+                telemetry.addLine("case 1 finished");
+                telemetry.update();
+                autoStep++;
+
+            case 2:
+                Shoot(315);
+                reload();
+                sleep(2000);
+                stopMotors();
+                telemetry.addLine("case 2 is finished");
+                telemetry.update();
+
+
+                break;
+
+
+        }
         }
         public void loop(){
         //Information
