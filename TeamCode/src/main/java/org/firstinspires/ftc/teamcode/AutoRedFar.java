@@ -97,53 +97,24 @@ public class AutoRedFar extends OpMode {
                 autoStep++;
 
             case 1:
-                try {
-                    List<AprilTagDetection> detections = aprilTagProcessor  .getDetections();
-
-                    if (detections.isEmpty()) {
-                        AprilTagDetection tag = detections.get(1);
-
-                        double x = tag.ftcPose.x;          // left/right offset (inches)
-                        double y = tag.ftcPose.y;          // forward/back distance (inches)
-                        double heading = tag.ftcPose.yaw;  // rotation needed (degrees)
-
-                        telemetry.addData("Tag ID", tag.id);
-                        telemetry.addData("X Offset (in)", x);
-                        telemetry.addData("Y Distance (in)", y);
-                        telemetry.addData("Yaw (deg)", heading);
-
-                        // --- ALIGNMENT LOGIC ---
-                        double strafePower = x * 0.05;     // tune this
-                        double turnPower = heading * 0.05; // tune this
-
-                        telemetry.addData("Strafe Power", strafePower);
-                        telemetry.addData("Turn Power", turnPower);
-                    } else {
-                        telemetry.addLine("No AprilTag detected");
-                    }
-                }catch (IndexOutOfBoundsException e){
-                    telemetry.addLine("No apriltag seen");
-                    telemetry.update();
-                }
-                autoStep ++;
-            case 2:
                 Turn(50);
                 autoStep++;
 
-            case 3:
+
+            case 2:
                 driveForward(0.5,500);
                 autoStep++;
 
 
 
-            case 4:
+            case 3:
                 Shoot(375);
                 reload();
                 autoStep++;
 
 
-            case 5:
-                Shoot(315);
+            case 4:
+                Shoot(375);
                 reload();
                 autoStep++;
 
@@ -195,12 +166,6 @@ public class AutoRedFar extends OpMode {
 
     // ---------------- TURN ----------------
     public void Turn(double angle) {
-        targetAngle = angle;
-        isTurning = true;
-
-    }
-
-    public void loop(){
         if (isTurning) {
             double heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
             double error = AngleUnit.normalizeDegrees(targetAngle - heading);
@@ -217,6 +182,11 @@ public class AutoRedFar extends OpMode {
                 isTurning = false;
             }
         }
+
+    }
+
+    public void loop(){
+
         //Information
         FtcDashboard dashboard = FtcDashboard.getInstance();
         TelemetryPacket packet = new TelemetryPacket();

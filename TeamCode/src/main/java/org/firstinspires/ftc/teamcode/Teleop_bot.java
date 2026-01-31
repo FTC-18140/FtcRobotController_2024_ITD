@@ -2,7 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 import static android.os.SystemClock.sleep;
 
+import android.util.Size;
+
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -13,35 +16,37 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-<<<<<<< HEAD
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.openftc.easyopencv.OpenCvCamera;
 
 import java.util.List;
-=======
->>>>>>> parent of 623caa8 (Added vision to teleop, and improved imu turning on autos and teleop)
-
 @TeleOp
+@Config
 public class Teleop_bot extends OpMode {
+    public static double kP = 34;
+    public static double kI = 0.007;
+    public static double kD = 1.4;
+    public static double kF = 14;
     DcMotor leftDrive;
     DcMotor rightDrive;
     DcMotorEx ShootMotor;
     Servo servo1;
     Servo servo2;
     IMU imu;
-<<<<<<< HEAD
     WebcamName webcam;
-  AprilTagProcessor tagProcessor;
+    AprilTagProcessor tagProcessor;
     VisionPortal visionPortal;
 
 
     @Override
     public void init() {
-        webcam = hardwareMap.get(WebcamName.class,"Webcam 1");
+        webcam = hardwareMap.get(WebcamName.class, "Webcam 1");
         // Create AprilTag processor
         tagProcessor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
@@ -59,11 +64,6 @@ public class Teleop_bot extends OpMode {
 
         telemetry.addLine("Initializing camera...");
 
-=======
-
-    @Override
-    public void init() {
->>>>>>> parent of 623caa8 (Added vision to teleop, and improved imu turning on autos and teleop)
         imu = hardwareMap.get(IMU.class, "imu");
         leftDrive = hardwareMap.get(DcMotor.class, "leftMotor");
         leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -84,44 +84,38 @@ public class Teleop_bot extends OpMode {
         ShootMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         ShootMotor.setPIDFCoefficients(
                 DcMotor.RunMode.RUN_USING_ENCODER,
-                new PIDFCoefficients(36.0, 0.007, 0.9, 16)
+                new PIDFCoefficients(kP, kI, kD, kF)
         );
         IMU.Parameters parameters = new IMU.Parameters
                 (new RevHubOrientationOnRobot
                         (RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                RevHubOrientationOnRobot.UsbFacingDirection.UP));
-                imu.initialize(parameters);
-                imu.resetYaw();
+                                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
+        imu.initialize(parameters);
+        imu.resetYaw();
         telemetry.addData("Status", "Initalized");
     }
-<<<<<<< HEAD
-
 
 
     public double getHeading() {
-=======
-    public double getHeading(){
->>>>>>> parent of 623caa8 (Added vision to teleop, and improved imu turning on autos and teleop)
         return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
     }
+
+    // Timer to track match duration
+    private ElapsedTime runtime = new ElapsedTime();
+    private boolean rumbleTriggered = false;
+    private final long matchDurationMs = 2 * 60 * 1000;  // 2 minutes
+    private final long rumbleBeforeEndMs = 30 * 1000;    // 30 seconds before end
 
 
     @Override
     public void loop() {
-<<<<<<< HEAD
         // --- DRIVE ---
         double drive = gamepad1.left_stick_y;
         double turn = gamepad1.right_stick_x;
-=======
-        // Basic arcade drive
-        double drive = gamepad1.left_stick_y;  // forward/back
-        double turn = gamepad1.right_stick_x;   // left/right
->>>>>>> parent of 623caa8 (Added vision to teleop, and improved imu turning on autos and teleop)
 
         double leftPower = drive + turn;
         double rightPower = drive - turn;
 
-<<<<<<< HEAD
         double speedScale = 0.7;
         if (gamepad1.left_bumper) {
             speedScale = 1.0;
@@ -138,117 +132,105 @@ public class Teleop_bot extends OpMode {
 
         List<AprilTagDetection> detections = tagProcessor.getDetections();
 
-            try {
+        try {
 
 
-                if (detections.isEmpty()) {
-                    AprilTagDetection tag = detections.get(1);
+            if (!detections.isEmpty()) {
+                AprilTagDetection tag = detections.get(1);
 
-                    double x = tag.ftcPose.x;          // left/right offset (inches)
-                    double y = tag.ftcPose.y;          // forward/back distance (inches)
-                    double heading = tag.ftcPose.yaw;  // rotation needed (degrees)
+                double x = tag.ftcPose.x;          // left/right offset (inches)
+                double y = tag.ftcPose.y;          // forward/back distance (inches)
+                double heading = tag.ftcPose.yaw;  // rotation needed (degrees)
 
-                    telemetry.addData("Tag ID", tag.id);
-                    telemetry.addData("X Offset (in)", x);
-                    telemetry.addData("Y Distance (in)", y);
-                    telemetry.addData("Yaw (deg)", heading);
+                telemetry.addData("Tag ID", tag.id);
+                telemetry.addData("X Offset (in)", x);
+                telemetry.addData("Y Distance (in)", y);
+                telemetry.addData("Yaw (deg)", heading);
 
-                    // --- ALIGNMENT LOGIC ---
-                    double strafePower = x * 0.05;     // tune this
-                    double turnPower = heading * 0.05; // tune this
+                // --- ALIGNMENT LOGIC ---
+                double strafePower = x * 0.5;     // tune this
+                double turnPower = heading * 0.5; // tune this
 
-                    telemetry.addData("Strafe Power", strafePower);
-                    telemetry.addData("Turn Power", turnPower);
-                } else {
-                    telemetry.addLine("No AprilTag detected");
-                }
-            }catch (IndexOutOfBoundsException e){
-                 telemetry.addLine("No apriltag seen");
-                telemetry.update();
+                telemetry.addData("Strafe Power", strafePower);
+                telemetry.addData("Turn Power", turnPower);
+            } else {
+                telemetry.addLine("No AprilTag detected");
             }
+        } catch (IndexOutOfBoundsException e) {
+            telemetry.addLine("No apriltag seen");
+            telemetry.update();
+        } catch (NullPointerException e) {
+            telemetry.addLine("returned null for tag pose");
+            telemetry.update();
 
 
+            //ATTACHMENTS
 
 
+            //Shooting
+            if (gamepad2.right_trigger > 0.9) {
+                ShootMotor.setVelocity(375);
+
+            } else {
+                ShootMotor.setVelocity(0);
+
+            }
+            //organizer forwards
+            if (gamepad2.circle) {
+                servo1.setDirection(Servo.Direction.FORWARD);
+                servo2.setDirection(Servo.Direction.REVERSE);
+                servo1.setPosition(1);
+                servo2.setPosition(1);
+            } else {
+                servo1.setPosition(0.0);
+                servo2.setPosition(0.0);
+            }
+            //organizer backwards
+            if (gamepad2.square) {
+                servo1.setPosition(0);
+                servo2.setPosition(0);
+            }
+            long elapsedMs = (long) runtime.milliseconds();
+            long remainingMs = matchDurationMs - elapsedMs;
+
+            // Trigger rumble only once when 30 seconds are left
+            if (!rumbleTriggered && remainingMs <= rumbleBeforeEndMs) {
+                rumbleTriggered = true;
+
+                // Vibrate for 500ms multiple times until endgame or until safe period for non-blocking
+                // Here we just trigger a short pulse as an example
+                gamepad1.rumble(1.0, 1.0, 2);
+
+                telemetry.addLine("Rumble triggered for endgame!");
 
 
-        //ATTACHMENTS
+            }
+            FtcDashboard dashboard = FtcDashboard.getInstance();
+            TelemetryPacket packet = new TelemetryPacket();
 
+            packet.put("power", leftDrive.getPower());
+            packet.put("power", rightDrive.getPower());
+            packet.put("ShootMotor rpm", ShootMotor.getVelocity());
 
-        //Shooting
-        if(gamepad1.right_trigger > 0.9) {
-            ShootMotor.setVelocity(375);
-
-        } else {
-            ShootMotor.setVelocity(0);
-
-        }
-=======
-        // Speed scaling
-        double speedScale = 0.7;   // default normal speed
-
-        if (gamepad1.left_bumper) {
-            speedScale = 1;// fast mode (30% faster)
-            telemetry.addLine("Fast mode");
-
-        } else if (gamepad1.right_bumper) {
-            speedScale = 0.4;// slow mode
-            telemetry.addLine("Slow mode");
-
-        }
-
-        // Apply scaling
-        leftPower  *= speedScale;
-        rightPower *= speedScale;
-        // Send to motors
-        leftDrive.setPower(leftPower);
-        rightDrive.setPower(rightPower);
-        //ATTACHMENTS
-
->>>>>>> parent of 623caa8 (Added vision to teleop, and improved imu turning on autos and teleop)
-        //organizer forwards
-        if (gamepad1.circle) {
-            servo1.setDirection(Servo.Direction.FORWARD);
-            servo2.setDirection(Servo.Direction.REVERSE);
-            servo1.setPosition(1);
-            servo2.setPosition(1);
-        }else {
-            servo1.setPosition(0.0);
-            servo2.setPosition(0.0);
-        }
-        //organizer backwards
-        if (gamepad1.square) {
-            servo1.setPosition(0);
-            servo2.setPosition(0);
-        }
-        //Shooting
-        if (gamepad1.right_trigger > 0.9) {
-            ShootMotor.setVelocity(320);
-
-        }else {
-            ShootMotor.setVelocity(0);
-
-
-        }
-        FtcDashboard dashboard = FtcDashboard.getInstance();
-        TelemetryPacket packet = new TelemetryPacket();
-
-        packet.put("power", leftDrive.getPower());
-        packet.put("power", rightDrive.getPower());
-        packet.put("ShootMotor rpm", ShootMotor.getVelocity());
-        packet.put("ShootMotor PID", ShootMotor.getPIDFCoefficients(ShootMotor.getMode()));
-        packet.put("Servo1 position", servo1.getPosition());
-        packet.put("Servo2 position", servo2.getPosition());
-        dashboard.sendTelemetryPacket(packet);
-        telemetry.addData("Detections", detections.size());
-        telemetry.addData("Velocity:", ShootMotor.getVelocity());
-        telemetry.addData("Left wheel speed", leftDrive.getPower());
-        telemetry.addData("Right wheel speed:", rightDrive.getPower());
-        telemetry.addData("servo1 postion", servo1.getPosition());
-        telemetry.addData("servo2 postion", servo2.getPosition());
-        telemetry.update();
+            packet.put("P", kP);
+            packet.put("I", kI);
+            packet.put("D", kD);
+            packet.put("F", kF);
+            packet.put("Servo1 position", servo1.getPosition());
+            packet.put("Servo2 position", servo2.getPosition());
+            packet.put("imu heading", getHeading());
+            dashboard.sendTelemetryPacket(packet);
+            telemetry.addData("Detections", detections.size());
+            telemetry.addData("Velocity:", ShootMotor.getVelocity());
+            telemetry.addData("Left wheel speed", leftDrive.getPower());
+            telemetry.addData("Right wheel speed:", rightDrive.getPower());
+            telemetry.addData("servo1 postion", servo1.getPosition());
+            telemetry.addData("servo2 postion", servo2.getPosition());
+            telemetry.addData("imu heading", getHeading());
+            telemetry.update();
         }
     }
+}
 
 /*
         //Chassis

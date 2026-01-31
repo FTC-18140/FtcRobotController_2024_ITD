@@ -76,7 +76,7 @@ public class AutoRed_Depot extends OpMode {
         switch (autoStep){
 
             case 0:
-                Shoot(315);
+                Shoot(375);
                 reload();
                 sleep(2000);
                 telemetry.addLine("case 0 finished");
@@ -84,7 +84,7 @@ public class AutoRed_Depot extends OpMode {
                 autoStep++;
 
             case 1:
-                Shoot(315);
+                Shoot(375);
                 reload();
                 sleep(2000);
                 telemetry.addLine("case 1 finished");
@@ -92,7 +92,7 @@ public class AutoRed_Depot extends OpMode {
                 autoStep++;
 
             case 2:
-                Shoot(315);
+                Shoot(375);
                 reload();
                 sleep(2000);
                 stopMotors();
