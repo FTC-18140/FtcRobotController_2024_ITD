@@ -24,8 +24,8 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@Autonomous(name="AutoRed_Far")
-public class AutoRedFar extends OpMode {
+@Autonomous(name="AutoRedFar_vision")
+public class AutoRedFar_vision extends OpMode {
     DcMotor leftDrive, rightDrive;
     DcMotorEx ShootMotor;//Flywheel
     IMU imu;
@@ -84,7 +84,7 @@ public class AutoRedFar extends OpMode {
 
     int autoStep = 0;
 
-    boolean isTurning = false;
+    boolean isTurning = true;
     double targetAngle = 0;
     double kP = 0.01;
 
@@ -117,6 +117,10 @@ public class AutoRedFar extends OpMode {
                 Shoot(375);
                 reload();
                 autoStep++;
+
+            case 5:
+                driveBackward(0.5, 3000);
+                telemetry.addLine("Case 5 finished, Auto over ");
 
                 break;
         }
